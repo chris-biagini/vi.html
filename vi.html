@@ -77,7 +77,7 @@
       padding: 0 18px;
       cursor: pointer;
       font-family: inherit;
-      font-size: 11px;
+      font-size: 13px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       transition: color 0.15s, background 0.15s;
@@ -104,8 +104,15 @@
       display: none;
     }
 
-    #preview-container.visible { display: block; }
+    #preview-container.visible, #help-container.visible { display: block; }
     #editor-container.hidden { display: none; }
+
+    #help-container {
+      flex: 1;
+      overflow-y: auto;
+      background: #f5f3ee;
+      display: none;
+    }
 
     /* ── CodeMirror Overrides ──────────────────────────── */
     .CodeMirror {
@@ -113,7 +120,7 @@
       background: var(--bg);
       color: var(--fg);
       font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
-      font-size: 14px;
+      font-size: 17px;
       line-height: 1.55;
     }
 
@@ -122,7 +129,7 @@
       border-right: 1px solid #1e1e1e;
     }
 
-    .CodeMirror-linenumber { color: var(--fg-dim); font-size: 12px; }
+    .CodeMirror-linenumber { color: var(--fg-dim); font-size: 14px; }
     .CodeMirror-cursor { border-left: 2px solid var(--cursor-bg); }
 
     .cm-fat-cursor .CodeMirror-cursor,
@@ -157,7 +164,7 @@
       border-bottom: none !important;
       padding: 3px 8px;
       font-family: inherit;
-      font-size: 13px;
+      font-size: 16px;
     }
 
     .CodeMirror-dialog input {
@@ -166,7 +173,7 @@
       border: 1px solid var(--tab-border);
       padding: 2px 6px;
       font-family: inherit;
-      font-size: 13px;
+      font-size: 16px;
       outline: none;
     }
 
@@ -184,7 +191,7 @@
       align-items: center;
       padding: 0 10px;
       gap: 14px;
-      font-size: 11px;
+      font-size: 13px;
       color: var(--status-fg);
       user-select: none;
     }
@@ -217,7 +224,7 @@
       margin: 0 auto;
       padding: 48px 36px;
       font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
-      font-size: 16px;
+      font-size: 19px;
       line-height: 1.75;
       color: #2a2a2a;
     }
@@ -290,6 +297,97 @@
     }
 
     #preview-content img { max-width: 100%; height: auto; }
+
+    /* ── Help Pane ─────────────────────────────────────── */
+    #help-content {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 48px 36px 80px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.6;
+      color: #2a2a2a;
+    }
+
+    #help-content h1 {
+      font-size: 1.8em;
+      margin: 0 0 0.1em;
+      font-weight: 700;
+      color: #111;
+    }
+
+    #help-content .subtitle {
+      color: #777;
+      margin: 0 0 2em;
+      font-size: 1em;
+    }
+
+    #help-content h2 {
+      font-size: 1.15em;
+      margin: 2em 0 0.5em;
+      font-weight: 600;
+      color: #1a1a1a;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.3em;
+    }
+
+    #help-content p { margin: 0.5em 0; }
+
+    #help-content ul { padding-left: 1.5em; margin: 0.5em 0; }
+    #help-content li { margin: 0.3em 0; }
+
+    #help-content a { color: #2a5a8a; text-decoration: underline; }
+
+    #help-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0.5em 0 1em;
+      font-size: 0.92em;
+    }
+
+    #help-content th, #help-content td {
+      border: 1px solid #d8d5ce;
+      padding: 6px 10px;
+      text-align: left;
+    }
+
+    #help-content th {
+      background: #eae7e0;
+      font-weight: 600;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #555;
+    }
+
+    #help-content tr:nth-child(even) td { background: #f9f7f3; }
+
+    #help-content kbd {
+      display: inline-block;
+      padding: 1px 6px;
+      font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      font-size: 0.88em;
+      color: #333;
+      background: #f0ede6;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-shadow: 0 1px 0 #bbb;
+      line-height: 1.4;
+    }
+
+    #help-content code {
+      font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      background: #eae7e0;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 0.88em;
+    }
+
+    #help-content hr {
+      border: none;
+      border-top: 2px solid #d0cdc6;
+      margin: 2.5em 0;
+    }
   </style>
 </head>
 <body>
@@ -297,12 +395,184 @@
     <div id="tab-bar">
       <button id="tab-editor" class="tab active">Editor</button>
       <button id="tab-preview" class="tab">Preview</button>
+      <button id="tab-help" class="tab">Help</button>
     </div>
     <div id="editor-container">
       <textarea id="editor"></textarea>
     </div>
     <div id="preview-container">
       <div id="preview-content"></div>
+    </div>
+    <div id="help-container">
+      <div id="help-content">
+
+        <h1>vi.html</h1>
+        <p class="subtitle">A markdown editor with vim keybindings</p>
+
+        <h2>Modes</h2>
+        <p>Vim has distinct modes for different tasks. The current mode is shown in the status bar.</p>
+        <table>
+          <thead><tr><th>Mode</th><th>Enter with</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><b>Normal</b></td><td><kbd>Esc</kbd></td><td>Navigate, delete, copy, paste, and issue commands. This is your home base.</td></tr>
+            <tr><td><b>Insert</b></td><td><kbd>i</kbd> <kbd>a</kbd> <kbd>o</kbd> <kbd>A</kbd> <kbd>O</kbd></td><td>Type text. Press <kbd>Esc</kbd> to return to Normal.</td></tr>
+            <tr><td><b>Visual</b></td><td><kbd>v</kbd> (char) &middot; <kbd>V</kbd> (line)</td><td>Select text, then act on it (delete, yank, reflow, etc.).</td></tr>
+            <tr><td><b>Replace</b></td><td><kbd>R</kbd></td><td>Overwrite characters in place.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Movement (Normal mode)</h2>
+        <table>
+          <thead><tr><th>Key</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>h</kbd> <kbd>j</kbd> <kbd>k</kbd> <kbd>l</kbd></td><td>Left, down, up, right</td></tr>
+            <tr><td><kbd>w</kbd> / <kbd>b</kbd></td><td>Next word / previous word</td></tr>
+            <tr><td><kbd>e</kbd></td><td>End of word</td></tr>
+            <tr><td><kbd>0</kbd> / <kbd>$</kbd></td><td>Start / end of line</td></tr>
+            <tr><td><kbd>^</kbd></td><td>First non-blank character</td></tr>
+            <tr><td><kbd>gg</kbd> / <kbd>G</kbd></td><td>Top / bottom of document</td></tr>
+            <tr><td><kbd>{</kbd> / <kbd>}</kbd></td><td>Previous / next blank line (paragraph boundary)</td></tr>
+            <tr><td><kbd>%</kbd></td><td>Matching bracket</td></tr>
+            <tr><td><kbd>f</kbd><em>x</em> / <kbd>F</kbd><em>x</em></td><td>Jump to next / previous occurrence of character <em>x</em></td></tr>
+            <tr><td><kbd>t</kbd><em>x</em> / <kbd>T</kbd><em>x</em></td><td>Jump to just before next / after previous <em>x</em></td></tr>
+            <tr><td><kbd>;</kbd> / <kbd>,</kbd></td><td>Repeat / reverse last f/F/t/T</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Editing (Normal mode)</h2>
+        <table>
+          <thead><tr><th>Key</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>i</kbd> / <kbd>a</kbd></td><td>Insert before / after cursor</td></tr>
+            <tr><td><kbd>I</kbd> / <kbd>A</kbd></td><td>Insert at start / end of line</td></tr>
+            <tr><td><kbd>o</kbd> / <kbd>O</kbd></td><td>Open line below / above</td></tr>
+            <tr><td><kbd>x</kbd></td><td>Delete character under cursor</td></tr>
+            <tr><td><kbd>dd</kbd></td><td>Delete entire line</td></tr>
+            <tr><td><kbd>d</kbd><em>motion</em></td><td>Delete over motion (e.g. <kbd>dw</kbd> = delete word, <kbd>d$</kbd> = delete to end of line)</td></tr>
+            <tr><td><kbd>cc</kbd></td><td>Change entire line (delete + enter Insert)</td></tr>
+            <tr><td><kbd>c</kbd><em>motion</em></td><td>Change over motion (e.g. <kbd>cw</kbd> = change word)</td></tr>
+            <tr><td><kbd>yy</kbd></td><td>Yank (copy) entire line</td></tr>
+            <tr><td><kbd>y</kbd><em>motion</em></td><td>Yank over motion</td></tr>
+            <tr><td><kbd>p</kbd> / <kbd>P</kbd></td><td>Paste after / before cursor</td></tr>
+            <tr><td><kbd>u</kbd></td><td>Undo</td></tr>
+            <tr><td><kbd>Ctrl-r</kbd></td><td>Redo</td></tr>
+            <tr><td><kbd>.</kbd></td><td>Repeat last edit</td></tr>
+            <tr><td><kbd>~</kbd></td><td>Toggle case of character</td></tr>
+            <tr><td><kbd>&gt;&gt;</kbd> / <kbd>&lt;&lt;</kbd></td><td>Indent / unindent line</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Text Objects</h2>
+        <p>Use with operators like <kbd>d</kbd>, <kbd>c</kbd>, <kbd>y</kbd>, <kbd>gq</kbd>. Prefix with <kbd>i</kbd> for &ldquo;inner&rdquo; or <kbd>a</kbd> for &ldquo;around&rdquo;.</p>
+        <table>
+          <thead><tr><th>Object</th><th>Meaning</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>w</kbd></td><td>Word</td><td><kbd>diw</kbd> = delete inner word</td></tr>
+            <tr><td><kbd>W</kbd></td><td>WORD (whitespace-delimited)</td><td><kbd>daW</kbd> = delete around WORD</td></tr>
+            <tr><td><kbd>s</kbd></td><td>Sentence</td><td><kbd>cis</kbd> = change inner sentence</td></tr>
+            <tr><td><kbd>p</kbd></td><td>Paragraph</td><td><kbd>gqap</kbd> = reflow around paragraph</td></tr>
+            <tr><td><kbd>"</kbd> <kbd>'</kbd> <kbd>`</kbd></td><td>Quoted string</td><td><kbd>ci"</kbd> = change inside quotes</td></tr>
+            <tr><td><kbd>(</kbd> <kbd>[</kbd> <kbd>{</kbd></td><td>Bracket pair</td><td><kbd>di(</kbd> = delete inside parens</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Search</h2>
+        <table>
+          <thead><tr><th>Key</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>/</kbd><em>pattern</em></td><td>Search forward</td></tr>
+            <tr><td><kbd>?</kbd><em>pattern</em></td><td>Search backward</td></tr>
+            <tr><td><kbd>n</kbd> / <kbd>N</kbd></td><td>Next / previous match</td></tr>
+            <tr><td><kbd>*</kbd> / <kbd>#</kbd></td><td>Search for word under cursor (forward / backward)</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Counts</h2>
+        <p>Most commands accept a numeric prefix: <kbd>5j</kbd> moves down 5 lines, <kbd>3dd</kbd> deletes 3 lines, <kbd>2dw</kbd> deletes 2 words.</p>
+
+        <hr>
+
+        <h2>vi.html Commands</h2>
+        <p>Type <kbd>:</kbd> in Normal mode to enter the command line.</p>
+        <table>
+          <thead><tr><th>Command</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><code>:w</code></td><td>Save to browser storage</td></tr>
+            <tr><td><code>:e</code></td><td>Switch to Editor tab</td></tr>
+            <tr><td><code>:pre[view]</code></td><td>Switch to Preview tab</td></tr>
+            <tr><td><code>:help</code></td><td>Show this help</td></tr>
+            <tr><td><code>:tog[gle]</code></td><td>Toggle between Editor and Preview</td></tr>
+            <tr><td><code>:persist</code></td><td>Enable auto-save (default)</td></tr>
+            <tr><td><code>:nopersist</code></td><td>Disable auto-save</td></tr>
+            <tr><td><code>:clear</code></td><td>Wipe saved content from storage</td></tr>
+            <tr><td><code>:setall</code></td><td>Show all current settings</td></tr>
+            <tr><td><code>:s/old/new/g</code></td><td>Substitute (supports regex)</td></tr>
+            <tr><td><code>:noh</code></td><td>Clear search highlighting</td></tr>
+          </tbody>
+        </table>
+
+        <h2>vi.html Options</h2>
+        <p>Set with <code>:set <em>option</em></code>. Boolean options can be negated with <code>:set no<em>option</em></code>. All settings auto-persist across sessions.</p>
+        <table>
+          <thead><tr><th>Option</th><th>Short</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>textwidth</code></td><td><code>tw</code></td><td>number</td><td>0 (off)</td><td>Auto-wrap lines at this column in Insert mode</td></tr>
+            <tr><td><code>number</code></td><td><code>nu</code></td><td>bool</td><td>on</td><td>Show line numbers</td></tr>
+            <tr><td><code>relativenumber</code></td><td><code>rnu</code></td><td>bool</td><td>off</td><td>Relative line numbers</td></tr>
+            <tr><td><code>tabstop</code></td><td><code>ts</code></td><td>number</td><td>4</td><td>Tab display width</td></tr>
+            <tr><td><code>shiftwidth</code></td><td><code>sw</code></td><td>number</td><td>4</td><td>Indent width for <kbd>&gt;&gt;</kbd> / <kbd>&lt;&lt;</kbd></td></tr>
+            <tr><td><code>expandtab</code></td><td><code>et</code></td><td>bool</td><td>on</td><td>Insert spaces instead of tabs</td></tr>
+            <tr><td><code>wrap</code></td><td></td><td>bool</td><td>on</td><td>Soft-wrap long lines</td></tr>
+          </tbody>
+        </table>
+
+        <h2>vi.html Keyboard Shortcuts</h2>
+        <table>
+          <thead><tr><th>Key</th><th>Context</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>\</kbd><kbd>p</kbd></td><td>Normal mode</td><td>Toggle between Editor and Preview</td></tr>
+            <tr><td><kbd>\</kbd></td><td>Preview / Help</td><td>Return to Editor</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Text Reflow</h2>
+        <p>Set <code>:set tw=72</code> (or your preferred width), then use <kbd>gq</kbd> with a motion or text object to hard-wrap text:</p>
+        <table>
+          <thead><tr><th>Key</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>gqq</kbd></td><td>Reflow current line</td></tr>
+            <tr><td><kbd>gqap</kbd></td><td>Reflow current paragraph</td></tr>
+            <tr><td><kbd>gq}</kbd></td><td>Reflow from cursor to next blank line</td></tr>
+            <tr><td><kbd>gqj</kbd></td><td>Reflow current line and next</td></tr>
+            <tr><td>Visual + <kbd>gq</kbd></td><td>Reflow selected lines</td></tr>
+          </tbody>
+        </table>
+        <p>Lines are wrapped at word boundaries. Indentation is preserved. This is useful for writing <a href="https://sembr.org/" target="_blank">semantic line breaks</a>.</p>
+
+        <h2>Persistence</h2>
+        <ul>
+          <li><b>Content</b> is auto-saved as you type (1-second debounce). Saved content expires after <b>7 days</b> of inactivity. Use <code>:w</code> to save explicitly and refresh the timer.</li>
+          <li><b>Settings</b> (<code>:set</code> values) persist indefinitely.</li>
+          <li><b>Disable</b> auto-save with <code>:nopersist</code>. Re-enable with <code>:persist</code>.</li>
+          <li><b>Clear</b> saved content immediately with <code>:clear</code>.</li>
+        </ul>
+
+        <h2>Preview &amp; SmartyPants</h2>
+        <p>The Preview tab renders your markdown with full <a href="https://github.github.com/gfm/" target="_blank">GitHub Flavored Markdown</a> support: tables, task lists, strikethrough, and fenced code blocks.</p>
+        <p>SmartyPants typography is applied automatically in the preview:</p>
+        <table>
+          <thead><tr><th>You type</th><th>Rendered as</th></tr></thead>
+          <tbody>
+            <tr><td><code>"hello"</code></td><td>&ldquo;hello&rdquo;</td></tr>
+            <tr><td><code>'hello'</code></td><td>&lsquo;hello&rsquo;</td></tr>
+            <tr><td><code>it's</code></td><td>it&rsquo;s</td></tr>
+            <tr><td><code>--</code></td><td>&ndash;</td></tr>
+            <tr><td><code>---</code></td><td>&mdash;</td></tr>
+            <tr><td><code>...</code></td><td>&hellip;</td></tr>
+          </tbody>
+        </table>
+
+      </div>
     </div>
     <div id="status-bar">
       <span id="status-mode">NORMAL</span>
@@ -395,27 +665,39 @@
 
     // ── Tab switching ───────────────────────────────────────
     function showTab(name, cm) {
-      var edC = document.getElementById('editor-container');
-      var prC = document.getElementById('preview-container');
-      var tabEd = document.getElementById('tab-editor');
-      var tabPr = document.getElementById('tab-preview');
+      var containers = {
+        editor:  document.getElementById('editor-container'),
+        preview: document.getElementById('preview-container'),
+        help:    document.getElementById('help-container')
+      };
+      var tabs = {
+        editor:  document.getElementById('tab-editor'),
+        preview: document.getElementById('tab-preview'),
+        help:    document.getElementById('tab-help')
+      };
 
       state.currentTab = name;
 
+      // Hide all, deactivate all
+      containers.editor.classList.add('hidden');
+      containers.preview.classList.remove('visible');
+      containers.help.classList.remove('visible');
+      tabs.editor.classList.remove('active');
+      tabs.preview.classList.remove('active');
+      tabs.help.classList.remove('active');
+
+      // Show selected
       if (name === 'preview') {
         renderPreview(cm);
-        edC.classList.add('hidden');
-        prC.classList.add('visible');
-        tabEd.classList.remove('active');
-        tabPr.classList.add('active');
+        containers.preview.classList.add('visible');
+      } else if (name === 'help') {
+        containers.help.classList.add('visible');
       } else {
-        prC.classList.remove('visible');
-        edC.classList.remove('hidden');
-        tabPr.classList.remove('active');
-        tabEd.classList.add('active');
+        containers.editor.classList.remove('hidden');
         cm.focus();
         cm.refresh();
       }
+      tabs[name].classList.add('active');
     }
 
     // ── SmartyPants ─────────────────────────────────────────
@@ -503,6 +785,19 @@
 
       if (lineText.length <= state.textwidth) return;
 
+      // Vim behavior: only wrap when cursor is at or past the textwidth column.
+      // Typing early in a long line does not trigger wrapping.
+      if (cursor.ch < state.textwidth) return;
+
+      // Vim 'l' flag behavior: don't wrap if line was already over textwidth
+      // before this insertion. Calculate pre-insertion length by subtracting
+      // the inserted text length.
+      var insertedLen = 0;
+      for (var t = 0; t < changeObj.text.length; t++) {
+        insertedLen += changeObj.text[t].length;
+      }
+      if (lineText.length - insertedLen > state.textwidth) return;
+
       // Find last space at or before textwidth
       var breakAt = -1;
       for (var i = state.textwidth; i >= 0; i--) {
@@ -523,7 +818,8 @@
           { line: lineNo, ch: breakAt + 1 }
         );
       });
-      state.wrapping = false;
+      // Delay reset so the batched change event from cm.operation sees the flag
+      setTimeout(function() { state.wrapping = false; }, 0);
     }
 
     // ── gq reflow ───────────────────────────────────────────
@@ -561,11 +857,14 @@
         result.push(wordWrap(joined, width, paraIndent));
       }
 
+      var text = result.join('\n');
       cm.replaceRange(
-        result.join('\n'),
+        text,
         { line: fromLine, ch: 0 },
         { line: toLine, ch: cm.getLine(toLine).length }
       );
+      // Return number of lines in the replacement
+      return text.split('\n').length;
     }
 
     function wordWrap(text, width, indent) {
@@ -650,6 +949,10 @@
       showTab('editor', cm);
     });
 
+    CodeMirror.Vim.defineEx('help', 'h', function(cm) {
+      showTab('help', cm);
+    });
+
     CodeMirror.Vim.defineEx('write', 'w', function(cm) {
       saveContent(cm.getValue());
       lsSet(LS_TTL, String(Date.now() + TTL_MS));
@@ -694,14 +997,27 @@
         flash('textwidth not set (use :set tw=N)');
         return;
       }
+      var cursorLine = 0;
       cm.operation(function() {
         for (var i = ranges.length - 1; i >= 0; i--) {
           var range = ranges[i];
-          var from = range.anchor.line < range.head.line ? range.anchor.line : range.head.line;
-          var to = range.anchor.line < range.head.line ? range.head.line : range.anchor.line;
-          reflowRange(cm, from, to, state.textwidth);
+          var fromPos = range.anchor.line <= range.head.line ? range.anchor : range.head;
+          var toPos = range.anchor.line <= range.head.line ? range.head : range.anchor;
+          var from = fromPos.line;
+          var to = toPos.line;
+          // CM5 vim uses exclusive end for linewise motions (head at ch:0 of next line)
+          if (to > from && toPos.ch === 0) to--;
+          // Trim trailing blank lines from the range
+          while (to > from && cm.getLine(to).trim() === '') to--;
+          var newLines = reflowRange(cm, from, to, state.textwidth);
+          // Cursor goes to line after reflowed text (vim behavior)
+          cursorLine = from + newLines;
         }
       });
+      // Position cursor at first non-blank line after reflowed text, or last line of result
+      var lastLine = cm.lastLine();
+      if (cursorLine > lastLine) cursorLine = lastLine;
+      cm.setCursor(cursorLine, 0);
     });
 
     // Map gq as an operator key
@@ -750,6 +1066,9 @@
     document.getElementById('tab-preview').addEventListener('click', function() {
       showTab('preview', cm);
     });
+    document.getElementById('tab-help').addEventListener('click', function() {
+      showTab('help', cm);
+    });
 
     // Toggle command and keyboard shortcut
     CodeMirror.Vim.defineEx('toggle', 'tog', function(cm) {
@@ -757,7 +1076,7 @@
     });
     CodeMirror.Vim.map('\\p', ':toggle<CR>', 'normal');
     document.addEventListener('keydown', function(e) {
-      if (e.key === '\\' && state.currentTab === 'preview') {
+      if (e.key === '\\' && state.currentTab !== 'editor') {
         e.preventDefault();
         showTab('editor', cm);
       }
