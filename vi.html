@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vi.html</title>
+
+  <!-- CodeMirror 5 core -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/dialog/dialog.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/dialog/dialog.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/search/searchcursor.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/search/search.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/markdown/markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/keymap/vim.min.js"></script>
+
+  <!-- marked.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/16.3.0/lib/marked.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg:          #0c0c0c;
+      --bg-alt:      #151515;
+      --bg-tab:      #0f0f0f;
+      --fg:          #b8b8a8;
+      --fg-dim:      #555548;
+      --accent:      #6aab73;
+      --accent-warm: #c9964a;
+      --accent-vis:  #6a9fc4;
+      --accent-rep:  #c46a6a;
+      --cursor-bg:   #b8b8a8;
+      --tab-active:  #1a261a;
+      --tab-border:  #2a2a2a;
+      --status-bg:   #0a0a0a;
+      --status-fg:   #666;
+      --flash-fg:    #8abf8a;
+      --sel-bg:      #1e3320;
+      --dialog-bg:   #111;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Tab Bar ────────────────────────────────────────── */
+    #tab-bar {
+      height: 30px;
+      flex-shrink: 0;
+      background: var(--bg-tab);
+      border-bottom: 1px solid var(--tab-border);
+      display: flex;
+      align-items: stretch;
+      padding: 0 6px;
+      gap: 2px;
+      user-select: none;
+    }
+
+    .tab {
+      background: transparent;
+      border: none;
+      border-top: 2px solid transparent;
+      color: var(--fg-dim);
+      padding: 0 18px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .tab:hover:not(.active) { color: var(--fg); background: #161616; }
+    .tab.active {
+      color: var(--fg);
+      background: var(--tab-active);
+      border-top-color: var(--accent);
+    }
+
+    /* ── Editor Container ──────────────────────────────── */
+    #editor-container {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #preview-container {
+      flex: 1;
+      overflow-y: auto;
+      background: #f5f3ee;
+      display: none;
+    }
+
+    #preview-container.visible { display: block; }
+    #editor-container.hidden { display: none; }
+
+    /* ── CodeMirror Overrides ──────────────────────────── */
+    .CodeMirror {
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .CodeMirror-gutters {
+      background: var(--bg-alt);
+      border-right: 1px solid #1e1e1e;
+    }
+
+    .CodeMirror-linenumber { color: var(--fg-dim); font-size: 12px; }
+    .CodeMirror-cursor { border-left: 2px solid var(--cursor-bg); }
+
+    .cm-fat-cursor .CodeMirror-cursor,
+    .cm-fat-cursor-mark .CodeMirror-cursor {
+      background: var(--cursor-bg);
+      border: none;
+      opacity: 0.65;
+    }
+
+    .CodeMirror-selected { background: var(--sel-bg) !important; }
+    .CodeMirror-focused .CodeMirror-selected { background: #1e3a24 !important; }
+
+    /* Markdown syntax tokens */
+    .cm-header   { color: #d4b86a; font-weight: bold; }
+    .cm-strong   { color: #d4b86a; font-weight: bold; }
+    .cm-em       { color: #8abf8a; font-style: italic; }
+    .cm-link     { color: var(--accent-vis); }
+    .cm-url      { color: #4e7fa0; text-decoration: underline; }
+    .cm-quote    { color: #7a7a68; font-style: italic; }
+    .cm-comment  { color: var(--fg-dim); }
+    .cm-keyword  { color: #c49ad4; }
+    .cm-atom     { color: #d4866a; }
+    .cm-string   { color: #8abf8a; }
+    .cm-variable-2 { color: var(--accent-vis); }
+    .cm-tag      { color: #c46a6a; }
+
+    /* Dialog (: command line, / search) */
+    .CodeMirror-dialog {
+      background: var(--dialog-bg);
+      color: var(--fg);
+      border-top: 1px solid var(--tab-border) !important;
+      border-bottom: none !important;
+      padding: 3px 8px;
+      font-family: inherit;
+      font-size: 13px;
+    }
+
+    .CodeMirror-dialog input {
+      background: var(--bg);
+      color: var(--fg);
+      border: 1px solid var(--tab-border);
+      padding: 2px 6px;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .CodeMirror-dialog input:focus { border-color: var(--accent); }
+
+    .cm-searching { background: #3a3a1a; }
+
+    /* ── Status Bar ────────────────────────────────────── */
+    #status-bar {
+      height: 22px;
+      flex-shrink: 0;
+      background: var(--status-bg);
+      border-top: 1px solid #1a1a1a;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      gap: 14px;
+      font-size: 11px;
+      color: var(--status-fg);
+      user-select: none;
+    }
+
+    #status-mode {
+      color: var(--accent);
+      font-weight: bold;
+      min-width: 56px;
+      letter-spacing: 0.04em;
+    }
+
+    #status-mode.insert  { color: var(--accent-warm); }
+    #status-mode.visual  { color: var(--accent-vis); }
+    #status-mode.replace { color: var(--accent-rep); }
+
+    #status-pos { color: var(--status-fg); }
+
+    #status-flash {
+      color: var(--flash-fg);
+      margin-left: auto;
+      opacity: 1;
+      transition: opacity 0.4s;
+    }
+
+    #status-flash.fade { opacity: 0; }
+
+    /* ── Preview Pane ──────────────────────────────────── */
+    #preview-content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 36px;
+      font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+      font-size: 16px;
+      line-height: 1.75;
+      color: #2a2a2a;
+    }
+
+    #preview-content h1 { font-size: 2em; margin: 0.8em 0 0.4em; font-weight: 700; color: #111; }
+    #preview-content h2 { font-size: 1.5em; margin: 1em 0 0.3em; font-weight: 600; color: #1a1a1a; }
+    #preview-content h3 { font-size: 1.2em; margin: 1em 0 0.3em; font-weight: 600; color: #222; }
+    #preview-content h4 { font-size: 1em; margin: 1em 0 0.2em; font-weight: 600; color: #333; }
+
+    #preview-content p { margin: 0.7em 0; }
+
+    #preview-content a { color: #2a5a8a; text-decoration: underline; }
+
+    #preview-content ul, #preview-content ol { padding-left: 1.8em; margin: 0.5em 0; }
+    #preview-content li { margin: 0.2em 0; }
+
+    #preview-content blockquote {
+      border-left: 3px solid #c4b89a;
+      margin: 1em 0;
+      padding: 0.3em 0 0.3em 1.2em;
+      color: #555;
+      font-style: italic;
+    }
+
+    #preview-content code {
+      font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
+      background: #eae7e0;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 0.88em;
+    }
+
+    #preview-content pre {
+      background: #1a1a1a;
+      color: #b8b8a8;
+      padding: 16px 20px;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 1em 0;
+      line-height: 1.5;
+    }
+
+    #preview-content pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+      font-size: 0.9em;
+    }
+
+    #preview-content table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    #preview-content th, #preview-content td {
+      border: 1px solid #d0cdc6;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    #preview-content th { background: #eae7e0; font-weight: 600; }
+    #preview-content tr:nth-child(even) td { background: #f9f7f3; }
+
+    #preview-content hr {
+      border: none;
+      border-top: 1px solid #d0cdc6;
+      margin: 2em 0;
+    }
+
+    #preview-content del { color: #999; }
+
+    #preview-content input[type="checkbox"] {
+      margin-right: 6px;
+      accent-color: #6aab73;
+    }
+
+    #preview-content img { max-width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="tab-bar">
+      <button id="tab-editor" class="tab active">Editor</button>
+      <button id="tab-preview" class="tab">Preview</button>
+    </div>
+    <div id="editor-container">
+      <textarea id="editor"></textarea>
+    </div>
+    <div id="preview-container">
+      <div id="preview-content"></div>
+    </div>
+    <div id="status-bar">
+      <span id="status-mode">NORMAL</span>
+      <span id="status-pos">1:1</span>
+      <span id="status-flash"></span>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+
+    // ── Constants ───────────────────────────────────────────
+    var LS_CONTENT  = 'vihtml_content';
+    var LS_TTL      = 'vihtml_content_ttl';
+    var LS_SETTINGS = 'vihtml_settings';
+    var LS_PERSIST  = 'vihtml_persist';
+    var TTL_MS      = 7 * 24 * 60 * 60 * 1000;
+
+    var state = {
+      textwidth: 0,
+      persist: true,
+      relativeNumber: false,
+      flashTimer: null,
+      currentTab: 'editor',
+      wrapping: false
+    };
+
+    // ── localStorage helpers ────────────────────────────────
+    function lsGet(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+    function lsSet(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
+    function lsRemove(k) { try { localStorage.removeItem(k); } catch(e) {} }
+
+    function saveContent(text) {
+      if (!state.persist) return;
+      lsSet(LS_CONTENT, text);
+      lsSet(LS_TTL, String(Date.now() + TTL_MS));
+    }
+
+    function loadContent() {
+      var ttl = parseInt(lsGet(LS_TTL) || '0', 10);
+      if (Date.now() > ttl) {
+        lsRemove(LS_CONTENT);
+        lsRemove(LS_TTL);
+        return null;
+      }
+      return lsGet(LS_CONTENT);
+    }
+
+    function saveSettings(cm) {
+      var s = {
+        lineNumbers: cm.getOption('lineNumbers'),
+        tabSize: cm.getOption('tabSize'),
+        indentUnit: cm.getOption('indentUnit'),
+        indentWithTabs: cm.getOption('indentWithTabs'),
+        lineWrapping: cm.getOption('lineWrapping'),
+        textwidth: state.textwidth,
+        relativeNumber: state.relativeNumber
+      };
+      lsSet(LS_SETTINGS, JSON.stringify(s));
+    }
+
+    function loadSettings() {
+      var raw = lsGet(LS_SETTINGS);
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch(e) { return null; }
+    }
+
+    // ── Status bar ──────────────────────────────────────────
+    var modeEl = null, posEl = null, flashEl = null;
+
+    function updateStatusPos(cm) {
+      var cur = cm.getCursor();
+      posEl.textContent = (cur.line + 1) + ':' + (cur.ch + 1);
+    }
+
+    function flash(msg, duration) {
+      duration = duration || 3000;
+      flashEl.textContent = msg;
+      flashEl.classList.remove('fade');
+      clearTimeout(state.flashTimer);
+      state.flashTimer = setTimeout(function() {
+        flashEl.classList.add('fade');
+        setTimeout(function() {
+          flashEl.textContent = '';
+          flashEl.classList.remove('fade');
+        }, 400);
+      }, duration);
+    }
+
+    // ── Tab switching ───────────────────────────────────────
+    function showTab(name, cm) {
+      var edC = document.getElementById('editor-container');
+      var prC = document.getElementById('preview-container');
+      var tabEd = document.getElementById('tab-editor');
+      var tabPr = document.getElementById('tab-preview');
+
+      state.currentTab = name;
+
+      if (name === 'preview') {
+        renderPreview(cm);
+        edC.classList.add('hidden');
+        prC.classList.add('visible');
+        tabEd.classList.remove('active');
+        tabPr.classList.add('active');
+      } else {
+        prC.classList.remove('visible');
+        edC.classList.remove('hidden');
+        tabPr.classList.remove('active');
+        tabEd.classList.add('active');
+        cm.focus();
+        cm.refresh();
+      }
+    }
+
+    // ── SmartyPants ─────────────────────────────────────────
+    function smartyPants(html) {
+      var inCode = 0;
+      return html.replace(/(<\/?(code|pre)[^>]*>)|(<[^>]*>)|([^<]+)/gi, function(match, codeTag, codeTagName, otherTag, text) {
+        if (codeTag) {
+          if (codeTag[1] === '/') {
+            inCode = Math.max(0, inCode - 1);
+          } else {
+            inCode++;
+          }
+          return codeTag;
+        }
+        if (otherTag) return otherTag;
+        if (!text || inCode > 0) return text || '';
+        return educateText(text);
+      });
+    }
+
+    function educateText(t) {
+      // Unescape HTML entities for quotes (marked v16 escapes these)
+      t = t.replace(/&quot;/g, '"');
+      t = t.replace(/&#39;/g, "'");
+      // Em dashes and en dashes
+      t = t.replace(/---/g, '\u2014');
+      t = t.replace(/--/g, '\u2013');
+      // Ellipsis
+      t = t.replace(/\.\.\./g, '\u2026');
+      // Double quotes
+      t = t.replace(/(^|[\s(\[{>\u2014\u2013])"(?=\S)/gm, '$1\u201C');
+      t = t.replace(/"/g, '\u201D');
+      // Apostrophes in contractions (before general single quotes)
+      t = t.replace(/(\w)'(\w)/g, '$1\u2019$2');
+      // Single quotes
+      t = t.replace(/(^|[\s(\[{>\u2014\u2013])'(?=\S)/gm, '$1\u2018');
+      t = t.replace(/'/g, '\u2019');
+      return t;
+    }
+
+    // ── Preview rendering ───────────────────────────────────
+    function renderPreview(cm) {
+      var md = cm.getValue();
+      var html = marked.parse(md);
+      html = smartyPants(html);
+      document.getElementById('preview-content').innerHTML = html;
+    }
+
+    // ── Relative line numbers ───────────────────────────────
+    function enableRelativeNumbers(cm) {
+      state.relativeNumber = true;
+      cm.setOption('lineNumbers', true);
+      updateRelativeFormatter(cm);
+      cm.on('cursorActivity', relNumHandler);
+    }
+
+    function disableRelativeNumbers(cm) {
+      state.relativeNumber = false;
+      cm.off('cursorActivity', relNumHandler);
+      cm.setOption('lineNumberFormatter', CodeMirror.defaults.lineNumberFormatter);
+      cm.refresh();
+    }
+
+    function relNumHandler(cm) {
+      updateRelativeFormatter(cm);
+    }
+
+    function updateRelativeFormatter(cm) {
+      var curLine = cm.getCursor().line;
+      cm.setOption('lineNumberFormatter', function(lineNo) {
+        var rel = Math.abs((lineNo - 1) - curLine);
+        return rel === 0 ? String(lineNo) : String(rel);
+      });
+    }
+
+    // ── textwidth auto-wrap ─────────────────────────────────
+    function handleTextwidthWrap(cm, changeObj) {
+      if (state.textwidth <= 0) return;
+      if (state.wrapping) return;
+      if (changeObj.origin !== '+input') return;
+
+      var cursor = cm.getCursor();
+      var lineNo = cursor.line;
+      var lineText = cm.getLine(lineNo);
+
+      if (lineText.length <= state.textwidth) return;
+
+      // Find last space at or before textwidth
+      var breakAt = -1;
+      for (var i = state.textwidth; i >= 0; i--) {
+        if (lineText[i] === ' ') {
+          breakAt = i;
+          break;
+        }
+      }
+      if (breakAt <= 0) return;
+
+      var indent = lineText.match(/^(\s*)/)[1];
+
+      state.wrapping = true;
+      cm.operation(function() {
+        cm.replaceRange(
+          '\n' + indent,
+          { line: lineNo, ch: breakAt },
+          { line: lineNo, ch: breakAt + 1 }
+        );
+      });
+      state.wrapping = false;
+    }
+
+    // ── gq reflow ───────────────────────────────────────────
+    function reflowRange(cm, fromLine, toLine, width) {
+      var lines = [];
+      for (var i = fromLine; i <= toLine; i++) {
+        lines.push(cm.getLine(i));
+      }
+
+      var indent = lines[0].match(/^(\s*)/)[1];
+
+      // Handle paragraphs: split on blank lines, reflow each
+      var paragraphs = [];
+      var current = [];
+      for (var j = 0; j < lines.length; j++) {
+        if (lines[j].trim() === '') {
+          if (current.length > 0) paragraphs.push(current);
+          paragraphs.push(['']);
+          current = [];
+        } else {
+          current.push(lines[j]);
+        }
+      }
+      if (current.length > 0) paragraphs.push(current);
+
+      var result = [];
+      for (var p = 0; p < paragraphs.length; p++) {
+        var para = paragraphs[p];
+        if (para.length === 1 && para[0].trim() === '') {
+          result.push('');
+          continue;
+        }
+        var paraIndent = para[0].match(/^(\s*)/)[1];
+        var joined = para.map(function(l) { return l.trim(); }).join(' ').replace(/\s+/g, ' ');
+        result.push(wordWrap(joined, width, paraIndent));
+      }
+
+      cm.replaceRange(
+        result.join('\n'),
+        { line: fromLine, ch: 0 },
+        { line: toLine, ch: cm.getLine(toLine).length }
+      );
+    }
+
+    function wordWrap(text, width, indent) {
+      var words = text.split(' ');
+      var lines = [];
+      var cur = indent;
+
+      for (var i = 0; i < words.length; i++) {
+        var word = words[i];
+        if (!word) continue;
+        var test = cur === indent ? indent + word : cur + ' ' + word;
+        if (test.length <= width || cur === indent) {
+          cur = test;
+        } else {
+          lines.push(cur);
+          cur = indent + word;
+        }
+      }
+      if (cur !== indent || lines.length === 0) lines.push(cur);
+      return lines.join('\n');
+    }
+
+    // ── Debounced content save ──────────────────────────────
+    var saveTimer = null;
+    function scheduleContentSave(cm) {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function() {
+        saveContent(cm.getValue());
+      }, 1000);
+    }
+
+    // ── Register Vim options ────────────────────────────────
+    CodeMirror.Vim.defineOption('number', true, 'boolean', ['nu'], function(val, cm) {
+      if (!cm) return;
+      cm.setOption('lineNumbers', val);
+      saveSettings(cm);
+    });
+
+    CodeMirror.Vim.defineOption('relativenumber', false, 'boolean', ['rnu'], function(val, cm) {
+      if (!cm) return;
+      if (val) { enableRelativeNumbers(cm); } else { disableRelativeNumbers(cm); }
+      saveSettings(cm);
+    });
+
+    CodeMirror.Vim.defineOption('tabstop', 4, 'number', ['ts'], function(val, cm) {
+      if (!cm) return;
+      cm.setOption('tabSize', val);
+      saveSettings(cm);
+    });
+
+    CodeMirror.Vim.defineOption('shiftwidth', 4, 'number', ['sw'], function(val, cm) {
+      if (!cm) return;
+      cm.setOption('indentUnit', val);
+      saveSettings(cm);
+    });
+
+    CodeMirror.Vim.defineOption('expandtab', true, 'boolean', ['et'], function(val, cm) {
+      if (!cm) return;
+      cm.setOption('indentWithTabs', !val);
+      saveSettings(cm);
+    });
+
+    CodeMirror.Vim.defineOption('wrap', true, 'boolean', [], function(val, cm) {
+      if (!cm) return;
+      cm.setOption('lineWrapping', val);
+      saveSettings(cm);
+    });
+
+    CodeMirror.Vim.defineOption('textwidth', 0, 'number', ['tw'], function(val, cm) {
+      if (!cm) return;
+      state.textwidth = val;
+      saveSettings(cm);
+      flash('textwidth=' + val);
+    });
+
+    // ── Register Vim Ex commands ─────────────────────────────
+    CodeMirror.Vim.defineEx('preview', 'pre', function(cm) {
+      showTab('preview', cm);
+    });
+
+    CodeMirror.Vim.defineEx('edit', 'e', function(cm) {
+      showTab('editor', cm);
+    });
+
+    CodeMirror.Vim.defineEx('write', 'w', function(cm) {
+      saveContent(cm.getValue());
+      lsSet(LS_TTL, String(Date.now() + TTL_MS));
+      flash('Saved');
+    });
+
+    CodeMirror.Vim.defineEx('clear', '', function(cm) {
+      lsRemove(LS_CONTENT);
+      lsRemove(LS_TTL);
+      flash('Cleared');
+    });
+
+    CodeMirror.Vim.defineEx('persist', '', function(cm) {
+      state.persist = true;
+      lsSet(LS_PERSIST, '1');
+      flash('Persist: on');
+    });
+
+    CodeMirror.Vim.defineEx('nopersist', '', function(cm) {
+      state.persist = false;
+      lsSet(LS_PERSIST, '0');
+      flash('Persist: off');
+    });
+
+    CodeMirror.Vim.defineEx('setall', '', function(cm) {
+      var s = [
+        'number=' + cm.getOption('lineNumbers'),
+        'rnu=' + state.relativeNumber,
+        'ts=' + cm.getOption('tabSize'),
+        'sw=' + cm.getOption('indentUnit'),
+        'et=' + !cm.getOption('indentWithTabs'),
+        'wrap=' + cm.getOption('lineWrapping'),
+        'tw=' + state.textwidth,
+        'persist=' + state.persist
+      ].join('  ');
+      flash(s, 8000);
+    });
+
+    // ── Register gq operator ────────────────────────────────
+    CodeMirror.Vim.defineOperator('hardWrap', function(cm, operatorArgs, ranges) {
+      if (state.textwidth <= 0) {
+        flash('textwidth not set (use :set tw=N)');
+        return;
+      }
+      cm.operation(function() {
+        for (var i = ranges.length - 1; i >= 0; i--) {
+          var range = ranges[i];
+          var from = range.anchor.line < range.head.line ? range.anchor.line : range.head.line;
+          var to = range.anchor.line < range.head.line ? range.head.line : range.anchor.line;
+          reflowRange(cm, from, to, state.textwidth);
+        }
+      });
+    });
+
+    // Map gq as an operator key
+    CodeMirror.Vim.mapCommand('gq', 'operator', 'hardWrap', {}, {});
+
+    // ── marked.js configuration ─────────────────────────────
+    marked.setOptions({ gfm: true, breaks: false });
+
+    // ── Build CodeMirror ────────────────────────────────────
+    modeEl  = document.getElementById('status-mode');
+    posEl   = document.getElementById('status-pos');
+    flashEl = document.getElementById('status-flash');
+
+    var cm = CodeMirror.fromTextArea(document.getElementById('editor'), {
+      mode: 'markdown',
+      keyMap: 'vim',
+      lineNumbers: true,
+      lineWrapping: true,
+      indentWithTabs: false,
+      tabSize: 4,
+      indentUnit: 4,
+      matchBrackets: true,
+      autofocus: true,
+      showCursorWhenSelecting: true
+    });
+
+    // ── Wire up events ──────────────────────────────────────
+    cm.on('vim-mode-change', function(modeObj) {
+      if (!modeObj) return;
+      var mode = modeObj.mode || 'normal';
+      var sub = modeObj.subMode || '';
+      var display = mode.toUpperCase();
+      if (sub) display += ' ' + sub.toUpperCase();
+      modeEl.textContent = display;
+      modeEl.className = mode;
+    });
+
+    cm.on('cursorActivity', function() { updateStatusPos(cm); });
+    cm.on('change', function(cm, changeObj) { scheduleContentSave(cm); });
+    cm.on('change', handleTextwidthWrap);
+
+    // Tab click handlers
+    document.getElementById('tab-editor').addEventListener('click', function() {
+      showTab('editor', cm);
+    });
+    document.getElementById('tab-preview').addEventListener('click', function() {
+      showTab('preview', cm);
+    });
+
+    // Toggle command and keyboard shortcut
+    CodeMirror.Vim.defineEx('toggle', 'tog', function(cm) {
+      showTab(state.currentTab === 'editor' ? 'preview' : 'editor', cm);
+    });
+    CodeMirror.Vim.map('\\p', ':toggle<CR>', 'normal');
+    document.addEventListener('keydown', function(e) {
+      if (e.key === '\\' && state.currentTab === 'preview') {
+        e.preventDefault();
+        showTab('editor', cm);
+      }
+    });
+
+    // ── Load persisted state ────────────────────────────────
+    var persistFlag = lsGet(LS_PERSIST);
+    state.persist = persistFlag !== '0';
+
+    var settings = loadSettings();
+    if (settings) {
+      cm.setOption('lineNumbers', settings.lineNumbers !== false);
+      cm.setOption('tabSize', settings.tabSize || 4);
+      cm.setOption('indentUnit', settings.indentUnit || 4);
+      cm.setOption('indentWithTabs', settings.indentWithTabs === true);
+      cm.setOption('lineWrapping', settings.lineWrapping !== false);
+      state.textwidth = settings.textwidth || 0;
+      if (settings.relativeNumber) enableRelativeNumbers(cm);
+    }
+
+    var savedContent = loadContent();
+    if (savedContent !== null) {
+      cm.setValue(savedContent);
+      cm.clearHistory();
+    }
+
+    updateStatusPos(cm);
+  })();
+  </script>
+</body>
+</html>
