@@ -9,6 +9,14 @@
  * See: https://vimhelp.org/change.txt.html#auto-format
  */
 
+export function findBreakPoint(lineText, textwidth) {
+  if (lineText.length <= textwidth) return -1;
+  for (var i = textwidth; i >= 0; i--) {
+    if (lineText[i] === ' ') return i;
+  }
+  return -1;
+}
+
 export function handleTextwidthWrap(cm, changeObj, state) {
   if (state.textwidth <= 0) return;
   if (state.wrapping) return;
@@ -21,16 +29,7 @@ export function handleTextwidthWrap(cm, changeObj, state) {
   var lineNo = cursor.line;
   var lineText = cm.getLine(lineNo);
 
-  if (lineText.length <= state.textwidth) return;
-
-  // Find last space at or before textwidth
-  var breakAt = -1;
-  for (var i = state.textwidth; i >= 0; i--) {
-    if (lineText[i] === ' ') {
-      breakAt = i;
-      break;
-    }
-  }
+  var breakAt = findBreakPoint(lineText, state.textwidth);
   if (breakAt <= 0) return;
 
   var indent = lineText.match(/^(\s*)/)[1];

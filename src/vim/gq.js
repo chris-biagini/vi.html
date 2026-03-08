@@ -11,7 +11,7 @@
  */
 import { Vim } from '@replit/codemirror-vim';
 
-function reflowRange(cm, fromLine, toLine, width) {
+export function reflowRange(cm, fromLine, toLine, width) {
   var lines = [];
   for (var i = fromLine; i <= toLine; i++) {
     lines.push(cm.getLine(i));
@@ -58,7 +58,7 @@ function reflowRange(cm, fromLine, toLine, width) {
   return text.split('\n').length;
 }
 
-function wordWrap(text, width, indent) {
+export function wordWrap(text, width, indent) {
   var words = text.split(' ');
   var lines = [];
   var cur = indent;
