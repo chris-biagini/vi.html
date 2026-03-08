@@ -33,8 +33,14 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 - `npm run build` — build `vi.html`
 - `npm run build:min` — build minified
 - `npm run dev` — watch mode (rebuilds on changes to `src/`)
-- `vi.html` is gitignored (build artifact). GitHub Actions builds and deploys to Pages on push to main.
-- No test runner or linter configured.
+- `npm test` — run tests (vitest)
+- `npm run test:watch` — run tests in watch mode
+- `npm run lint` — check lint + formatting (eslint + prettier)
+- `npm run lint:fix` — auto-fix lint + formatting issues
+- `npm run check` — lint + test (what CI runs)
+- `vi.html` is gitignored (build artifact). GitHub Actions runs lint + test + build on push to main, deploys to Pages.
+- Tests use Vitest. Test files are co-located with source (`*.test.js`).
+- Linting uses ESLint (flat config) + Prettier. Config in `eslint.config.mjs` and `.prettierrc`.
 
 ## Vim Fidelity
 
