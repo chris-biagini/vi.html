@@ -3,7 +3,7 @@ import { EditorState, Compartment } from '@codemirror/state';
 import { markdown } from '@codemirror/lang-markdown';
 import { vim, getCM } from '@replit/codemirror-vim';
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands';
-import { bracketMatching } from '@codemirror/language';
+import { bracketMatching, indentUnit as indentUnitFacet } from '@codemirror/language';
 import { searchKeymap } from '@codemirror/search';
 
 import { saveContent, loadContent, saveSettings, loadSettings, loadPersistFlag, savePersistFlag, clearContent, refreshTTL } from './storage.js';
@@ -24,11 +24,37 @@ var state = {
 var lineNumbersCompartment = new Compartment();
 var lineWrappingCompartment = new Compartment();
 var tabSizeCompartment = new Compartment();
+var indentUnitCompartment = new Compartment();
 
 // Track current values for settings display (compartment.get() is unreliable)
 var currentLineNumbers = true;
 var currentLineWrapping = true;
 var currentTabSize = 4;
+var currentIndentUnit = 4;
+var currentIndentWithTabs = false;
+
+// Track cursor line for relative number updates
+var lastCursorLine = -1;
+
+// ── Line numbers helpers ────────────────────────────────
+function makeLineNumbersExtension() {
+  if (!currentLineNumbers) return [];
+  if (!state.relativeNumber) return lineNumbers();
+  return lineNumbers({
+    formatNumber: function(lineNo, edState) {
+      var cursorLine = edState.doc.lineAt(edState.selection.main.head).number;
+      var rel = Math.abs(lineNo - cursorLine);
+      return rel === 0 ? String(lineNo) : String(rel);
+    }
+  });
+}
+
+function makeIndentUnitString() {
+  if (currentIndentWithTabs) return '\t';
+  var s = '';
+  for (var i = 0; i < currentIndentUnit; i++) s += ' ';
+  return s;
+}
 
 // ── Build editor ────────────────────────────────────────
 initStatusBar();
@@ -41,6 +67,7 @@ var view = new EditorView({
       lineNumbersCompartment.of(lineNumbers()),
       lineWrappingCompartment.of(EditorView.lineWrapping),
       tabSizeCompartment.of(EditorState.tabSize.of(4)),
+      indentUnitCompartment.of(indentUnitFacet.of('    ')),
       markdown(),
       history(),
       bracketMatching(),
@@ -51,6 +78,13 @@ var view = new EditorView({
           var pos = update.state.selection.main.head;
           var line = update.state.doc.lineAt(pos);
           updateStatusPos(line.number - 1, pos - line.from);
+          // Refresh relative line numbers when cursor line changes
+          if (state.relativeNumber && line.number !== lastCursorLine) {
+            lastCursorLine = line.number;
+            update.view.dispatch({
+              effects: lineNumbersCompartment.reconfigure(makeLineNumbersExtension())
+            });
+          }
         }
         if (update.docChanged) {
           scheduleContentSave();
@@ -130,7 +164,7 @@ function scheduleContentSave() {
 // ── Tab callbacks ───────────────────────────────────────
 var tabCallbacks = {
   getText: function() { return view.state.doc.toString(); },
-  focusEditor: function() { view.focus(); }
+  focusEditor: function() { view.focus(); view.requestMeasure(); }
 };
 
 function doShowTab(name) {
@@ -142,8 +176,8 @@ function gatherSettings() {
   return {
     lineNumbers: currentLineNumbers,
     tabSize: currentTabSize,
-    indentUnit: currentTabSize, // TODO: separate indentUnit in Task 3
-    indentWithTabs: false, // TODO: indentWithTabs in Task 3
+    indentUnit: currentIndentUnit,
+    indentWithTabs: currentIndentWithTabs,
     lineWrapping: currentLineWrapping,
     textwidth: state.textwidth,
     relativeNumber: state.relativeNumber
@@ -159,12 +193,14 @@ var editorAPI = {
   setLineNumbers: function(val) {
     currentLineNumbers = val;
     view.dispatch({
-      effects: lineNumbersCompartment.reconfigure(val ? lineNumbers() : [])
+      effects: lineNumbersCompartment.reconfigure(makeLineNumbersExtension())
     });
   },
   setRelativeNumbers: function(val) {
-    // TODO: Full relative line number implementation in Task 3
     state.relativeNumber = val;
+    view.dispatch({
+      effects: lineNumbersCompartment.reconfigure(makeLineNumbersExtension())
+    });
   },
   setTabSize: function(val) {
     currentTabSize = val;
@@ -173,10 +209,16 @@ var editorAPI = {
     });
   },
   setIndentUnit: function(val) {
-    // TODO: Full indentUnit compartment in Task 3
+    currentIndentUnit = val;
+    view.dispatch({
+      effects: indentUnitCompartment.reconfigure(indentUnitFacet.of(makeIndentUnitString()))
+    });
   },
   setIndentWithTabs: function(val) {
-    // TODO: Full indentWithTabs compartment in Task 3
+    currentIndentWithTabs = val;
+    view.dispatch({
+      effects: indentUnitCompartment.reconfigure(indentUnitFacet.of(makeIndentUnitString()))
+    });
   },
   setLineWrapping: function(val) {
     currentLineWrapping = val;
@@ -210,8 +252,8 @@ var editorAPI = {
       'number=' + currentLineNumbers,
       'rnu=' + state.relativeNumber,
       'ts=' + currentTabSize,
-      'sw=' + currentTabSize, // TODO: separate indentUnit in Task 3
-      'et=true', // TODO: indentWithTabs in Task 3
+      'sw=' + currentIndentUnit,
+      'et=' + !currentIndentWithTabs,
       'wrap=' + currentLineWrapping,
       'tw=' + state.textwidth,
       'persist=' + state.persist
@@ -256,12 +298,12 @@ var settings = loadSettings();
 if (settings) {
   editorAPI.setLineNumbers(settings.lineNumbers !== false);
   editorAPI.setTabSize(settings.tabSize || 4);
-  // TODO: indentUnit and indentWithTabs in Task 3
+  editorAPI.setIndentUnit(settings.indentUnit || 4);
+  editorAPI.setIndentWithTabs(settings.indentWithTabs || false);
   editorAPI.setLineWrapping(settings.lineWrapping !== false);
   state.textwidth = settings.textwidth || 0;
   if (settings.relativeNumber) {
-    state.relativeNumber = true;
-    // TODO: Full relative line number implementation in Task 3
+    editorAPI.setRelativeNumbers(true);
   }
 }
 

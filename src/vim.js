@@ -114,7 +114,6 @@ export function registerVimConfig(state, flashFn, showTabFn, saveSettingsFn, edi
 
   Vim.defineOption('relativenumber', false, 'boolean', ['rnu'], function(val, cm) {
     if (!cm) return;
-    // TODO: Full relative line number implementation in Task 3
     state.relativeNumber = val;
     editorAPI.setRelativeNumbers(val);
     saveSettingsFn();
@@ -128,14 +127,12 @@ export function registerVimConfig(state, flashFn, showTabFn, saveSettingsFn, edi
 
   Vim.defineOption('shiftwidth', 4, 'number', ['sw'], function(val, cm) {
     if (!cm) return;
-    // TODO: Full indentUnit implementation in Task 3
     editorAPI.setIndentUnit(val);
     saveSettingsFn();
   });
 
   Vim.defineOption('expandtab', true, 'boolean', ['et'], function(val, cm) {
     if (!cm) return;
-    // TODO: Full indentWithTabs implementation in Task 3
     editorAPI.setIndentWithTabs(!val);
     saveSettingsFn();
   });
