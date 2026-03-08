@@ -91,8 +91,8 @@
       display: none;
     }
 
-    /* ── CodeMirror Overrides ──────────────────────────── */
-    .CodeMirror {
+    /* ── CodeMirror 6 Overrides ──────────────────────────── */
+    .cm-editor {
       height: 100%;
       background: var(--bg);
       color: var(--fg);
@@ -101,25 +101,26 @@
       line-height: 1.55;
     }
 
-    .CodeMirror-gutters {
+    .cm-gutters {
       background: var(--bg-alt);
       border-right: 1px solid #1e1e1e;
     }
 
-    .CodeMirror-linenumber { color: var(--fg-dim); font-size: 14px; }
-    .CodeMirror-cursor { border-left: 2px solid var(--cursor-bg); }
+    .cm-lineNumbers .cm-gutterElement { color: var(--fg-dim); font-size: 14px; }
+    .cm-cursor { border-left: 2px solid var(--cursor-bg); }
 
-    .cm-fat-cursor .CodeMirror-cursor,
-    .cm-fat-cursor-mark .CodeMirror-cursor {
+    .cm-fat-cursor .cm-cursor {
       background: var(--cursor-bg);
       border: none;
       opacity: 0.65;
     }
 
-    .CodeMirror-selected { background: var(--sel-bg) !important; }
-    .CodeMirror-focused .CodeMirror-selected { background: #1e3a24 !important; }
+    .cm-selectionBackground { background: var(--sel-bg) !important; }
+    .cm-focused .cm-selectionBackground { background: #1e3a24 !important; }
 
-    /* Markdown syntax tokens */
+    /* Markdown syntax tokens (CM6 uses .tok- prefix for some, but
+       @codemirror/lang-markdown uses highlight tags mapped via theme;
+       these cover the vim plugin and any classHighlighter usage) */
     .cm-header   { color: #d4b86a; font-weight: bold; }
     .cm-strong   { color: #d4b86a; font-weight: bold; }
     .cm-em       { color: #8abf8a; font-style: italic; }
@@ -133,8 +134,8 @@
     .cm-variable-2 { color: var(--accent-vis); }
     .cm-tag      { color: #c46a6a; }
 
-    /* Dialog (: command line, / search) */
-    .CodeMirror-dialog {
+    /* Panels (vim command line, search) */
+    .cm-panels {
       background: var(--dialog-bg);
       color: var(--fg);
       border-top: 1px solid var(--tab-border) !important;
@@ -144,7 +145,7 @@
       font-size: 16px;
     }
 
-    .CodeMirror-dialog input {
+    .cm-panels input {
       background: var(--bg);
       color: var(--fg);
       border: 1px solid var(--tab-border);
@@ -154,9 +155,9 @@
       outline: none;
     }
 
-    .CodeMirror-dialog input:focus { border-color: var(--accent); }
+    .cm-panels input:focus { border-color: var(--accent); }
 
-    .cm-searching { background: #3a3a1a; }
+    .cm-searchMatch { background: #3a3a1a; }
 
     /* ── Status Bar ────────────────────────────────────── */
     #status-bar {
