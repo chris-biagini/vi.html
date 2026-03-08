@@ -48,7 +48,9 @@ describe('smartyPants', () => {
   });
 
   test('handles mixed code and text', () => {
-    const result = smartyPants('<p>"smart"</p><code>"raw"</code><p>"smart"</p>');
+    const result = smartyPants(
+      '<p>"smart"</p><code>"raw"</code><p>"smart"</p>',
+    );
     expect(result).toBe(
       '<p>\u201Csmart\u201D</p><code>"raw"</code><p>\u201Csmart\u201D</p>',
     );

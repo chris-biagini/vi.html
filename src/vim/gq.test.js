@@ -28,7 +28,11 @@ function mockCm(lines) {
 describe('wordWrap', () => {
   // :help gq — "Text is formatted to textwidth columns"
   test('wraps line exceeding textwidth at last word boundary', () => {
-    const result = wordWrap('the quick brown fox jumps over the lazy dog', 20, '');
+    const result = wordWrap(
+      'the quick brown fox jumps over the lazy dog',
+      20,
+      '',
+    );
     expect(result).toBe('the quick brown fox\njumps over the lazy\ndog');
   });
 
@@ -44,7 +48,11 @@ describe('wordWrap', () => {
 
   // :help gq — word longer than textwidth goes on its own line
   test('keeps word longer than textwidth on its own line', () => {
-    const result = wordWrap('short superlongwordthatexceedstextwidth end', 10, '');
+    const result = wordWrap(
+      'short superlongwordthatexceedstextwidth end',
+      10,
+      '',
+    );
     expect(result).toBe('short\nsuperlongwordthatexceedstextwidth\nend');
   });
 
@@ -68,10 +76,7 @@ describe('wordWrap', () => {
 describe('reflowRange', () => {
   // :help gq — reflows a range of lines to textwidth
   test('reflows multi-line paragraph to textwidth', () => {
-    const cm = mockCm([
-      'the quick brown',
-      'fox jumps over the lazy dog',
-    ]);
+    const cm = mockCm(['the quick brown', 'fox jumps over the lazy dog']);
     reflowRange(cm, 0, 1, 20);
     expect(cm.result()).toEqual([
       'the quick brown fox',
@@ -99,9 +104,7 @@ describe('reflowRange', () => {
 
   // :help gq — indentation is preserved
   test('preserves leading indentation', () => {
-    const cm = mockCm([
-      '  indented text that should be wrapped properly',
-    ]);
+    const cm = mockCm(['  indented text that should be wrapped properly']);
     reflowRange(cm, 0, 0, 20);
     expect(cm.result()).toEqual([
       '  indented text that',
@@ -111,12 +114,8 @@ describe('reflowRange', () => {
   });
 
   test('handles already-wrapped text (no change needed)', () => {
-    const cm = mockCm([
-      'short line',
-    ]);
+    const cm = mockCm(['short line']);
     reflowRange(cm, 0, 0, 80);
-    expect(cm.result()).toEqual([
-      'short line',
-    ]);
+    expect(cm.result()).toEqual(['short line']);
   });
 });
