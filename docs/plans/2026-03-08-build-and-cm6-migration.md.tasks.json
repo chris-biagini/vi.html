@@ -1,0 +1,12 @@
+{
+  "planPath": "docs/plans/2026-03-08-build-and-cm6-migration.md",
+  "tasks": [
+    {"id": 1, "subject": "Task 0: Build infrastructure", "status": "pending"},
+    {"id": 2, "subject": "Task 1: Extract HTML template and CSS", "status": "pending", "blockedBy": [1]},
+    {"id": 3, "subject": "Task 2: Port JS to CM6 modules", "status": "pending", "blockedBy": [2]},
+    {"id": 4, "subject": "Task 3: Polish CM6-specific issues", "status": "pending", "blockedBy": [3]},
+    {"id": 5, "subject": "Task 4: Add watch mode to build.js", "status": "pending", "blockedBy": [1]},
+    {"id": 6, "subject": "Task 5: GitHub Action for Pages deployment", "status": "pending", "blockedBy": [3]}
+  ],
+  "lastUpdated": "2026-03-08T00:00:00Z"
+}
