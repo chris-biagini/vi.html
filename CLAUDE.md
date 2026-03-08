@@ -25,6 +25,10 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 
 **Build gotcha:** `build.js` uses function replacement (not string patterns) when inlining into `template.html` to avoid `$` pattern interpolation issues with bundled code.
 
+**Module gotcha:** `package.json` has `"type": "commonjs"` but `src/` uses ESM imports (esbuild handles it). Config files that use `import` syntax need `.mjs` extension (e.g., `vitest.config.mjs`, `eslint.config.mjs`).
+
+**Template gotcha:** `template.html` uses lowercase `<!doctype html>` (not `<!DOCTYPE html>`). The editor uses `<div id="editor-container">`, not a `<textarea>`.
+
 **CM6 vim API:** `@replit/codemirror-vim` provides backward-compatible API. Use `import { Vim } from '@replit/codemirror-vim'` and `getCM(view)` for CM5-style methods. Dynamic options use compartments (`new Compartment()`).
 
 ## Development
@@ -41,6 +45,13 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 - `vi.html` is gitignored (build artifact). GitHub Actions runs lint + test + build on push to main, deploys to Pages.
 - Tests use Vitest. Test files are co-located with source (`*.test.js`).
 - Linting uses ESLint (flat config) + Prettier. Config in `eslint.config.mjs` and `.prettierrc`.
+
+## Testing Conventions
+
+- Vim fidelity tests reference `:help` topics in comments for traceability.
+- Pure functions are exported for testability (`wordWrap`, `reflowRange` from gq.js; `findBreakPoint` from textwidth.js).
+- `storage.test.js` mocks `localStorage` via `vi.stubGlobal`. CM5 API mocks only need `getLine()` and `replaceRange()`.
+- `npm run check` before pushing — matches what CI runs.
 
 ## Vim Fidelity
 
