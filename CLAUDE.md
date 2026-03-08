@@ -1,25 +1,29 @@
 # vi.html
 
-Single-file markdown editor with vim keybindings. No build step — just `vi.html`.
+Single-file markdown editor with vim keybindings. Source is modular; `vi.html` is built from `src/`.
 
 ## Architecture
 
-Everything lives in `vi.html` (~1100 lines): HTML structure, CSS styles, and JavaScript in a single IIFE.
+**Source files in `src/`:**
+- `template.html` — HTML skeleton with `/* STYLE */` and `/* SCRIPT */` placeholders
+- `style.css` — all CSS (markdown tokens, preview/help pane styles)
+- `storage.js` — localStorage helpers (content with 7-day TTL, settings, persist flag)
+- `ui.js` — status bar, tab switching, SmartyPants, preview rendering (marked.js)
+- `vim.js` — all vim customizations: gq reflow, textwidth wrap, arrow clamping, `:set` options and Ex commands via `Vim.defineOption`/`Vim.defineEx`
+- `main.js` — entry point: CM6 EditorView, compartments for dynamic options, event wiring, state loading
 
-**Dependencies (CDN):** CodeMirror 5.65.18 (editor, vim keymap, markdown mode, search, dialog) and marked.js 16.3.0 (preview rendering).
+**Dependencies (npm, bundled offline):** CodeMirror 6 (`codemirror`, `@codemirror/lang-markdown`, `@codemirror/view`, `@codemirror/state`), `@replit/codemirror-vim`, `marked`
 
-**Key sections in the JS:**
-- localStorage helpers (content with 7-day TTL, settings, persist flag)
-- Tab switching (editor/preview/help)
-- SmartyPants typography for preview
-- Relative line numbers
-- `textwidth` auto-wrap on insert
-- `gq` operator for hard-wrap reflow
-- Vim `:set` options and Ex commands registered via `CodeMirror.Vim.defineOption`/`defineEx`
+**Build:** `build.js` uses esbuild to bundle JS+CSS, then inlines into `template.html` → produces `vi.html`. Output is ~880KB minified.
+
+**CM6 vim API:** `@replit/codemirror-vim` provides backward-compatible API. Use `import { Vim } from '@replit/codemirror-vim'` and `getCM(view)` for CM5-style methods. Dynamic options use compartments (`new Compartment()`).
 
 ## Development
 
-Open `vi.html` in a browser. No server needed (uses localStorage, not filesystem).
+- `npm run build` — build `vi.html`
+- `npm run build:min` — build minified
+- `npm run dev` — watch mode (rebuilds on changes to `src/`)
+- `vi.html` is gitignored (build artifact). GitHub Actions builds and deploys to Pages on push to main.
 
 ## Vim Fidelity
 
