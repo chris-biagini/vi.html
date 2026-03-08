@@ -31,6 +31,8 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 
 **CM6 vim API:** `@replit/codemirror-vim` provides backward-compatible API. Use `import { Vim } from '@replit/codemirror-vim'` and `getCM(view)` for CM5-style methods. Dynamic options use compartments (`new Compartment()`).
 
+**editorAPI pattern:** Vim modules don't import CM6 directly. `main.js` defines an `editorAPI` object that wraps compartment reconfigurations (e.g., `setTabSize`, `getTabSize`). New vim features needing runtime editor state must add methods here.
+
 ## Development
 
 - `npm install` — install dependencies (first time only)
@@ -55,4 +57,8 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 
 ## Vim Fidelity
 
-This is a vim learning tool. Custom vim features (gq, textwidth wrap, Ex commands) must match standard vim behavior. When modifying vim-related code, verify against vim docs (vimhelp.org) or vim source — do not rely on assumptions. Key references: `:help gq` (change.txt), `:help textwidth` (options.txt), `:help formatoptions` (options.txt).
+This is a vim learning tool. Custom vim features (gq, textwidth wrap, Ex commands) must match standard vim behavior. When modifying vim-related code, verify against vim docs (vimhelp.org) or vim source — do not rely on assumptions. Key references: `:help gq` (change.txt), `:help textwidth` (options.txt), `:help formatoptions` (options.txt), `:help shiftwidth` (options.txt).
+
+**Intentional default divergences:** `tabstop=4` (vim: 8), `shiftwidth=4` (vim: 8), `expandtab=on` (vim: off), `number=on` (vim: off). These are UX choices for a markdown editor — do not "fix" them to match vim defaults.
+
+**Not implemented (by design):** `formatoptions` flags (n, 1, 2, w, a), `gw` operator. These are acceptable scope limits for a markdown editor.

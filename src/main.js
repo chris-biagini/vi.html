@@ -240,6 +240,9 @@ var editorAPI = {
       effects: lineNumbersCompartment.reconfigure(makeLineNumbersExtension()),
     });
   },
+  getTabSize: function () {
+    return currentTabSize;
+  },
   setTabSize: function (val) {
     currentTabSize = val;
     view.dispatch({

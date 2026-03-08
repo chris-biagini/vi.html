@@ -6,6 +6,10 @@
  * dispatches to the editor API to reconfigure CodeMirror compartments and
  * persists settings to localStorage.
  *
+ * Defaults diverge from vim where sensible for a markdown editor:
+ *   tabstop=4 (vim: 8), shiftwidth=4 (vim: 8),
+ *   expandtab=on (vim: off), number=on (vim: off).
+ *
  * See: https://vimhelp.org/options.txt.html
  */
 import { Vim } from '@replit/codemirror-vim';
@@ -36,9 +40,10 @@ export function registerVimOptions(state, flashFn, saveSettingsFn, editorAPI) {
     saveSettingsFn();
   });
 
+  // :help 'shiftwidth' — "When zero, the 'tabstop' value will be used."
   Vim.defineOption('shiftwidth', 4, 'number', ['sw'], function (val, cm) {
     if (!cm) return;
-    editorAPI.setIndentUnit(val);
+    editorAPI.setIndentUnit(val === 0 ? editorAPI.getTabSize() : val);
     saveSettingsFn();
   });
 
