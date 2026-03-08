@@ -1,0 +1,27 @@
+{
+  "name": "vi.html",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Single-file markdown editor with vim keybindings",
+  "type": "commonjs",
+  "scripts": {
+    "build": "node build.js",
+    "build:min": "node build.js --minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chris-biagini/vi.html.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@codemirror/lang-markdown": "^6.5.0",
+    "@codemirror/state": "^6.5.4",
+    "@codemirror/view": "^6.39.16",
+    "@replit/codemirror-vim": "^6.3.0",
+    "codemirror": "^6.0.2",
+    "marked": "^17.0.4"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.3"
+  }
+}
