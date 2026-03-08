@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "build": "node build.js",
-    "build:min": "node build.js --minify"
+    "build:min": "node build.js --minify",
+    "dev": "node build.js --watch"
   },
   "repository": {
     "type": "git",

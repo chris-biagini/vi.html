@@ -32,7 +32,24 @@ async function build() {
   console.log('Built vi.html (' + size + ' KB)');
 }
 
-build().catch(function(err) {
+const watchMode = process.argv.includes('--watch');
+
+build().then(function() {
+  if (watchMode) {
+    let timeout = null;
+    console.log('Watching src/ for changes...');
+    fs.watch('src', { recursive: true }, function(event, filename) {
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(function() {
+        timeout = null;
+        console.log('Change detected: ' + (filename || 'unknown'));
+        build().catch(function(err) {
+          console.error('Build error:', err.message);
+        });
+      }, 100);
+    });
+  }
+}).catch(function(err) {
   console.error(err);
   process.exit(1);
 });
