@@ -2,11 +2,20 @@ const esbuild = require('esbuild');
 const fs = require('fs');
 
 async function build() {
+  const banner = [
+    '/*!',
+    ' * vi.html - MIT License - Copyright (c) 2024 Chris Biagini',
+    ' * Includes: CodeMirror 6 (MIT, Marijn Haverbeke), @replit/codemirror-vim (MIT), marked (MIT)',
+    ' * See THIRD-PARTY-LICENSES for full license texts.',
+    ' */',
+  ].join('\n');
+
   // Bundle JS
   const jsResult = await esbuild.build({
     entryPoints: ['src/main.js'],
     bundle: true,
     format: 'iife',
+    banner: { js: banner },
     minify: process.argv.includes('--minify'),
     write: false,
   });
