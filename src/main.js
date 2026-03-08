@@ -25,6 +25,11 @@ var lineNumbersCompartment = new Compartment();
 var lineWrappingCompartment = new Compartment();
 var tabSizeCompartment = new Compartment();
 
+// Track current values for settings display (compartment.get() is unreliable)
+var currentLineNumbers = true;
+var currentLineWrapping = true;
+var currentTabSize = 4;
+
 // ── Build editor ────────────────────────────────────────
 initStatusBar();
 
@@ -134,14 +139,12 @@ function doShowTab(name) {
 
 // ── Helper to gather current settings ───────────────────
 function gatherSettings() {
-  var lineNums = lineNumbersCompartment.get(view.state) !== undefined;
-  var ts = view.state.tabSize;
   return {
-    lineNumbers: lineNums,
-    tabSize: ts,
-    indentUnit: ts, // TODO: separate indentUnit in Task 3
+    lineNumbers: currentLineNumbers,
+    tabSize: currentTabSize,
+    indentUnit: currentTabSize, // TODO: separate indentUnit in Task 3
     indentWithTabs: false, // TODO: indentWithTabs in Task 3
-    lineWrapping: lineWrappingCompartment.get(view.state) !== undefined,
+    lineWrapping: currentLineWrapping,
     textwidth: state.textwidth,
     relativeNumber: state.relativeNumber
   };
@@ -154,6 +157,7 @@ function doSaveSettings() {
 // ── Editor API for vim.js ───────────────────────────────
 var editorAPI = {
   setLineNumbers: function(val) {
+    currentLineNumbers = val;
     view.dispatch({
       effects: lineNumbersCompartment.reconfigure(val ? lineNumbers() : [])
     });
@@ -163,6 +167,7 @@ var editorAPI = {
     state.relativeNumber = val;
   },
   setTabSize: function(val) {
+    currentTabSize = val;
     view.dispatch({
       effects: tabSizeCompartment.reconfigure(EditorState.tabSize.of(val))
     });
@@ -174,6 +179,7 @@ var editorAPI = {
     // TODO: Full indentWithTabs compartment in Task 3
   },
   setLineWrapping: function(val) {
+    currentLineWrapping = val;
     view.dispatch({
       effects: lineWrappingCompartment.reconfigure(val ? EditorView.lineWrapping : [])
     });
@@ -200,15 +206,13 @@ var editorAPI = {
     savePersistFlag(val);
   },
   getSettingsDisplay: function() {
-    // TODO: More accurate settings display in Task 3
-    var ts = view.state.tabSize;
     return [
-      'number=' + (lineNumbersCompartment.get(view.state) !== undefined),
+      'number=' + currentLineNumbers,
       'rnu=' + state.relativeNumber,
-      'ts=' + ts,
-      'sw=' + ts,
-      'et=true',
-      'wrap=' + (lineWrappingCompartment.get(view.state) !== undefined),
+      'ts=' + currentTabSize,
+      'sw=' + currentTabSize, // TODO: separate indentUnit in Task 3
+      'et=true', // TODO: indentWithTabs in Task 3
+      'wrap=' + currentLineWrapping,
       'tw=' + state.textwidth,
       'persist=' + state.persist
     ].join('  ');

@@ -92,35 +92,10 @@
     }
 
     /* ── CodeMirror 6 Overrides ──────────────────────────── */
-    .cm-editor {
-      height: 100%;
-      background: var(--bg);
-      color: var(--fg);
-      font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
-      font-size: 17px;
-      line-height: 1.55;
-    }
+    /* Core editor styles are in EditorView.theme() in main.js.
+       These cover markdown tokens and search highlights. */
 
-    .cm-gutters {
-      background: var(--bg-alt);
-      border-right: 1px solid #1e1e1e;
-    }
-
-    .cm-lineNumbers .cm-gutterElement { color: var(--fg-dim); font-size: 14px; }
-    .cm-cursor { border-left: 2px solid var(--cursor-bg); }
-
-    .cm-fat-cursor .cm-cursor {
-      background: var(--cursor-bg);
-      border: none;
-      opacity: 0.65;
-    }
-
-    .cm-selectionBackground { background: var(--sel-bg) !important; }
-    .cm-focused .cm-selectionBackground { background: #1e3a24 !important; }
-
-    /* Markdown syntax tokens (CM6 uses .tok- prefix for some, but
-       @codemirror/lang-markdown uses highlight tags mapped via theme;
-       these cover the vim plugin and any classHighlighter usage) */
+    /* Markdown syntax tokens */
     .cm-header   { color: #d4b86a; font-weight: bold; }
     .cm-strong   { color: #d4b86a; font-weight: bold; }
     .cm-em       { color: #8abf8a; font-style: italic; }
@@ -133,29 +108,6 @@
     .cm-string   { color: #8abf8a; }
     .cm-variable-2 { color: var(--accent-vis); }
     .cm-tag      { color: #c46a6a; }
-
-    /* Panels (vim command line, search) */
-    .cm-panels {
-      background: var(--dialog-bg);
-      color: var(--fg);
-      border-top: 1px solid var(--tab-border) !important;
-      border-bottom: none !important;
-      padding: 3px 8px;
-      font-family: inherit;
-      font-size: 16px;
-    }
-
-    .cm-panels input {
-      background: var(--bg);
-      color: var(--fg);
-      border: 1px solid var(--tab-border);
-      padding: 2px 6px;
-      font-family: inherit;
-      font-size: 16px;
-      outline: none;
-    }
-
-    .cm-panels input:focus { border-color: var(--accent); }
 
     .cm-searchMatch { background: #3a3a1a; }
 

@@ -6,9 +6,8 @@ export function handleTextwidthWrap(cm, changeObj, state) {
   if (state.wrapping) return;
   if (changeObj.origin !== '+input') return;
 
-  // Vim only triggers auto-wrap on non-whitespace input
   var inserted = changeObj.text.join('');
-  if (!inserted || /^\s+$/.test(inserted)) return;
+  if (!inserted) return;
 
   var cursor = cm.getCursor();
   var lineNo = cursor.line;
@@ -229,6 +228,25 @@ export function registerVimConfig(state, flashFn, showTabFn, saveSettingsFn, edi
   });
 
   Vim.mapCommand('gq', 'operator', 'hardWrap', {}, {});
+
+  // ── Arrow key clamping (no wrap across lines, matches vim) ──
+  function clampedArrow(dir) {
+    return function(cm) {
+      var cur = cm.getCursor();
+      if (dir === 'left') {
+        if (cur.ch > 0) cm.execCommand('goCharLeft');
+      } else if (dir === 'right') {
+        var lineLen = cm.getLine(cur.line).length;
+        if (cur.ch < lineLen) cm.execCommand('goCharRight');
+      } else {
+        cm.execCommand(dir === 'up' ? 'goLineUp' : 'goLineDown');
+      }
+    };
+  }
+  Vim.defineAction('clampLeft', clampedArrow('left'));
+  Vim.defineAction('clampRight', clampedArrow('right'));
+  Vim.mapCommand('<Left>', 'action', 'clampLeft', {}, { context: 'insert' });
+  Vim.mapCommand('<Right>', 'action', 'clampRight', {}, { context: 'insert' });
 
   // ── \p mapping ────────────────────────────────────────
   Vim.map('\\p', ':toggle<CR>', 'normal');
