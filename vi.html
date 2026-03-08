@@ -780,9 +780,8 @@
       if (state.wrapping) return;
       if (changeObj.origin !== '+input') return;
 
-      // Vim only triggers auto-wrap on non-whitespace input
       var inserted = changeObj.text.join('');
-      if (!inserted || /^\s+$/.test(inserted)) return;
+      if (!inserted) return;
 
       var cursor = cm.getCursor();
       var lineNo = cursor.line;
@@ -1044,6 +1043,25 @@
       autofocus: true,
       showCursorWhenSelecting: true
     });
+
+    // ── Arrow keys: no wrap across lines (matches vim) ─────
+    function clampedArrow(dir) {
+      return function(cm) {
+        var cur = cm.getCursor();
+        if (dir === 'left') {
+          if (cur.ch > 0) cm.execCommand('goCharLeft');
+        } else if (dir === 'right') {
+          var lineLen = cm.getLine(cur.line).length;
+          if (cur.ch < lineLen) cm.execCommand('goCharRight');
+        } else {
+          cm.execCommand(dir === 'up' ? 'goLineUp' : 'goLineDown');
+        }
+      };
+    }
+    CodeMirror.Vim.defineAction('clampLeft', clampedArrow('left'));
+    CodeMirror.Vim.defineAction('clampRight', clampedArrow('right'));
+    CodeMirror.Vim.mapCommand('<Left>', 'action', 'clampLeft', {}, { context: 'insert' });
+    CodeMirror.Vim.mapCommand('<Right>', 'action', 'clampRight', {}, { context: 'insert' });
 
     // ── Wire up events ──────────────────────────────────────
     cm.on('vim-mode-change', function(modeObj) {
