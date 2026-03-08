@@ -39,7 +39,12 @@ function reflowRange(cm, fromLine, toLine, width) {
       continue;
     }
     var paraIndent = para[0].match(/^(\s*)/)[1];
-    var joined = para.map(function(l) { return l.trim(); }).join(' ').replace(/\s+/g, ' ');
+    var joined = para
+      .map(function (l) {
+        return l.trim();
+      })
+      .join(' ')
+      .replace(/\s+/g, ' ');
     result.push(wordWrap(joined, width, paraIndent));
   }
 
@@ -47,7 +52,7 @@ function reflowRange(cm, fromLine, toLine, width) {
   cm.replaceRange(
     text,
     { line: fromLine, ch: 0 },
-    { line: toLine, ch: cm.getLine(toLine).length }
+    { line: toLine, ch: cm.getLine(toLine).length },
   );
   // Return number of lines in the replacement
   return text.split('\n').length;
@@ -74,14 +79,16 @@ function wordWrap(text, width, indent) {
 }
 
 export function registerGqOperator(state) {
-  Vim.defineOperator('hardWrap', function(cm, operatorArgs, ranges) {
+  Vim.defineOperator('hardWrap', function (cm, operatorArgs, ranges) {
     var width = state.textwidth > 0 ? state.textwidth : 79;
     var cursorLine = 0;
-    cm.operation(function() {
+    cm.operation(function () {
       for (var i = ranges.length - 1; i >= 0; i--) {
         var range = ranges[i];
-        var fromPos = range.anchor.line <= range.head.line ? range.anchor : range.head;
-        var toPos = range.anchor.line <= range.head.line ? range.head : range.anchor;
+        var fromPos =
+          range.anchor.line <= range.head.line ? range.anchor : range.head;
+        var toPos =
+          range.anchor.line <= range.head.line ? range.head : range.anchor;
         var from = fromPos.line;
         var to = toPos.line;
         // CM5 vim uses exclusive end for linewise motions (head at ch:0 of next line)

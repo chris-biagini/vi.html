@@ -10,7 +10,7 @@
 import { Vim } from '@replit/codemirror-vim';
 
 function clampedArrow(dir) {
-  return function(cm) {
+  return function (cm) {
     var cur = cm.getCursor();
     if (dir === 'left') {
       if (cur.ch > 0) cm.execCommand('goCharLeft');

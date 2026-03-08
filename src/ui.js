@@ -4,16 +4,18 @@ import { marked } from 'marked';
 marked.use({ gfm: true, breaks: false });
 
 // ── Status bar ──────────────────────────────────────────
-var modeEl = null, posEl = null, flashEl = null;
+var modeEl = null,
+  posEl = null,
+  flashEl = null;
 
 export function initStatusBar() {
-  modeEl  = document.getElementById('status-mode');
-  posEl   = document.getElementById('status-pos');
+  modeEl = document.getElementById('status-mode');
+  posEl = document.getElementById('status-pos');
   flashEl = document.getElementById('status-flash');
 }
 
 export function updateStatusPos(line, ch) {
-  posEl.textContent = (line + 1) + ':' + (ch + 1);
+  posEl.textContent = line + 1 + ':' + (ch + 1);
 }
 
 export function flash(msg, duration) {
@@ -22,9 +24,9 @@ export function flash(msg, duration) {
   flashEl.classList.remove('fade');
   // Use a module-level timer variable
   clearTimeout(flash._timer);
-  flash._timer = setTimeout(function() {
+  flash._timer = setTimeout(function () {
     flashEl.classList.add('fade');
-    setTimeout(function() {
+    setTimeout(function () {
       flashEl.textContent = '';
       flashEl.classList.remove('fade');
     }, 400);
@@ -45,14 +47,14 @@ export function updateMode(modeObj) {
 // ── Tab switching ───────────────────────────────────────
 export function showTab(name, state, callbacks) {
   var containers = {
-    editor:  document.getElementById('editor-container'),
+    editor: document.getElementById('editor-container'),
     preview: document.getElementById('preview-container'),
-    help:    document.getElementById('help-container')
+    help: document.getElementById('help-container'),
   };
   var tabs = {
-    editor:  document.getElementById('tab-editor'),
+    editor: document.getElementById('tab-editor'),
     preview: document.getElementById('tab-preview'),
-    help:    document.getElementById('tab-help')
+    help: document.getElementById('tab-help'),
   };
 
   state.currentTab = name;
@@ -81,19 +83,22 @@ export function showTab(name, state, callbacks) {
 // ── SmartyPants ─────────────────────────────────────────
 export function smartyPants(html) {
   var inCode = 0;
-  return html.replace(/(<\/?(code|pre)[^>]*>)|(<[^>]*>)|([^<]+)/gi, function(match, codeTag, codeTagName, otherTag, text) {
-    if (codeTag) {
-      if (codeTag[1] === '/') {
-        inCode = Math.max(0, inCode - 1);
-      } else {
-        inCode++;
+  return html.replace(
+    /(<\/?(code|pre)[^>]*>)|(<[^>]*>)|([^<]+)/gi,
+    function (match, codeTag, codeTagName, otherTag, text) {
+      if (codeTag) {
+        if (codeTag[1] === '/') {
+          inCode = Math.max(0, inCode - 1);
+        } else {
+          inCode++;
+        }
+        return codeTag;
       }
-      return codeTag;
-    }
-    if (otherTag) return otherTag;
-    if (!text || inCode > 0) return text || '';
-    return educateText(text);
-  });
+      if (otherTag) return otherTag;
+      if (!text || inCode > 0) return text || '';
+      return educateText(text);
+    },
+  );
 }
 
 export function educateText(t) {
@@ -106,12 +111,12 @@ export function educateText(t) {
   // Ellipsis
   t = t.replace(/\.\.\./g, '\u2026');
   // Double quotes
-  t = t.replace(/(^|[\s(\[{>\u2014\u2013])"(?=\S)/gm, '$1\u201C');
+  t = t.replace(/(^|[\s([{>\u2014\u2013])"(?=\S)/gm, '$1\u201C');
   t = t.replace(/"/g, '\u201D');
   // Apostrophes in contractions (before general single quotes)
   t = t.replace(/(\w)'(\w)/g, '$1\u2019$2');
   // Single quotes
-  t = t.replace(/(^|[\s(\[{>\u2014\u2013])'(?=\S)/gm, '$1\u2018');
+  t = t.replace(/(^|[\s([{>\u2014\u2013])'(?=\S)/gm, '$1\u2018');
   t = t.replace(/'/g, '\u2019');
   return t;
 }

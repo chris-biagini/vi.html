@@ -36,13 +36,15 @@ export function handleTextwidthWrap(cm, changeObj, state) {
   var indent = lineText.match(/^(\s*)/)[1];
 
   state.wrapping = true;
-  cm.operation(function() {
+  cm.operation(function () {
     cm.replaceRange(
       '\n' + indent,
       { line: lineNo, ch: breakAt },
-      { line: lineNo, ch: breakAt + 1 }
+      { line: lineNo, ch: breakAt + 1 },
     );
   });
   // Delay reset so the batched change event from cm.operation sees the flag
-  setTimeout(function() { state.wrapping = false; }, 0);
+  setTimeout(function () {
+    state.wrapping = false;
+  }, 0);
 }

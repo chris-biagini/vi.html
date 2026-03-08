@@ -1,204 +1,568 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>vi.html</title>
-  <style>
-  /* STYLE */
-  </style>
-</head>
-<body>
-  <div id="app">
-    <div id="tab-bar">
-      <button id="tab-editor" class="tab active">Editor</button>
-      <button id="tab-preview" class="tab">Preview</button>
-      <button id="tab-help" class="tab">Help</button>
-    </div>
-    <div id="editor-container"></div>
-    <div id="preview-container">
-      <div id="preview-content"></div>
-    </div>
-    <div id="help-container">
-      <div id="help-content">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vi.html</title>
+    <style>
+      /* STYLE */
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="tab-bar">
+        <button id="tab-editor" class="tab active">Editor</button>
+        <button id="tab-preview" class="tab">Preview</button>
+        <button id="tab-help" class="tab">Help</button>
+      </div>
+      <div id="editor-container"></div>
+      <div id="preview-container">
+        <div id="preview-content"></div>
+      </div>
+      <div id="help-container">
+        <div id="help-content">
+          <h1>vi.html</h1>
+          <p class="subtitle">A markdown editor with vim keybindings</p>
 
-        <h1>vi.html</h1>
-        <p class="subtitle">A markdown editor with vim keybindings</p>
+          <h2>Modes</h2>
+          <p>
+            Vim has distinct modes for different tasks. The current mode is
+            shown in the status bar.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Mode</th>
+                <th>Enter with</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Normal</b></td>
+                <td><kbd>Esc</kbd></td>
+                <td>
+                  Navigate, delete, copy, paste, and issue commands. This is
+                  your home base.
+                </td>
+              </tr>
+              <tr>
+                <td><b>Insert</b></td>
+                <td>
+                  <kbd>i</kbd> <kbd>a</kbd> <kbd>o</kbd> <kbd>A</kbd>
+                  <kbd>O</kbd>
+                </td>
+                <td>Type text. Press <kbd>Esc</kbd> to return to Normal.</td>
+              </tr>
+              <tr>
+                <td><b>Visual</b></td>
+                <td><kbd>v</kbd> (char) &middot; <kbd>V</kbd> (line)</td>
+                <td>
+                  Select text, then act on it (delete, yank, reflow, etc.).
+                </td>
+              </tr>
+              <tr>
+                <td><b>Replace</b></td>
+                <td><kbd>R</kbd></td>
+                <td>Overwrite characters in place.</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <h2>Modes</h2>
-        <p>Vim has distinct modes for different tasks. The current mode is shown in the status bar.</p>
-        <table>
-          <thead><tr><th>Mode</th><th>Enter with</th><th>Purpose</th></tr></thead>
-          <tbody>
-            <tr><td><b>Normal</b></td><td><kbd>Esc</kbd></td><td>Navigate, delete, copy, paste, and issue commands. This is your home base.</td></tr>
-            <tr><td><b>Insert</b></td><td><kbd>i</kbd> <kbd>a</kbd> <kbd>o</kbd> <kbd>A</kbd> <kbd>O</kbd></td><td>Type text. Press <kbd>Esc</kbd> to return to Normal.</td></tr>
-            <tr><td><b>Visual</b></td><td><kbd>v</kbd> (char) &middot; <kbd>V</kbd> (line)</td><td>Select text, then act on it (delete, yank, reflow, etc.).</td></tr>
-            <tr><td><b>Replace</b></td><td><kbd>R</kbd></td><td>Overwrite characters in place.</td></tr>
-          </tbody>
-        </table>
+          <h2>Movement (Normal mode)</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>h</kbd> <kbd>j</kbd> <kbd>k</kbd> <kbd>l</kbd></td>
+                <td>Left, down, up, right</td>
+              </tr>
+              <tr>
+                <td><kbd>w</kbd> / <kbd>b</kbd></td>
+                <td>Next word / previous word</td>
+              </tr>
+              <tr>
+                <td><kbd>e</kbd></td>
+                <td>End of word</td>
+              </tr>
+              <tr>
+                <td><kbd>0</kbd> / <kbd>$</kbd></td>
+                <td>Start / end of line</td>
+              </tr>
+              <tr>
+                <td><kbd>^</kbd></td>
+                <td>First non-blank character</td>
+              </tr>
+              <tr>
+                <td><kbd>gg</kbd> / <kbd>G</kbd></td>
+                <td>Top / bottom of document</td>
+              </tr>
+              <tr>
+                <td><kbd>{</kbd> / <kbd>}</kbd></td>
+                <td>Previous / next blank line (paragraph boundary)</td>
+              </tr>
+              <tr>
+                <td><kbd>%</kbd></td>
+                <td>Matching bracket</td>
+              </tr>
+              <tr>
+                <td><kbd>f</kbd><em>x</em> / <kbd>F</kbd><em>x</em></td>
+                <td>
+                  Jump to next / previous occurrence of character <em>x</em>
+                </td>
+              </tr>
+              <tr>
+                <td><kbd>t</kbd><em>x</em> / <kbd>T</kbd><em>x</em></td>
+                <td>Jump to just before next / after previous <em>x</em></td>
+              </tr>
+              <tr>
+                <td><kbd>;</kbd> / <kbd>,</kbd></td>
+                <td>Repeat / reverse last f/F/t/T</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <h2>Movement (Normal mode)</h2>
-        <table>
-          <thead><tr><th>Key</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td><kbd>h</kbd> <kbd>j</kbd> <kbd>k</kbd> <kbd>l</kbd></td><td>Left, down, up, right</td></tr>
-            <tr><td><kbd>w</kbd> / <kbd>b</kbd></td><td>Next word / previous word</td></tr>
-            <tr><td><kbd>e</kbd></td><td>End of word</td></tr>
-            <tr><td><kbd>0</kbd> / <kbd>$</kbd></td><td>Start / end of line</td></tr>
-            <tr><td><kbd>^</kbd></td><td>First non-blank character</td></tr>
-            <tr><td><kbd>gg</kbd> / <kbd>G</kbd></td><td>Top / bottom of document</td></tr>
-            <tr><td><kbd>{</kbd> / <kbd>}</kbd></td><td>Previous / next blank line (paragraph boundary)</td></tr>
-            <tr><td><kbd>%</kbd></td><td>Matching bracket</td></tr>
-            <tr><td><kbd>f</kbd><em>x</em> / <kbd>F</kbd><em>x</em></td><td>Jump to next / previous occurrence of character <em>x</em></td></tr>
-            <tr><td><kbd>t</kbd><em>x</em> / <kbd>T</kbd><em>x</em></td><td>Jump to just before next / after previous <em>x</em></td></tr>
-            <tr><td><kbd>;</kbd> / <kbd>,</kbd></td><td>Repeat / reverse last f/F/t/T</td></tr>
-          </tbody>
-        </table>
+          <h2>Editing (Normal mode)</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>i</kbd> / <kbd>a</kbd></td>
+                <td>Insert before / after cursor</td>
+              </tr>
+              <tr>
+                <td><kbd>I</kbd> / <kbd>A</kbd></td>
+                <td>Insert at start / end of line</td>
+              </tr>
+              <tr>
+                <td><kbd>o</kbd> / <kbd>O</kbd></td>
+                <td>Open line below / above</td>
+              </tr>
+              <tr>
+                <td><kbd>x</kbd></td>
+                <td>Delete character under cursor</td>
+              </tr>
+              <tr>
+                <td><kbd>dd</kbd></td>
+                <td>Delete entire line</td>
+              </tr>
+              <tr>
+                <td><kbd>d</kbd><em>motion</em></td>
+                <td>
+                  Delete over motion (e.g. <kbd>dw</kbd> = delete word,
+                  <kbd>d$</kbd> = delete to end of line)
+                </td>
+              </tr>
+              <tr>
+                <td><kbd>cc</kbd></td>
+                <td>Change entire line (delete + enter Insert)</td>
+              </tr>
+              <tr>
+                <td><kbd>c</kbd><em>motion</em></td>
+                <td>Change over motion (e.g. <kbd>cw</kbd> = change word)</td>
+              </tr>
+              <tr>
+                <td><kbd>yy</kbd></td>
+                <td>Yank (copy) entire line</td>
+              </tr>
+              <tr>
+                <td><kbd>y</kbd><em>motion</em></td>
+                <td>Yank over motion</td>
+              </tr>
+              <tr>
+                <td><kbd>p</kbd> / <kbd>P</kbd></td>
+                <td>Paste after / before cursor</td>
+              </tr>
+              <tr>
+                <td><kbd>u</kbd></td>
+                <td>Undo</td>
+              </tr>
+              <tr>
+                <td><kbd>Ctrl-r</kbd></td>
+                <td>Redo</td>
+              </tr>
+              <tr>
+                <td><kbd>.</kbd></td>
+                <td>Repeat last edit</td>
+              </tr>
+              <tr>
+                <td><kbd>~</kbd></td>
+                <td>Toggle case of character</td>
+              </tr>
+              <tr>
+                <td><kbd>&gt;&gt;</kbd> / <kbd>&lt;&lt;</kbd></td>
+                <td>Indent / unindent line</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <h2>Editing (Normal mode)</h2>
-        <table>
-          <thead><tr><th>Key</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td><kbd>i</kbd> / <kbd>a</kbd></td><td>Insert before / after cursor</td></tr>
-            <tr><td><kbd>I</kbd> / <kbd>A</kbd></td><td>Insert at start / end of line</td></tr>
-            <tr><td><kbd>o</kbd> / <kbd>O</kbd></td><td>Open line below / above</td></tr>
-            <tr><td><kbd>x</kbd></td><td>Delete character under cursor</td></tr>
-            <tr><td><kbd>dd</kbd></td><td>Delete entire line</td></tr>
-            <tr><td><kbd>d</kbd><em>motion</em></td><td>Delete over motion (e.g. <kbd>dw</kbd> = delete word, <kbd>d$</kbd> = delete to end of line)</td></tr>
-            <tr><td><kbd>cc</kbd></td><td>Change entire line (delete + enter Insert)</td></tr>
-            <tr><td><kbd>c</kbd><em>motion</em></td><td>Change over motion (e.g. <kbd>cw</kbd> = change word)</td></tr>
-            <tr><td><kbd>yy</kbd></td><td>Yank (copy) entire line</td></tr>
-            <tr><td><kbd>y</kbd><em>motion</em></td><td>Yank over motion</td></tr>
-            <tr><td><kbd>p</kbd> / <kbd>P</kbd></td><td>Paste after / before cursor</td></tr>
-            <tr><td><kbd>u</kbd></td><td>Undo</td></tr>
-            <tr><td><kbd>Ctrl-r</kbd></td><td>Redo</td></tr>
-            <tr><td><kbd>.</kbd></td><td>Repeat last edit</td></tr>
-            <tr><td><kbd>~</kbd></td><td>Toggle case of character</td></tr>
-            <tr><td><kbd>&gt;&gt;</kbd> / <kbd>&lt;&lt;</kbd></td><td>Indent / unindent line</td></tr>
-          </tbody>
-        </table>
+          <h2>Text Objects</h2>
+          <p>
+            Use with operators like <kbd>d</kbd>, <kbd>c</kbd>, <kbd>y</kbd>,
+            <kbd>gq</kbd>. Prefix with <kbd>i</kbd> for &ldquo;inner&rdquo; or
+            <kbd>a</kbd> for &ldquo;around&rdquo;.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Object</th>
+                <th>Meaning</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>w</kbd></td>
+                <td>Word</td>
+                <td><kbd>diw</kbd> = delete inner word</td>
+              </tr>
+              <tr>
+                <td><kbd>W</kbd></td>
+                <td>WORD (whitespace-delimited)</td>
+                <td><kbd>daW</kbd> = delete around WORD</td>
+              </tr>
+              <tr>
+                <td><kbd>s</kbd></td>
+                <td>Sentence</td>
+                <td><kbd>cis</kbd> = change inner sentence</td>
+              </tr>
+              <tr>
+                <td><kbd>p</kbd></td>
+                <td>Paragraph</td>
+                <td><kbd>gqap</kbd> = reflow around paragraph</td>
+              </tr>
+              <tr>
+                <td><kbd>"</kbd> <kbd>'</kbd> <kbd>`</kbd></td>
+                <td>Quoted string</td>
+                <td><kbd>ci"</kbd> = change inside quotes</td>
+              </tr>
+              <tr>
+                <td><kbd>(</kbd> <kbd>[</kbd> <kbd>{</kbd></td>
+                <td>Bracket pair</td>
+                <td><kbd>di(</kbd> = delete inside parens</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <h2>Text Objects</h2>
-        <p>Use with operators like <kbd>d</kbd>, <kbd>c</kbd>, <kbd>y</kbd>, <kbd>gq</kbd>. Prefix with <kbd>i</kbd> for &ldquo;inner&rdquo; or <kbd>a</kbd> for &ldquo;around&rdquo;.</p>
-        <table>
-          <thead><tr><th>Object</th><th>Meaning</th><th>Example</th></tr></thead>
-          <tbody>
-            <tr><td><kbd>w</kbd></td><td>Word</td><td><kbd>diw</kbd> = delete inner word</td></tr>
-            <tr><td><kbd>W</kbd></td><td>WORD (whitespace-delimited)</td><td><kbd>daW</kbd> = delete around WORD</td></tr>
-            <tr><td><kbd>s</kbd></td><td>Sentence</td><td><kbd>cis</kbd> = change inner sentence</td></tr>
-            <tr><td><kbd>p</kbd></td><td>Paragraph</td><td><kbd>gqap</kbd> = reflow around paragraph</td></tr>
-            <tr><td><kbd>"</kbd> <kbd>'</kbd> <kbd>`</kbd></td><td>Quoted string</td><td><kbd>ci"</kbd> = change inside quotes</td></tr>
-            <tr><td><kbd>(</kbd> <kbd>[</kbd> <kbd>{</kbd></td><td>Bracket pair</td><td><kbd>di(</kbd> = delete inside parens</td></tr>
-          </tbody>
-        </table>
+          <h2>Search</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>/</kbd><em>pattern</em></td>
+                <td>Search forward</td>
+              </tr>
+              <tr>
+                <td><kbd>?</kbd><em>pattern</em></td>
+                <td>Search backward</td>
+              </tr>
+              <tr>
+                <td><kbd>n</kbd> / <kbd>N</kbd></td>
+                <td>Next / previous match</td>
+              </tr>
+              <tr>
+                <td><kbd>*</kbd> / <kbd>#</kbd></td>
+                <td>Search for word under cursor (forward / backward)</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <h2>Search</h2>
-        <table>
-          <thead><tr><th>Key</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td><kbd>/</kbd><em>pattern</em></td><td>Search forward</td></tr>
-            <tr><td><kbd>?</kbd><em>pattern</em></td><td>Search backward</td></tr>
-            <tr><td><kbd>n</kbd> / <kbd>N</kbd></td><td>Next / previous match</td></tr>
-            <tr><td><kbd>*</kbd> / <kbd>#</kbd></td><td>Search for word under cursor (forward / backward)</td></tr>
-          </tbody>
-        </table>
+          <h2>Counts</h2>
+          <p>
+            Most commands accept a numeric prefix: <kbd>5j</kbd> moves down 5
+            lines, <kbd>3dd</kbd> deletes 3 lines, <kbd>2dw</kbd> deletes 2
+            words.
+          </p>
 
-        <h2>Counts</h2>
-        <p>Most commands accept a numeric prefix: <kbd>5j</kbd> moves down 5 lines, <kbd>3dd</kbd> deletes 3 lines, <kbd>2dw</kbd> deletes 2 words.</p>
+          <hr />
 
-        <hr>
+          <h2>vi.html Commands</h2>
+          <p>Type <kbd>:</kbd> in Normal mode to enter the command line.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>:w</code></td>
+                <td>Save to browser storage</td>
+              </tr>
+              <tr>
+                <td><code>:e</code></td>
+                <td>Reload content from last save</td>
+              </tr>
+              <tr>
+                <td><code>:editor</code></td>
+                <td>Switch to Editor tab</td>
+              </tr>
+              <tr>
+                <td><code>:pre[view]</code></td>
+                <td>Switch to Preview tab</td>
+              </tr>
+              <tr>
+                <td><code>:help</code></td>
+                <td>Show this help</td>
+              </tr>
+              <tr>
+                <td><code>:tog[gle]</code></td>
+                <td>Toggle between Editor and Preview</td>
+              </tr>
+              <tr>
+                <td><code>:persist</code></td>
+                <td>Enable auto-save (default)</td>
+              </tr>
+              <tr>
+                <td><code>:nopersist</code></td>
+                <td>Disable auto-save</td>
+              </tr>
+              <tr>
+                <td><code>:clear</code></td>
+                <td>Wipe saved content from storage</td>
+              </tr>
+              <tr>
+                <td><code>:settings</code></td>
+                <td>Show all current settings</td>
+              </tr>
+              <tr>
+                <td><code>:s/old/new/g</code></td>
+                <td>Substitute (supports regex)</td>
+              </tr>
+              <tr>
+                <td><code>:noh</code></td>
+                <td>Clear search highlighting</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <h2>vi.html Commands</h2>
-        <p>Type <kbd>:</kbd> in Normal mode to enter the command line.</p>
-        <table>
-          <thead><tr><th>Command</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td><code>:w</code></td><td>Save to browser storage</td></tr>
-            <tr><td><code>:e</code></td><td>Reload content from last save</td></tr>
-            <tr><td><code>:editor</code></td><td>Switch to Editor tab</td></tr>
-            <tr><td><code>:pre[view]</code></td><td>Switch to Preview tab</td></tr>
-            <tr><td><code>:help</code></td><td>Show this help</td></tr>
-            <tr><td><code>:tog[gle]</code></td><td>Toggle between Editor and Preview</td></tr>
-            <tr><td><code>:persist</code></td><td>Enable auto-save (default)</td></tr>
-            <tr><td><code>:nopersist</code></td><td>Disable auto-save</td></tr>
-            <tr><td><code>:clear</code></td><td>Wipe saved content from storage</td></tr>
-            <tr><td><code>:settings</code></td><td>Show all current settings</td></tr>
-            <tr><td><code>:s/old/new/g</code></td><td>Substitute (supports regex)</td></tr>
-            <tr><td><code>:noh</code></td><td>Clear search highlighting</td></tr>
-          </tbody>
-        </table>
+          <h2>vi.html Options</h2>
+          <p>
+            Set with <code>:set <em>option</em></code
+            >. Boolean options can be negated with
+            <code>:set no<em>option</em></code
+            >. All settings auto-persist across sessions.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Short</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>textwidth</code></td>
+                <td><code>tw</code></td>
+                <td>number</td>
+                <td>0 (off)</td>
+                <td>Auto-wrap lines at this column in Insert mode</td>
+              </tr>
+              <tr>
+                <td><code>number</code></td>
+                <td><code>nu</code></td>
+                <td>bool</td>
+                <td>on</td>
+                <td>Show line numbers</td>
+              </tr>
+              <tr>
+                <td><code>relativenumber</code></td>
+                <td><code>rnu</code></td>
+                <td>bool</td>
+                <td>off</td>
+                <td>Relative line numbers</td>
+              </tr>
+              <tr>
+                <td><code>tabstop</code></td>
+                <td><code>ts</code></td>
+                <td>number</td>
+                <td>4</td>
+                <td>Tab display width</td>
+              </tr>
+              <tr>
+                <td><code>shiftwidth</code></td>
+                <td><code>sw</code></td>
+                <td>number</td>
+                <td>4</td>
+                <td>
+                  Indent width for <kbd>&gt;&gt;</kbd> / <kbd>&lt;&lt;</kbd>
+                </td>
+              </tr>
+              <tr>
+                <td><code>expandtab</code></td>
+                <td><code>et</code></td>
+                <td>bool</td>
+                <td>on</td>
+                <td>Insert spaces instead of tabs</td>
+              </tr>
+              <tr>
+                <td><code>wrap</code></td>
+                <td></td>
+                <td>bool</td>
+                <td>on</td>
+                <td>Soft-wrap long lines</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <h2>vi.html Options</h2>
-        <p>Set with <code>:set <em>option</em></code>. Boolean options can be negated with <code>:set no<em>option</em></code>. All settings auto-persist across sessions.</p>
-        <table>
-          <thead><tr><th>Option</th><th>Short</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>textwidth</code></td><td><code>tw</code></td><td>number</td><td>0 (off)</td><td>Auto-wrap lines at this column in Insert mode</td></tr>
-            <tr><td><code>number</code></td><td><code>nu</code></td><td>bool</td><td>on</td><td>Show line numbers</td></tr>
-            <tr><td><code>relativenumber</code></td><td><code>rnu</code></td><td>bool</td><td>off</td><td>Relative line numbers</td></tr>
-            <tr><td><code>tabstop</code></td><td><code>ts</code></td><td>number</td><td>4</td><td>Tab display width</td></tr>
-            <tr><td><code>shiftwidth</code></td><td><code>sw</code></td><td>number</td><td>4</td><td>Indent width for <kbd>&gt;&gt;</kbd> / <kbd>&lt;&lt;</kbd></td></tr>
-            <tr><td><code>expandtab</code></td><td><code>et</code></td><td>bool</td><td>on</td><td>Insert spaces instead of tabs</td></tr>
-            <tr><td><code>wrap</code></td><td></td><td>bool</td><td>on</td><td>Soft-wrap long lines</td></tr>
-          </tbody>
-        </table>
+          <h2>vi.html Keyboard Shortcuts</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Context</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>\</kbd><kbd>p</kbd></td>
+                <td>Normal mode</td>
+                <td>Toggle between Editor and Preview</td>
+              </tr>
+              <tr>
+                <td><kbd>\</kbd></td>
+                <td>Preview / Help</td>
+                <td>Return to Editor</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <h2>vi.html Keyboard Shortcuts</h2>
-        <table>
-          <thead><tr><th>Key</th><th>Context</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td><kbd>\</kbd><kbd>p</kbd></td><td>Normal mode</td><td>Toggle between Editor and Preview</td></tr>
-            <tr><td><kbd>\</kbd></td><td>Preview / Help</td><td>Return to Editor</td></tr>
-          </tbody>
-        </table>
+          <h2>Text Reflow</h2>
+          <p>
+            Set <code>:set tw=72</code> (or your preferred width), then use
+            <kbd>gq</kbd> with a motion or text object to hard-wrap text. If
+            <code>textwidth</code> is 0, <kbd>gq</kbd> wraps at 79 columns
+            (matching vim).
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>gqq</kbd></td>
+                <td>Reflow current line</td>
+              </tr>
+              <tr>
+                <td><kbd>gqap</kbd></td>
+                <td>Reflow current paragraph</td>
+              </tr>
+              <tr>
+                <td><kbd>gq}</kbd></td>
+                <td>Reflow from cursor to next blank line</td>
+              </tr>
+              <tr>
+                <td><kbd>gqj</kbd></td>
+                <td>Reflow current line and next</td>
+              </tr>
+              <tr>
+                <td>Visual + <kbd>gq</kbd></td>
+                <td>Reflow selected lines</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Lines are wrapped at word boundaries. Indentation is preserved. This
+            is useful for writing
+            <a href="https://sembr.org/" target="_blank">semantic line breaks</a
+            >.
+          </p>
 
-        <h2>Text Reflow</h2>
-        <p>Set <code>:set tw=72</code> (or your preferred width), then use <kbd>gq</kbd> with a motion or text object to hard-wrap text. If <code>textwidth</code> is 0, <kbd>gq</kbd> wraps at 79 columns (matching vim).</p>
-        <table>
-          <thead><tr><th>Key</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td><kbd>gqq</kbd></td><td>Reflow current line</td></tr>
-            <tr><td><kbd>gqap</kbd></td><td>Reflow current paragraph</td></tr>
-            <tr><td><kbd>gq}</kbd></td><td>Reflow from cursor to next blank line</td></tr>
-            <tr><td><kbd>gqj</kbd></td><td>Reflow current line and next</td></tr>
-            <tr><td>Visual + <kbd>gq</kbd></td><td>Reflow selected lines</td></tr>
-          </tbody>
-        </table>
-        <p>Lines are wrapped at word boundaries. Indentation is preserved. This is useful for writing <a href="https://sembr.org/" target="_blank">semantic line breaks</a>.</p>
+          <h2>Persistence</h2>
+          <ul>
+            <li>
+              <b>Content</b> is auto-saved as you type (1-second debounce).
+              Saved content expires after <b>7 days</b> of inactivity. Use
+              <code>:w</code> to save explicitly and refresh the timer.
+            </li>
+            <li>
+              <b>Settings</b> (<code>:set</code> values) persist indefinitely.
+            </li>
+            <li>
+              <b>Disable</b> auto-save with <code>:nopersist</code>. Re-enable
+              with <code>:persist</code>.
+            </li>
+            <li>
+              <b>Clear</b> saved content immediately with <code>:clear</code>.
+            </li>
+          </ul>
 
-        <h2>Persistence</h2>
-        <ul>
-          <li><b>Content</b> is auto-saved as you type (1-second debounce). Saved content expires after <b>7 days</b> of inactivity. Use <code>:w</code> to save explicitly and refresh the timer.</li>
-          <li><b>Settings</b> (<code>:set</code> values) persist indefinitely.</li>
-          <li><b>Disable</b> auto-save with <code>:nopersist</code>. Re-enable with <code>:persist</code>.</li>
-          <li><b>Clear</b> saved content immediately with <code>:clear</code>.</li>
-        </ul>
-
-        <h2>Preview &amp; SmartyPants</h2>
-        <p>The Preview tab renders your markdown with full <a href="https://github.github.com/gfm/" target="_blank">GitHub Flavored Markdown</a> support: tables, task lists, strikethrough, and fenced code blocks.</p>
-        <p>SmartyPants typography is applied automatically in the preview:</p>
-        <table>
-          <thead><tr><th>You type</th><th>Rendered as</th></tr></thead>
-          <tbody>
-            <tr><td><code>"hello"</code></td><td>&ldquo;hello&rdquo;</td></tr>
-            <tr><td><code>'hello'</code></td><td>&lsquo;hello&rsquo;</td></tr>
-            <tr><td><code>it's</code></td><td>it&rsquo;s</td></tr>
-            <tr><td><code>--</code></td><td>&ndash;</td></tr>
-            <tr><td><code>---</code></td><td>&mdash;</td></tr>
-            <tr><td><code>...</code></td><td>&hellip;</td></tr>
-          </tbody>
-        </table>
-
+          <h2>Preview &amp; SmartyPants</h2>
+          <p>
+            The Preview tab renders your markdown with full
+            <a href="https://github.github.com/gfm/" target="_blank"
+              >GitHub Flavored Markdown</a
+            >
+            support: tables, task lists, strikethrough, and fenced code blocks.
+          </p>
+          <p>SmartyPants typography is applied automatically in the preview:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>You type</th>
+                <th>Rendered as</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>"hello"</code></td>
+                <td>&ldquo;hello&rdquo;</td>
+              </tr>
+              <tr>
+                <td><code>'hello'</code></td>
+                <td>&lsquo;hello&rsquo;</td>
+              </tr>
+              <tr>
+                <td><code>it's</code></td>
+                <td>it&rsquo;s</td>
+              </tr>
+              <tr>
+                <td><code>--</code></td>
+                <td>&ndash;</td>
+              </tr>
+              <tr>
+                <td><code>---</code></td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td><code>...</code></td>
+                <td>&hellip;</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="status-bar">
+        <span id="status-mode">NORMAL</span>
+        <span id="status-pos">1:1</span>
+        <span id="status-flash"></span>
       </div>
     </div>
-    <div id="status-bar">
-      <span id="status-mode">NORMAL</span>
-      <span id="status-pos">1:1</span>
-      <span id="status-flash"></span>
-    </div>
-  </div>
-  <script>
-  /* SCRIPT */
-  </script>
-</body>
+    <script>
+      /* SCRIPT */
+    </script>
+  </body>
 </html>

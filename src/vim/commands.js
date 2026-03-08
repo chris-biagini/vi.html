@@ -10,50 +10,50 @@
 import { Vim } from '@replit/codemirror-vim';
 
 export function registerExCommands(state, flashFn, showTabFn, editorAPI) {
-  Vim.defineEx('preview', 'pre', function(cm) {
+  Vim.defineEx('preview', 'pre', function (_cm) {
     showTabFn('preview');
   });
 
-  Vim.defineEx('edit', 'e', function(cm) {
+  Vim.defineEx('edit', 'e', function (_cm) {
     editorAPI.reloadContent();
   });
 
-  Vim.defineEx('editor', 'editor', function(cm) {
+  Vim.defineEx('editor', 'editor', function (_cm) {
     showTabFn('editor');
   });
 
-  Vim.defineEx('help', 'h', function(cm) {
+  Vim.defineEx('help', 'h', function (_cm) {
     showTabFn('help');
   });
 
-  Vim.defineEx('write', 'w', function(cm) {
+  Vim.defineEx('write', 'w', function (_cm) {
     editorAPI.saveNow();
     flashFn('Saved');
   });
 
-  Vim.defineEx('clear', '', function(cm) {
+  Vim.defineEx('clear', '', function (_cm) {
     editorAPI.clearSaved();
     flashFn('Cleared');
   });
 
-  Vim.defineEx('persist', '', function(cm) {
+  Vim.defineEx('persist', '', function (_cm) {
     state.persist = true;
     editorAPI.savePersistFlag(true);
     flashFn('Persist: on');
   });
 
-  Vim.defineEx('nopersist', '', function(cm) {
+  Vim.defineEx('nopersist', '', function (_cm) {
     state.persist = false;
     editorAPI.savePersistFlag(false);
     flashFn('Persist: off');
   });
 
-  Vim.defineEx('settings', 'settings', function(cm) {
+  Vim.defineEx('settings', 'settings', function (_cm) {
     var s = editorAPI.getSettingsDisplay();
     flashFn(s, 8000);
   });
 
-  Vim.defineEx('toggle', 'tog', function(cm) {
+  Vim.defineEx('toggle', 'tog', function (_cm) {
     showTabFn(state.currentTab === 'editor' ? 'preview' : 'editor');
   });
 }

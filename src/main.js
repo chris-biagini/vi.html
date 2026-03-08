@@ -1,14 +1,44 @@
-import { EditorView, lineNumbers, drawSelection, keymap } from '@codemirror/view';
+import {
+  EditorView,
+  lineNumbers,
+  drawSelection,
+  keymap,
+} from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
 import { markdown } from '@codemirror/lang-markdown';
 import { vim, getCM } from '@replit/codemirror-vim';
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands';
-import { bracketMatching, indentUnit as indentUnitFacet } from '@codemirror/language';
+import {
+  bracketMatching,
+  indentUnit as indentUnitFacet,
+} from '@codemirror/language';
 import { searchKeymap } from '@codemirror/search';
 
-import { saveContent, loadContent, saveSettings, loadSettings, loadPersistFlag, savePersistFlag, clearContent, refreshTTL } from './storage.js';
-import { initStatusBar, updateStatusPos, flash, updateMode, showTab } from './ui.js';
-import { handleTextwidthWrap, registerGqOperator, registerArrowClamp, registerVimOptions, registerExCommands, registerMappings } from './vim/index.js';
+import {
+  saveContent,
+  loadContent,
+  saveSettings,
+  loadSettings,
+  loadPersistFlag,
+  savePersistFlag,
+  clearContent,
+  refreshTTL,
+} from './storage.js';
+import {
+  initStatusBar,
+  updateStatusPos,
+  flash,
+  updateMode,
+  showTab,
+} from './ui.js';
+import {
+  handleTextwidthWrap,
+  registerGqOperator,
+  registerArrowClamp,
+  registerVimOptions,
+  registerExCommands,
+  registerMappings,
+} from './vim/index.js';
 
 // ── Application state ───────────────────────────────────
 var state = {
@@ -17,7 +47,7 @@ var state = {
   relativeNumber: false,
   flashTimer: null,
   currentTab: 'editor',
-  wrapping: false
+  wrapping: false,
 };
 
 // ── Compartments for dynamic options ────────────────────
@@ -41,11 +71,11 @@ function makeLineNumbersExtension() {
   if (!currentLineNumbers) return [];
   if (!state.relativeNumber) return lineNumbers();
   return lineNumbers({
-    formatNumber: function(lineNo, edState) {
+    formatNumber: function (lineNo, edState) {
       var cursorLine = edState.doc.lineAt(edState.selection.main.head).number;
       var rel = Math.abs(lineNo - cursorLine);
       return rel === 0 ? String(lineNo) : String(rel);
-    }
+    },
   });
 }
 
@@ -73,7 +103,7 @@ var view = new EditorView({
       bracketMatching(),
       drawSelection(),
       keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
-      EditorView.updateListener.of(function(update) {
+      EditorView.updateListener.of(function (update) {
         if (update.selectionSet) {
           var pos = update.state.selection.main.head;
           var line = update.state.doc.lineAt(pos);
@@ -82,7 +112,9 @@ var view = new EditorView({
           if (state.relativeNumber && line.number !== lastCursorLine) {
             lastCursorLine = line.number;
             update.view.dispatch({
-              effects: lineNumbersCompartment.reconfigure(makeLineNumbersExtension())
+              effects: lineNumbersCompartment.reconfigure(
+                makeLineNumbersExtension(),
+              ),
             });
           }
         }
@@ -97,7 +129,8 @@ var view = new EditorView({
           color: 'var(--fg)',
         },
         '.cm-content': {
-          fontFamily: "ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
+          fontFamily:
+            "ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
           fontSize: '17px',
           lineHeight: '1.55',
         },
@@ -156,15 +189,20 @@ var cm = getCM(view);
 var saveTimer = null;
 function scheduleContentSave() {
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(function() {
+  saveTimer = setTimeout(function () {
     saveContent(view.state.doc.toString(), state.persist);
   }, 1000);
 }
 
 // ── Tab callbacks ───────────────────────────────────────
 var tabCallbacks = {
-  getText: function() { return view.state.doc.toString(); },
-  focusEditor: function() { view.focus(); view.requestMeasure(); }
+  getText: function () {
+    return view.state.doc.toString();
+  },
+  focusEditor: function () {
+    view.focus();
+    view.requestMeasure();
+  },
 };
 
 function doShowTab(name) {
@@ -180,7 +218,7 @@ function gatherSettings() {
     indentWithTabs: currentIndentWithTabs,
     lineWrapping: currentLineWrapping,
     textwidth: state.textwidth,
-    relativeNumber: state.relativeNumber
+    relativeNumber: state.relativeNumber,
   };
 }
 
@@ -190,64 +228,70 @@ function doSaveSettings() {
 
 // ── Editor API for vim modules ───────────────────────────
 var editorAPI = {
-  setLineNumbers: function(val) {
+  setLineNumbers: function (val) {
     currentLineNumbers = val;
     view.dispatch({
-      effects: lineNumbersCompartment.reconfigure(makeLineNumbersExtension())
+      effects: lineNumbersCompartment.reconfigure(makeLineNumbersExtension()),
     });
   },
-  setRelativeNumbers: function(val) {
+  setRelativeNumbers: function (val) {
     state.relativeNumber = val;
     view.dispatch({
-      effects: lineNumbersCompartment.reconfigure(makeLineNumbersExtension())
+      effects: lineNumbersCompartment.reconfigure(makeLineNumbersExtension()),
     });
   },
-  setTabSize: function(val) {
+  setTabSize: function (val) {
     currentTabSize = val;
     view.dispatch({
-      effects: tabSizeCompartment.reconfigure(EditorState.tabSize.of(val))
+      effects: tabSizeCompartment.reconfigure(EditorState.tabSize.of(val)),
     });
   },
-  setIndentUnit: function(val) {
+  setIndentUnit: function (val) {
     currentIndentUnit = val;
     view.dispatch({
-      effects: indentUnitCompartment.reconfigure(indentUnitFacet.of(makeIndentUnitString()))
+      effects: indentUnitCompartment.reconfigure(
+        indentUnitFacet.of(makeIndentUnitString()),
+      ),
     });
   },
-  setIndentWithTabs: function(val) {
+  setIndentWithTabs: function (val) {
     currentIndentWithTabs = val;
     view.dispatch({
-      effects: indentUnitCompartment.reconfigure(indentUnitFacet.of(makeIndentUnitString()))
+      effects: indentUnitCompartment.reconfigure(
+        indentUnitFacet.of(makeIndentUnitString()),
+      ),
     });
   },
-  setLineWrapping: function(val) {
+  setLineWrapping: function (val) {
     currentLineWrapping = val;
     view.dispatch({
-      effects: lineWrappingCompartment.reconfigure(val ? EditorView.lineWrapping : [])
+      effects: lineWrappingCompartment.reconfigure(
+        val ? EditorView.lineWrapping : [],
+      ),
     });
   },
-  saveNow: function() {
+  saveNow: function () {
     saveContent(view.state.doc.toString(), true);
     refreshTTL();
   },
-  reloadContent: function() {
+  reloadContent: function () {
     var saved = loadContent();
     if (saved !== null) {
       view.dispatch({
-        changes: { from: 0, to: view.state.doc.length, insert: saved }
+        changes: { from: 0, to: view.state.doc.length, insert: saved },
       });
       flash('Reloaded');
     } else {
       flash('No saved content');
     }
   },
-  clearSaved: function() {
+  clearSaved: function () {
     clearContent();
   },
-  savePersistFlag: function(val) {
+  savePersistFlag: function (val) {
     savePersistFlag(val);
   },
-  getSettingsDisplay: function() {
+  getSettingsDisplay: function () {
     return [
       'number=' + currentLineNumbers,
       'rnu=' + state.relativeNumber,
@@ -256,9 +300,9 @@ var editorAPI = {
       'et=' + !currentIndentWithTabs,
       'wrap=' + currentLineWrapping,
       'tw=' + state.textwidth,
-      'persist=' + state.persist
+      'persist=' + state.persist,
     ].join('  ');
-  }
+  },
 };
 
 // ── Register vim config ─────────────────────────────────
@@ -272,23 +316,23 @@ registerMappings();
 cm.on('vim-mode-change', updateMode);
 
 // ── Wire up textwidth wrapping ──────────────────────────
-cm.on('change', function(cmInstance, changeObj) {
+cm.on('change', function (cmInstance, changeObj) {
   handleTextwidthWrap(cmInstance, changeObj, state);
 });
 
 // ── Tab click handlers ──────────────────────────────────
-document.getElementById('tab-editor').addEventListener('click', function() {
+document.getElementById('tab-editor').addEventListener('click', function () {
   doShowTab('editor');
 });
-document.getElementById('tab-preview').addEventListener('click', function() {
+document.getElementById('tab-preview').addEventListener('click', function () {
   doShowTab('preview');
 });
-document.getElementById('tab-help').addEventListener('click', function() {
+document.getElementById('tab-help').addEventListener('click', function () {
   doShowTab('help');
 });
 
 // ── Backslash to return to editor from preview/help ─────
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
   if (e.key === '\\' && state.currentTab !== 'editor') {
     e.preventDefault();
     doShowTab('editor');
@@ -314,7 +358,7 @@ if (settings) {
 var savedContent = loadContent();
 if (savedContent !== null) {
   view.dispatch({
-    changes: { from: 0, to: view.state.doc.length, insert: savedContent }
+    changes: { from: 0, to: view.state.doc.length, insert: savedContent },
   });
 }
 

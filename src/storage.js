@@ -1,14 +1,32 @@
 // ── Constants ───────────────────────────────────────────
-var LS_CONTENT  = 'vihtml_content';
-var LS_TTL      = 'vihtml_content_ttl';
+var LS_CONTENT = 'vihtml_content';
+var LS_TTL = 'vihtml_content_ttl';
 var LS_SETTINGS = 'vihtml_settings';
-var LS_PERSIST  = 'vihtml_persist';
-var TTL_MS      = 7 * 24 * 60 * 60 * 1000;
+var LS_PERSIST = 'vihtml_persist';
+var TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 // ── localStorage helpers ────────────────────────────────
-export function lsGet(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
-export function lsSet(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
-export function lsRemove(k) { try { localStorage.removeItem(k); } catch(e) {} }
+export function lsGet(k) {
+  try {
+    return localStorage.getItem(k);
+  } catch (_e) {
+    return null;
+  }
+}
+export function lsSet(k, v) {
+  try {
+    localStorage.setItem(k, v);
+  } catch (_e) {
+    /* ignore */
+  }
+}
+export function lsRemove(k) {
+  try {
+    localStorage.removeItem(k);
+  } catch (_e) {
+    /* ignore */
+  }
+}
 
 export function saveContent(text, persist) {
   if (!persist) return;
@@ -33,7 +51,11 @@ export function saveSettings(settingsObj) {
 export function loadSettings() {
   var raw = lsGet(LS_SETTINGS);
   if (!raw) return null;
-  try { return JSON.parse(raw); } catch(e) { return null; }
+  try {
+    return JSON.parse(raw);
+  } catch (_e) {
+    return null;
+  }
 }
 
 export function loadPersistFlag() {
