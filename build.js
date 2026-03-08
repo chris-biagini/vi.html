@@ -24,8 +24,8 @@ async function build() {
 
   // Read template and inline bundles
   let html = fs.readFileSync('src/template.html', 'utf8');
-  html = html.replace('/* STYLE */', css);
-  html = html.replace('/* SCRIPT */', js);
+  html = html.replace('/* STYLE */', function() { return css; });
+  html = html.replace('/* SCRIPT */', function() { return js; });
 
   fs.writeFileSync('vi.html', html);
   const size = (fs.statSync('vi.html').size / 1024).toFixed(1);
