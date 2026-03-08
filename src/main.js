@@ -8,7 +8,7 @@ import { searchKeymap } from '@codemirror/search';
 
 import { saveContent, loadContent, saveSettings, loadSettings, loadPersistFlag, savePersistFlag, clearContent, refreshTTL } from './storage.js';
 import { initStatusBar, updateStatusPos, flash, updateMode, showTab } from './ui.js';
-import { handleTextwidthWrap, registerVimConfig } from './vim.js';
+import { handleTextwidthWrap, registerGqOperator, registerArrowClamp, registerVimOptions, registerExCommands, registerMappings } from './vim/index.js';
 
 // ── Application state ───────────────────────────────────
 var state = {
@@ -188,7 +188,7 @@ function doSaveSettings() {
   saveSettings(gatherSettings());
 }
 
-// ── Editor API for vim.js ───────────────────────────────
+// ── Editor API for vim modules ───────────────────────────
 var editorAPI = {
   setLineNumbers: function(val) {
     currentLineNumbers = val;
@@ -262,7 +262,11 @@ var editorAPI = {
 };
 
 // ── Register vim config ─────────────────────────────────
-registerVimConfig(state, flash, doShowTab, doSaveSettings, editorAPI);
+registerVimOptions(state, flash, doSaveSettings, editorAPI);
+registerExCommands(state, flash, doShowTab, editorAPI);
+registerGqOperator(state);
+registerArrowClamp();
+registerMappings();
 
 // ── Wire up vim-mode-change ─────────────────────────────
 cm.on('vim-mode-change', updateMode);

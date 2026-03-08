@@ -9,7 +9,14 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 - `style.css` — all CSS (markdown tokens, preview/help pane styles)
 - `storage.js` — localStorage helpers (content with 7-day TTL, settings, persist flag)
 - `ui.js` — status bar, tab switching, SmartyPants, preview rendering (marked.js)
-- `vim.js` — all vim customizations: gq reflow, textwidth wrap, arrow clamping, `:set` options and Ex commands via `Vim.defineOption`/`Vim.defineEx`
+- `vim/` — vim customizations, one file per feature:
+  - `vim/textwidth.js` — auto-wrap lines at textwidth during insert mode
+  - `vim/gq.js` — gq reflow operator for reformatting paragraphs
+  - `vim/arrow-clamp.js` — prevent arrow keys from wrapping across lines in insert mode
+  - `vim/options.js` — `:set` options (number, tabstop, textwidth, etc.) via `Vim.defineOption`
+  - `vim/commands.js` — Ex commands (:write, :preview, :help, etc.) via `Vim.defineEx`
+  - `vim/mappings.js` — custom key mappings (`\p` toggle)
+  - `vim/index.js` — barrel re-exporting all modules
 - `main.js` — entry point: CM6 EditorView, compartments for dynamic options, event wiring, state loading
 
 **Dependencies (npm, bundled offline):** CodeMirror 6 (`codemirror`, `@codemirror/lang-markdown`, `@codemirror/view`, `@codemirror/state`), `@replit/codemirror-vim`, `marked`
