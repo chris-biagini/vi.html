@@ -498,14 +498,15 @@
           <thead><tr><th>Command</th><th>Action</th></tr></thead>
           <tbody>
             <tr><td><code>:w</code></td><td>Save to browser storage</td></tr>
-            <tr><td><code>:e</code></td><td>Switch to Editor tab</td></tr>
+            <tr><td><code>:e</code></td><td>Reload content from last save</td></tr>
+            <tr><td><code>:editor</code></td><td>Switch to Editor tab</td></tr>
             <tr><td><code>:pre[view]</code></td><td>Switch to Preview tab</td></tr>
             <tr><td><code>:help</code></td><td>Show this help</td></tr>
             <tr><td><code>:tog[gle]</code></td><td>Toggle between Editor and Preview</td></tr>
             <tr><td><code>:persist</code></td><td>Enable auto-save (default)</td></tr>
             <tr><td><code>:nopersist</code></td><td>Disable auto-save</td></tr>
             <tr><td><code>:clear</code></td><td>Wipe saved content from storage</td></tr>
-            <tr><td><code>:setall</code></td><td>Show all current settings</td></tr>
+            <tr><td><code>:settings</code></td><td>Show all current settings</td></tr>
             <tr><td><code>:s/old/new/g</code></td><td>Substitute (supports regex)</td></tr>
             <tr><td><code>:noh</code></td><td>Clear search highlighting</td></tr>
           </tbody>
@@ -536,7 +537,7 @@
         </table>
 
         <h2>Text Reflow</h2>
-        <p>Set <code>:set tw=72</code> (or your preferred width), then use <kbd>gq</kbd> with a motion or text object to hard-wrap text:</p>
+        <p>Set <code>:set tw=72</code> (or your preferred width), then use <kbd>gq</kbd> with a motion or text object to hard-wrap text. If <code>textwidth</code> is 0, <kbd>gq</kbd> wraps at 79 columns (matching vim).</p>
         <table>
           <thead><tr><th>Key</th><th>Action</th></tr></thead>
           <tbody>
@@ -779,24 +780,15 @@
       if (state.wrapping) return;
       if (changeObj.origin !== '+input') return;
 
+      // Vim only triggers auto-wrap on non-whitespace input
+      var inserted = changeObj.text.join('');
+      if (!inserted || /^\s+$/.test(inserted)) return;
+
       var cursor = cm.getCursor();
       var lineNo = cursor.line;
       var lineText = cm.getLine(lineNo);
 
       if (lineText.length <= state.textwidth) return;
-
-      // Vim behavior: only wrap when cursor is at or past the textwidth column.
-      // Typing early in a long line does not trigger wrapping.
-      if (cursor.ch < state.textwidth) return;
-
-      // Vim 'l' flag behavior: don't wrap if line was already over textwidth
-      // before this insertion. Calculate pre-insertion length by subtracting
-      // the inserted text length.
-      var insertedLen = 0;
-      for (var t = 0; t < changeObj.text.length; t++) {
-        insertedLen += changeObj.text[t].length;
-      }
-      if (lineText.length - insertedLen > state.textwidth) return;
 
       // Find last space at or before textwidth
       var breakAt = -1;
@@ -946,6 +938,16 @@
     });
 
     CodeMirror.Vim.defineEx('edit', 'e', function(cm) {
+      var saved = loadContent();
+      if (saved !== null) {
+        cm.setValue(saved);
+        flash('Reloaded');
+      } else {
+        flash('No saved content');
+      }
+    });
+
+    CodeMirror.Vim.defineEx('editor', 'editor', function(cm) {
       showTab('editor', cm);
     });
 
@@ -977,7 +979,7 @@
       flash('Persist: off');
     });
 
-    CodeMirror.Vim.defineEx('setall', '', function(cm) {
+    CodeMirror.Vim.defineEx('settings', 'settings', function(cm) {
       var s = [
         'number=' + cm.getOption('lineNumbers'),
         'rnu=' + state.relativeNumber,
@@ -993,10 +995,8 @@
 
     // ── Register gq operator ────────────────────────────────
     CodeMirror.Vim.defineOperator('hardWrap', function(cm, operatorArgs, ranges) {
-      if (state.textwidth <= 0) {
-        flash('textwidth not set (use :set tw=N)');
-        return;
-      }
+      // Vim: if textwidth=0, use screen width capped at 79
+      var width = state.textwidth > 0 ? state.textwidth : 79;
       var cursorLine = 0;
       cm.operation(function() {
         for (var i = ranges.length - 1; i >= 0; i--) {
@@ -1009,15 +1009,16 @@
           if (to > from && toPos.ch === 0) to--;
           // Trim trailing blank lines from the range
           while (to > from && cm.getLine(to).trim() === '') to--;
-          var newLines = reflowRange(cm, from, to, state.textwidth);
-          // Cursor goes to line after reflowed text (vim behavior)
-          cursorLine = from + newLines;
+          var newLines = reflowRange(cm, from, to, width);
+          // Cursor goes to first non-blank of last formatted line (vim behavior)
+          cursorLine = from + newLines - 1;
         }
       });
-      // Position cursor at first non-blank line after reflowed text, or last line of result
+      // Position cursor at first non-blank of last formatted line
       var lastLine = cm.lastLine();
       if (cursorLine > lastLine) cursorLine = lastLine;
-      cm.setCursor(cursorLine, 0);
+      var firstNonBlank = cm.getLine(cursorLine).search(/\S/);
+      cm.setCursor(cursorLine, firstNonBlank < 0 ? 0 : firstNonBlank);
     });
 
     // Map gq as an operator key
