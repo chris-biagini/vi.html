@@ -349,6 +349,18 @@
                 <td><code>:noh</code></td>
                 <td>Clear search highlighting</td>
               </tr>
+              <tr>
+                <td><code>:exrc</code></td>
+                <td>Edit startup commands</td>
+              </tr>
+              <tr>
+                <td><code>:wq</code></td>
+                <td>Save and quit (in exrc: save and apply)</td>
+              </tr>
+              <tr>
+                <td><code>:q!</code></td>
+                <td>Quit without saving (in exrc: discard changes)</td>
+              </tr>
             </tbody>
           </table>
 
@@ -357,7 +369,7 @@
             Set with <code>:set <em>option</em></code
             >. Boolean options can be negated with
             <code>:set no<em>option</em></code
-            >. All settings auto-persist across sessions.
+            >. Use <code>:exrc</code> to persist settings across sessions.
           </p>
           <table>
             <thead>
@@ -496,7 +508,8 @@
             Define short text expansions that trigger automatically in Insert
             mode. When you type an abbreviation followed by a non-keyword
             character (space, punctuation, Enter), it expands to the full text.
-            Abbreviations persist across sessions.
+            To persist abbreviations across sessions, add them to your
+            <code>:exrc</code>.
           </p>
           <table>
             <thead>
@@ -547,6 +560,42 @@
             in the vim docs.
           </p>
 
+          <h2>exrc (Startup Commands)</h2>
+          <p>
+            vi.html supports an <code>exrc</code> &mdash; a list of Ex commands
+            that run every time the editor loads. Use it to persist your
+            <code>:set</code> options, abbreviations, and other configuration.
+          </p>
+          <p>
+            Type <code>:exrc</code> to edit your startup commands. The editor
+            switches to your exrc text. Use <code>:wq</code> to save and apply,
+            or <code>:q!</code> to discard changes.
+          </p>
+          <p>
+            Lines starting with <code>"</code> are comments. Blank lines are
+            ignored. Example:
+          </p>
+          <pre>
+" My vi.html config
+set ts=2
+set sw=2
+set noet
+ab teh the
+ab dont don't
+persist</pre
+          >
+          <p>
+            Any valid Ex command works. Changes take effect immediately after
+            saving.
+          </p>
+          <p>
+            See
+            <a href="https://vimhelp.org/starting.txt.html#exrc" target="_blank"
+              >:help exrc</a
+            >
+            in the vim docs.
+          </p>
+
           <h2>Persistence</h2>
           <ul>
             <li>
@@ -555,11 +604,13 @@
               <code>:w</code> to save explicitly and refresh the timer.
             </li>
             <li>
-              <b>Settings</b> (<code>:set</code> values) persist indefinitely.
+              <b>Settings</b> and <b>abbreviations</b> are ephemeral by default.
+              To persist them, add commands to your <code>:exrc</code>.
             </li>
             <li>
               <b>Disable</b> auto-save with <code>:nopersist</code>. Re-enable
-              with <code>:persist</code>.
+              with <code>:persist</code>. To persist this setting, add
+              <code>nopersist</code> to your <code>:exrc</code>.
             </li>
             <li>
               <b>Clear</b> saved content immediately with <code>:clear</code>.
