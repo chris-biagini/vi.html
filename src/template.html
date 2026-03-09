@@ -48,6 +48,7 @@
             <li><a href="#s-abbreviations">Abbreviations</a></li>
             <li><a href="#s-exrc">exrc</a></li>
             <li><a href="#s-end-of-buffer">End-of-Buffer Lines</a></li>
+            <li><a href="#s-folding">Folding</a></li>
             <li><a href="#s-persistence">Persistence</a></li>
             <li>
               <a href="#s-preview-smartypants">Preview &amp; SmartyPants</a>
@@ -909,6 +910,13 @@
                 <td>en</td>
                 <td>Spell checking language (e.g. en_us, fr, de)</td>
               </tr>
+              <tr>
+                <td><code>foldgutter</code></td>
+                <td><code>fdc</code></td>
+                <td>bool</td>
+                <td>on</td>
+                <td>Show fold indicators in gutter</td>
+              </tr>
             </tbody>
           </table>
           <div class="tip">
@@ -1048,6 +1056,48 @@ persist</pre
             end-of-buffer indicator. These are not part of the document &mdash;
             they show where the file ends and empty screen space begins.
           </p>
+
+          <h2 id="s-folding">Folding</h2>
+          <p>
+            Markdown headings can be folded to hide their content. Folding is
+            <em>nested</em>: closing a heading hides everything under it,
+            including sub-headings.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>zo</kbd></td>
+                <td>Open fold at cursor</td>
+              </tr>
+              <tr>
+                <td><kbd>zc</kbd></td>
+                <td>Close fold at cursor</td>
+              </tr>
+              <tr>
+                <td><kbd>za</kbd></td>
+                <td>Toggle fold at cursor</td>
+              </tr>
+              <tr>
+                <td><kbd>zR</kbd></td>
+                <td>Open all folds in buffer</td>
+              </tr>
+              <tr>
+                <td><kbd>zM</kbd></td>
+                <td>Close all folds in buffer</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tip">
+            <b>Fold gutter:</b> Clickable fold indicators appear in the gutter
+            by default. Toggle with <code>:set nofoldgutter</code> /
+            <code>:set foldgutter</code>.
+          </div>
 
           <h2 id="s-persistence">Persistence</h2>
           <ul>

@@ -159,6 +159,29 @@ body {
   background: #3a3a1a;
 }
 
+/* ── Fold placeholder ────────────────────────────────── */
+.cm-foldPlaceholder {
+  background: #1a1e14;
+  border: 1px solid #2a3a2a;
+  color: var(--fg-dim);
+  padding: 0 6px;
+  border-radius: 3px;
+  font-size: 0.85em;
+  cursor: pointer;
+}
+
+/* Fold gutter markers */
+.cm-foldGutter .cm-gutterElement {
+  color: var(--fg-dim);
+  font-size: 12px;
+  padding: 0 2px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.cm-foldGutter .cm-gutterElement:hover {
+  color: var(--fg);
+}
+
 /* ── Status Bar ────────────────────────────────────── */
 #status-bar {
   height: 22px;

@@ -45,6 +45,9 @@ import {
   exrcQuit,
   exrcWriteQuit,
   tildeExtension,
+  foldExtension,
+  foldGutterExtension,
+  registerFoldCommands,
 } from './vim/index.js';
 import { installTestHarness } from './test-harness.js';
 
@@ -65,6 +68,7 @@ var tabSizeCompartment = new Compartment();
 var indentUnitCompartment = new Compartment();
 var abbreviationsCompartment = new Compartment();
 var spellcheckCompartment = new Compartment();
+var foldGutterCompartment = new Compartment();
 
 // Track current values for settings display (compartment.get() is unreliable)
 var currentLineNumbers = true;
@@ -74,6 +78,7 @@ var currentIndentUnit = 4;
 var currentIndentWithTabs = false;
 var currentSpellcheck = false;
 var currentSpelllang = 'en';
+var currentFoldGutter = true;
 
 // Track cursor line for relative number updates
 var lastCursorLine = -1;
@@ -118,6 +123,8 @@ var view = new EditorView({
       abbreviationsCompartment.of([]),
       spellcheckCompartment.of([]),
       tildeExtension(),
+      foldExtension(),
+      foldGutterCompartment.of(foldGutterExtension()),
       EditorView.updateListener.of(function (update) {
         if (update.selectionSet) {
           var pos = update.state.selection.main.head;
@@ -345,6 +352,17 @@ var editorAPI = {
       });
     }
   },
+  setFoldGutter: function (val) {
+    currentFoldGutter = val;
+    view.dispatch({
+      effects: foldGutterCompartment.reconfigure(
+        val ? foldGutterExtension() : [],
+      ),
+    });
+  },
+  getFoldGutter: function () {
+    return currentFoldGutter;
+  },
   setStatusIndicator: function (label) {
     setStatusIndicator(label);
   },
@@ -359,6 +377,7 @@ var editorAPI = {
       'tw=' + state.textwidth,
       'spell=' + currentSpellcheck,
       'spelllang=' + currentSpelllang,
+      'foldgutter=' + currentFoldGutter,
       'persist=' + state.persist,
     ].join('  ');
   },
@@ -414,6 +433,7 @@ registerExCommands(state, flash, doShowTab, editorAPI, exrcAPI);
 registerGqOperator(state);
 registerArrowClamp();
 registerMappings();
+registerFoldCommands();
 
 var abbrExtension = registerAbbreviations(flash);
 view.dispatch({

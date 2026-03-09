@@ -1,0 +1,15 @@
+{
+  "planPath": "docs/plans/2026-03-09-markdown-folding.md",
+  "tasks": [
+    {"id": 1, "subject": "Task 8: Verify Vim.defineAction callback signature", "status": "pending"},
+    {"id": 2, "subject": "Task 1: Create fold.js with CM6 folding extensions", "status": "pending", "blockedBy": [1]},
+    {"id": 3, "subject": "Task 2: Integrate fold extensions into main.js", "status": "pending", "blockedBy": [2]},
+    {"id": 4, "subject": "Task 3: Add :set foldgutter option", "status": "pending", "blockedBy": [3]},
+    {"id": 5, "subject": "Task 4: Add fold placeholder CSS", "status": "pending", "blockedBy": [3]},
+    {"id": 6, "subject": "Task 5: Add help documentation", "status": "pending", "blockedBy": [3]},
+    {"id": 7, "subject": "Task 6: Lint check", "status": "pending", "blockedBy": [5]},
+    {"id": 8, "subject": "Task 7: Browser test with Playwright", "status": "pending", "blockedBy": [5, 6, 7]},
+    {"id": 9, "subject": "Task 9: Full CI check and commit", "status": "pending", "blockedBy": [7, 8]}
+  ],
+  "lastUpdated": "2026-03-09T00:00:00Z"
+}

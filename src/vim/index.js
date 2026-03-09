@@ -20,3 +20,8 @@ export {
   exrcQuit,
   exrcWriteQuit,
 } from './exrc.js';
+export {
+  foldExtension,
+  foldGutterExtension,
+  registerFoldCommands,
+} from './fold.js';

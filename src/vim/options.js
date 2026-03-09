@@ -70,4 +70,10 @@ export function registerVimOptions(state, flashFn, editorAPI) {
     if (!cm) return;
     editorAPI.setSpelllang(val);
   });
+
+  // :help 'foldcolumn' — toggle fold gutter indicators
+  Vim.defineOption('foldgutter', true, 'boolean', ['fdc'], function (val, cm) {
+    if (!cm) return;
+    editorAPI.setFoldGutter(val);
+  });
 }
