@@ -2,7 +2,7 @@
  * Vim options
  *
  * Registers vim-compatible :set options (number, relativenumber, tabstop,
- * shiftwidth, expandtab, wrap, textwidth) using Vim.defineOption. Each option
+ * shiftwidth, expandtab, wrap, textwidth, spell, spelllang) using Vim.defineOption. Each option
  * dispatches to the editor API to reconfigure CodeMirror compartments.
  *
  * Defaults diverge from vim where sensible for a markdown editor:
@@ -56,5 +56,17 @@ export function registerVimOptions(state, flashFn, editorAPI) {
     if (!cm) return;
     state.textwidth = val;
     flashFn('textwidth=' + val);
+  });
+
+  // :help 'spell' — enable/disable spell checking (uses browser spellcheck)
+  Vim.defineOption('spell', false, 'boolean', [], function (val, cm) {
+    if (!cm) return;
+    editorAPI.setSpellcheck(val);
+  });
+
+  // :help 'spelllang' — set spell checking language (browser-dependent)
+  Vim.defineOption('spelllang', 'en', 'string', ['spl'], function (val, cm) {
+    if (!cm) return;
+    editorAPI.setSpelllang(val);
   });
 }

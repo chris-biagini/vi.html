@@ -60,6 +60,7 @@ var lineWrappingCompartment = new Compartment();
 var tabSizeCompartment = new Compartment();
 var indentUnitCompartment = new Compartment();
 var abbreviationsCompartment = new Compartment();
+var spellcheckCompartment = new Compartment();
 
 // Track current values for settings display (compartment.get() is unreliable)
 var currentLineNumbers = true;
@@ -67,6 +68,8 @@ var currentLineWrapping = true;
 var currentTabSize = 4;
 var currentIndentUnit = 4;
 var currentIndentWithTabs = false;
+var currentSpellcheck = false;
+var currentSpelllang = 'en';
 
 // Track cursor line for relative number updates
 var lastCursorLine = -1;
@@ -109,6 +112,7 @@ var view = new EditorView({
       drawSelection(),
       keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
       abbreviationsCompartment.of([]),
+      spellcheckCompartment.of([]),
       EditorView.updateListener.of(function (update) {
         if (update.selectionSet) {
           var pos = update.state.selection.main.head;
@@ -292,6 +296,32 @@ var editorAPI = {
   getCM: function () {
     return cm;
   },
+  setSpellcheck: function (val) {
+    currentSpellcheck = val;
+    view.dispatch({
+      effects: spellcheckCompartment.reconfigure(
+        val
+          ? EditorView.contentAttributes.of({
+              spellcheck: 'true',
+              lang: currentSpelllang,
+            })
+          : [],
+      ),
+    });
+  },
+  setSpelllang: function (val) {
+    currentSpelllang = val;
+    if (currentSpellcheck) {
+      view.dispatch({
+        effects: spellcheckCompartment.reconfigure(
+          EditorView.contentAttributes.of({
+            spellcheck: 'true',
+            lang: val,
+          }),
+        ),
+      });
+    }
+  },
   setStatusIndicator: function (label) {
     setStatusIndicator(label);
   },
@@ -304,6 +334,8 @@ var editorAPI = {
       'et=' + !currentIndentWithTabs,
       'wrap=' + currentLineWrapping,
       'tw=' + state.textwidth,
+      'spell=' + currentSpellcheck,
+      'spelllang=' + currentSpelllang,
       'persist=' + state.persist,
     ].join('  ');
   },
