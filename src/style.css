@@ -191,6 +191,14 @@ body {
   color: var(--accent-rep);
 }
 
+#status-buffer {
+  color: var(--status-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
 #status-pos {
   color: var(--status-fg);
 }

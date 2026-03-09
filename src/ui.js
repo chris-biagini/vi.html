@@ -6,16 +6,22 @@ marked.use({ gfm: true, breaks: false });
 // ── Status bar ──────────────────────────────────────────
 var modeEl = null,
   posEl = null,
-  flashEl = null;
+  flashEl = null,
+  bufferEl = null;
 
 export function initStatusBar() {
   modeEl = document.getElementById('status-mode');
   posEl = document.getElementById('status-pos');
   flashEl = document.getElementById('status-flash');
+  bufferEl = document.getElementById('status-buffer');
 }
 
 export function updateStatusPos(line, ch) {
   posEl.textContent = line + 1 + ':' + (ch + 1);
+}
+
+export function updateBufferName(name) {
+  bufferEl.textContent = name;
 }
 
 export function flash(msg, duration) {
