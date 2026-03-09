@@ -38,6 +38,7 @@ import {
   registerVimOptions,
   registerExCommands,
   registerMappings,
+  registerAbbreviations,
 } from './vim/index.js';
 
 // ── Application state ───────────────────────────────────
@@ -55,6 +56,7 @@ var lineNumbersCompartment = new Compartment();
 var lineWrappingCompartment = new Compartment();
 var tabSizeCompartment = new Compartment();
 var indentUnitCompartment = new Compartment();
+var abbreviationsCompartment = new Compartment();
 
 // Track current values for settings display (compartment.get() is unreliable)
 var currentLineNumbers = true;
@@ -103,6 +105,7 @@ var view = new EditorView({
       bracketMatching(),
       drawSelection(),
       keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+      abbreviationsCompartment.of([]),
       EditorView.updateListener.of(function (update) {
         if (update.selectionSet) {
           var pos = update.state.selection.main.head;
@@ -314,6 +317,11 @@ registerExCommands(state, flash, doShowTab, editorAPI);
 registerGqOperator(state);
 registerArrowClamp();
 registerMappings();
+
+var abbrExtension = registerAbbreviations(flash);
+view.dispatch({
+  effects: abbreviationsCompartment.reconfigure(abbrExtension),
+});
 
 // ── Wire up vim-mode-change ─────────────────────────────
 cm.on('vim-mode-change', updateMode);
