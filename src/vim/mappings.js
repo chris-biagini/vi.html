@@ -10,4 +10,5 @@ import { Vim } from '@replit/codemirror-vim';
 
 export function registerMappings() {
   Vim.map('\\p', ':toggle<CR>', 'normal');
+  Vim.map('<C-6>', ':b#<CR>', 'normal');
 }

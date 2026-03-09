@@ -20,8 +20,13 @@ export function registerExCommands(
     showTabFn('preview');
   });
 
-  Vim.defineEx('edit', 'e', function (_cm) {
-    editorAPI.reloadContent();
+  Vim.defineEx('edit', 'e', function (_cm, params) {
+    var name = params && params.argString ? params.argString.trim() : '';
+    if (!name) {
+      editorAPI.reloadContent();
+    } else {
+      editorAPI.bufferManager.switchBuffer(name);
+    }
   });
 
   Vim.defineEx('editor', 'editor', function (_cm) {
@@ -32,13 +37,19 @@ export function registerExCommands(
     showTabFn('help');
   });
 
-  Vim.defineEx('write', 'w', function (_cm) {
+  Vim.defineEx('write', 'w', function (_cm, params) {
     if (exrcAPI && exrcAPI.isEditing()) {
       exrcAPI.write();
       return;
     }
-    editorAPI.saveNow();
-    flashFn('Saved');
+    var name = params && params.argString ? params.argString.trim() : '';
+    var mgr = editorAPI.bufferManager;
+    if (name) {
+      mgr.writeBuffer(name);
+    } else {
+      mgr.saveCurrentBuffer();
+      flashFn('"' + (mgr.currentName() || '[No Name]') + '" written');
+    }
   });
 
   Vim.defineEx('wq', 'wq', function (_cm) {
@@ -46,8 +57,9 @@ export function registerExCommands(
       exrcAPI.writeQuit();
       return;
     }
-    editorAPI.saveNow();
-    flashFn('Saved');
+    var mgr = editorAPI.bufferManager;
+    mgr.saveCurrentBuffer();
+    flashFn('"' + (mgr.currentName() || '[No Name]') + '" written');
   });
 
   Vim.defineEx('quit', 'q', function (_cm, params) {
@@ -59,8 +71,52 @@ export function registerExCommands(
   });
 
   Vim.defineEx('clear', '', function (_cm) {
-    editorAPI.clearSaved();
-    flashFn('Cleared');
+    editorAPI.bufferManager.reset();
+    flashFn('All buffers cleared');
+  });
+
+  Vim.defineEx('buffer', 'b', function (_cm, params) {
+    var arg = params && params.argString ? params.argString.trim() : '';
+    var mgr = editorAPI.bufferManager;
+    if (arg === '#') {
+      mgr.switchAlternate();
+    } else if (arg) {
+      mgr.switchBuffer(arg);
+    } else {
+      flashFn('"' + (mgr.currentName() || '[No Name]') + '"');
+    }
+  });
+
+  Vim.defineEx('ls', 'ls', function (_cm) {
+    flashFn(editorAPI.bufferManager.listBuffers(), 8000);
+  });
+
+  Vim.defineEx('buffers', 'buffers', function (_cm) {
+    flashFn(editorAPI.bufferManager.listBuffers(), 8000);
+  });
+
+  Vim.defineEx('bdelete', 'bd', function (_cm, params) {
+    var name = params && params.argString ? params.argString.trim() : undefined;
+    editorAPI.bufferManager.deleteBuffer(name || undefined);
+  });
+
+  Vim.defineEx('saveas', 'sav', function (_cm, params) {
+    var name = params && params.argString ? params.argString.trim() : '';
+    if (!name) {
+      flashFn('E471: Argument required');
+      return;
+    }
+    editorAPI.bufferManager.saveas(name);
+  });
+
+  Vim.defineEx('file', 'f', function (_cm, params) {
+    var name = params && params.argString ? params.argString.trim() : '';
+    var mgr = editorAPI.bufferManager;
+    if (!name) {
+      flashFn('"' + (mgr.currentName() || '[No Name]') + '"');
+      return;
+    }
+    mgr.renameBuffer(name);
   });
 
   Vim.defineEx('persist', '', function (_cm) {
