@@ -38,13 +38,11 @@ export function registerExCommands(state, flashFn, showTabFn, editorAPI) {
 
   Vim.defineEx('persist', '', function (_cm) {
     state.persist = true;
-    editorAPI.savePersistFlag(true);
     flashFn('Persist: on');
   });
 
   Vim.defineEx('nopersist', '', function (_cm) {
     state.persist = false;
-    editorAPI.savePersistFlag(false);
     flashFn('Persist: off');
   });
 

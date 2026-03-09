@@ -17,10 +17,6 @@ import { searchKeymap } from '@codemirror/search';
 import {
   saveContent,
   loadContent,
-  saveSettings,
-  loadSettings,
-  loadPersistFlag,
-  savePersistFlag,
   clearContent,
   refreshTTL,
 } from './storage.js';
@@ -212,23 +208,6 @@ function doShowTab(name) {
   showTab(name, state, tabCallbacks);
 }
 
-// ── Helper to gather current settings ───────────────────
-function gatherSettings() {
-  return {
-    lineNumbers: currentLineNumbers,
-    tabSize: currentTabSize,
-    indentUnit: currentIndentUnit,
-    indentWithTabs: currentIndentWithTabs,
-    lineWrapping: currentLineWrapping,
-    textwidth: state.textwidth,
-    relativeNumber: state.relativeNumber,
-  };
-}
-
-function doSaveSettings() {
-  saveSettings(gatherSettings());
-}
-
 // ── Editor API for vim modules ───────────────────────────
 var editorAPI = {
   setLineNumbers: function (val) {
@@ -294,9 +273,6 @@ var editorAPI = {
   clearSaved: function () {
     clearContent();
   },
-  savePersistFlag: function (val) {
-    savePersistFlag(val);
-  },
   getSettingsDisplay: function () {
     return [
       'number=' + currentLineNumbers,
@@ -312,7 +288,7 @@ var editorAPI = {
 };
 
 // ── Register vim config ─────────────────────────────────
-registerVimOptions(state, flash, doSaveSettings, editorAPI);
+registerVimOptions(state, flash, editorAPI);
 registerExCommands(state, flash, doShowTab, editorAPI);
 registerGqOperator(state);
 registerArrowClamp();
@@ -351,21 +327,6 @@ document.addEventListener('keydown', function (e) {
 });
 
 // ── Load persisted state ────────────────────────────────
-state.persist = loadPersistFlag();
-
-var settings = loadSettings();
-if (settings) {
-  editorAPI.setLineNumbers(settings.lineNumbers !== false);
-  editorAPI.setTabSize(settings.tabSize || 4);
-  editorAPI.setIndentUnit(settings.indentUnit || 4);
-  editorAPI.setIndentWithTabs(settings.indentWithTabs || false);
-  editorAPI.setLineWrapping(settings.lineWrapping !== false);
-  state.textwidth = settings.textwidth || 0;
-  if (settings.relativeNumber) {
-    editorAPI.setRelativeNumbers(true);
-  }
-}
-
 var savedContent = loadContent();
 if (savedContent !== null) {
   view.dispatch({

@@ -1,8 +1,6 @@
 // ── Constants ───────────────────────────────────────────
 var LS_CONTENT = 'vihtml_content';
 var LS_TTL = 'vihtml_content_ttl';
-var LS_SETTINGS = 'vihtml_settings';
-var LS_PERSIST = 'vihtml_persist';
 var LS_EXRC = 'vihtml_exrc';
 var TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -43,29 +41,6 @@ export function loadContent() {
     return null;
   }
   return lsGet(LS_CONTENT);
-}
-
-export function saveSettings(settingsObj) {
-  lsSet(LS_SETTINGS, JSON.stringify(settingsObj));
-}
-
-export function loadSettings() {
-  var raw = lsGet(LS_SETTINGS);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch (_e) {
-    return null;
-  }
-}
-
-export function loadPersistFlag() {
-  var val = lsGet(LS_PERSIST);
-  return val !== '0';
-}
-
-export function savePersistFlag(persist) {
-  lsSet(LS_PERSIST, persist ? '1' : '0');
 }
 
 export function clearContent() {

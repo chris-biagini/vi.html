@@ -3,17 +3,11 @@
  *
  * Insert-mode abbreviations that expand when a non-keyword character is typed.
  * Supports :abbreviate, :unabbreviate, and :abclear Ex commands.
- * Abbreviations persist to localStorage across sessions.
- *
  * See: https://vimhelp.org/map.txt.html#Abbreviations
  * Source: https://github.com/vim/vim/blob/master/src/map.c
  */
 import { Vim, getCM } from '@replit/codemirror-vim';
 import { EditorView } from '@codemirror/view';
-import { lsGet, lsSet, lsRemove } from '../storage.js';
-
-var LS_KEY = 'vihtml_abbreviations';
-
 // ── Keyword character test ──────────────────────────────
 // :help iskeyword — default is @,48-57,_,192-255
 // We simplify to [a-zA-Z0-9_] for ASCII.
@@ -28,24 +22,6 @@ var abbreviations = {};
 
 export function getAbbreviations() {
   return abbreviations;
-}
-
-function saveAbbreviations() {
-  if (Object.keys(abbreviations).length === 0) {
-    lsRemove(LS_KEY);
-  } else {
-    lsSet(LS_KEY, JSON.stringify(abbreviations));
-  }
-}
-
-function loadAbbreviations() {
-  var raw = lsGet(LS_KEY);
-  if (!raw) return;
-  try {
-    abbreviations = JSON.parse(raw);
-  } catch (_e) {
-    abbreviations = {};
-  }
 }
 
 // ── Word extraction ─────────────────────────────────────
@@ -69,8 +45,6 @@ export function extractWord(docText, pos) {
 
 // ── Ex commands and inputHandler ─────────────────────────
 export function registerAbbreviations(flashFn) {
-  loadAbbreviations();
-
   Vim.defineEx('abbreviate', 'ab', function (_cm, params) {
     var args = params.args || [];
     if (args.length === 0) {
@@ -99,7 +73,6 @@ export function registerAbbreviations(flashFn) {
     // Define abbreviation: first arg = lhs, rest = rhs
     var rhs = args.slice(1).join(' ');
     abbreviations[lhs] = rhs;
-    saveAbbreviations();
   });
 
   Vim.defineEx('unabbreviate', 'una', function (_cm, params) {
@@ -114,12 +87,10 @@ export function registerAbbreviations(flashFn) {
       return;
     }
     delete abbreviations[lhs];
-    saveAbbreviations();
   });
 
   Vim.defineEx('abclear', 'abc', function () {
     abbreviations = {};
-    saveAbbreviations();
     flashFn('All abbreviations cleared', 8000);
   });
 

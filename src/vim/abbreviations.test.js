@@ -20,24 +20,6 @@ import {
   registerAbbreviations,
 } from './abbreviations.js';
 
-// Mock localStorage
-const store = {};
-const mockLocalStorage = {
-  getItem: vi.fn((k) => (k in store ? store[k] : null)),
-  setItem: vi.fn((k, v) => {
-    store[k] = String(v);
-  }),
-  removeItem: vi.fn((k) => {
-    delete store[k];
-  }),
-};
-
-beforeEach(() => {
-  Object.keys(store).forEach((k) => delete store[k]);
-  vi.clearAllMocks();
-  vi.stubGlobal('localStorage', mockLocalStorage);
-});
-
 describe('isKeyword', () => {
   test('letters are keyword characters', () => {
     expect(isKeyword('a')).toBe(true);
@@ -201,18 +183,5 @@ describe('Ex commands', () => {
     flashFn.mockClear();
     commands.abclear(null, {});
     expect(flashFn).toHaveBeenCalledWith('All abbreviations cleared', 8000);
-  });
-
-  test('abbreviations persist to localStorage', () => {
-    commands.abbreviate(null, { args: ['teh', 'the'] });
-    expect(store['vihtml_abbreviations']).toBeDefined();
-    const parsed = JSON.parse(store['vihtml_abbreviations']);
-    expect(parsed['teh']).toBe('the');
-  });
-
-  test(':abc removes localStorage key', () => {
-    commands.abbreviate(null, { args: ['teh', 'the'] });
-    commands.abclear(null, {});
-    expect(store['vihtml_abbreviations']).toBeUndefined();
   });
 });

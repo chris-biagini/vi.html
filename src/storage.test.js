@@ -2,10 +2,6 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import {
   saveContent,
   loadContent,
-  saveSettings,
-  loadSettings,
-  loadPersistFlag,
-  savePersistFlag,
   clearContent,
   refreshTTL,
   saveExrc,
@@ -82,39 +78,6 @@ describe('refreshTTL', () => {
     const sevenDays = 7 * 24 * 60 * 60 * 1000;
     expect(ttl).toBeGreaterThanOrEqual(before + sevenDays - 100);
     expect(ttl).toBeLessThanOrEqual(before + sevenDays + 100);
-  });
-});
-
-describe('saveSettings / loadSettings', () => {
-  test('saves and loads settings object', () => {
-    const settings = { tabstop: 4, number: true };
-    saveSettings(settings);
-    expect(loadSettings()).toEqual(settings);
-  });
-
-  test('returns null when no settings saved', () => {
-    expect(loadSettings()).toBeNull();
-  });
-
-  test('returns null for corrupted JSON', () => {
-    store['vihtml_settings'] = 'not json';
-    expect(loadSettings()).toBeNull();
-  });
-});
-
-describe('savePersistFlag / loadPersistFlag', () => {
-  test('defaults to true when no flag set', () => {
-    expect(loadPersistFlag()).toBe(true);
-  });
-
-  test('returns false when flag is "0"', () => {
-    savePersistFlag(false);
-    expect(loadPersistFlag()).toBe(false);
-  });
-
-  test('returns true when flag is "1"', () => {
-    savePersistFlag(true);
-    expect(loadPersistFlag()).toBe(true);
   });
 });
 
