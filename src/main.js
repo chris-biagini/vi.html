@@ -15,14 +15,15 @@ import {
 import { searchKeymap } from '@codemirror/search';
 
 import {
-  saveContent,
-  loadContent,
-  clearContent,
-  refreshTTL,
+  loadBuffers,
+  saveBuffers,
+  loadSession,
+  saveSession,
 } from './storage.js';
 import {
   initStatusBar,
   updateStatusPos,
+  updateBufferName,
   flash,
   updateMode,
   showTab,
@@ -36,6 +37,7 @@ import {
   registerExCommands,
   registerMappings,
   registerAbbreviations,
+  createBufferManager,
   executeExrc,
   registerExrc,
   isEditingExrc,
@@ -202,7 +204,7 @@ function scheduleContentSave() {
   if (isEditingExrc()) return;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(function () {
-    saveContent(view.state.doc.toString(), state.persist);
+    if (state.persist) bufferManager.saveCurrentBuffer();
   }, 1000);
 }
 
@@ -269,14 +271,18 @@ var editorAPI = {
     });
   },
   saveNow: function () {
-    saveContent(view.state.doc.toString(), true);
-    refreshTTL();
+    bufferManager.saveCurrentBuffer();
   },
   reloadContent: function () {
-    var saved = loadContent();
-    if (saved !== null) {
+    var bufs = loadBuffers();
+    var name = bufferManager.currentName();
+    if (name in bufs) {
       view.dispatch({
-        changes: { from: 0, to: view.state.doc.length, insert: saved },
+        changes: {
+          from: 0,
+          to: view.state.doc.length,
+          insert: bufs[name].content,
+        },
       });
       flash('Reloaded');
     } else {
@@ -284,7 +290,10 @@ var editorAPI = {
     }
   },
   clearSaved: function () {
-    clearContent();
+    view.dispatch({
+      changes: { from: 0, to: view.state.doc.length, insert: '' },
+    });
+    flash('Buffer cleared');
   },
   getDoc: function () {
     return view.state.doc.toString();
@@ -342,6 +351,35 @@ var editorAPI = {
   },
 };
 
+// ── Buffer manager ───────────────────────────────────────
+var bufferManager = createBufferManager({
+  loadBuffers: loadBuffers,
+  saveBuffers: saveBuffers,
+  loadSession: loadSession,
+  saveSession: saveSession,
+  getDoc: function () {
+    return view.state.doc.toString();
+  },
+  setDoc: function (text) {
+    view.dispatch({
+      changes: { from: 0, to: view.state.doc.length, insert: text },
+    });
+  },
+  getCursor: function () {
+    var pos = view.state.selection.main.head;
+    var line = view.state.doc.lineAt(pos);
+    return { line: line.number - 1, ch: pos - line.from };
+  },
+  setCursor: function (line, ch) {
+    var info = view.state.doc.line(line + 1);
+    var pos = info.from + Math.min(ch, info.length);
+    view.dispatch({ selection: { anchor: pos } });
+  },
+  flash: flash,
+  updateBufferDisplay: updateBufferName,
+});
+editorAPI.bufferManager = bufferManager;
+
 // ── Register vim config ─────────────────────────────────
 registerVimOptions(state, flash, editorAPI);
 registerExrc(flash, editorAPI);
@@ -398,14 +436,6 @@ document.addEventListener('keydown', function (e) {
 
 // ── Execute exrc before loading content ──────────────────
 executeExrc(cm);
-
-// ── Load persisted state ────────────────────────────────
-var savedContent = loadContent();
-if (savedContent !== null) {
-  view.dispatch({
-    changes: { from: 0, to: view.state.doc.length, insert: savedContent },
-  });
-}
 
 // ── Test harness (vi.html?test) ──────────────────────────
 installTestHarness(view, cm, state, editorAPI);

@@ -70,6 +70,8 @@ export function installTestHarness(view, cm, state, editorAPI) {
 
     pressKey: pressKey,
 
+    bufferManager: editorAPI.bufferManager,
+
     getFlash: function () {
       return document.getElementById('status-flash').textContent;
     },
