@@ -43,6 +43,19 @@ export function extractWord(docText, pos) {
   return { word: docText.slice(from, to), from: from, to: to };
 }
 
+// ── Expansion logic (pure, testable) ─────────────────────
+// Given the document text, cursor position, trigger character, and the
+// abbreviation map, returns the CM6 change spec or null if no expansion.
+export function computeExpansion(docText, cursorPos, triggerChar, abbrMap) {
+  if (triggerChar.length !== 1 || isKeyword(triggerChar)) return null;
+  if (Object.keys(abbrMap).length === 0) return null;
+  var result = extractWord(docText, cursorPos);
+  if (!result) return null;
+  var expansion = abbrMap[result.word];
+  if (!expansion) return null;
+  return { from: result.from, to: result.to, insert: expansion + triggerChar };
+}
+
 // ── Ex commands and inputHandler ─────────────────────────
 export function registerAbbreviations(flashFn) {
   Vim.defineEx('abbreviate', 'ab', function (_cm, params) {
@@ -95,10 +108,7 @@ export function registerAbbreviations(flashFn) {
   });
 
   var inputHandler = EditorView.inputHandler.of(
-    function (view, from, to, text) {
-      // Only expand on single non-keyword character input
-      if (text.length !== 1 || isKeyword(text)) return false;
-
+    function (view, from, _to, text) {
       // Only expand in insert mode
       var cmInstance = getCM(view);
       if (
@@ -109,25 +119,11 @@ export function registerAbbreviations(flashFn) {
         return false;
       }
 
-      // No abbreviations defined — fast path
-      if (Object.keys(abbreviations).length === 0) return false;
-
-      // Extract the word just before the cursor
       var docText = view.state.doc.toString();
-      var result = extractWord(docText, from);
-      if (!result) return false;
+      var change = computeExpansion(docText, from, text, abbreviations);
+      if (!change) return false;
 
-      // Check if it matches an abbreviation
-      var expansion = abbreviations[result.word];
-      if (!expansion) return false;
-
-      // Replace the abbreviation with its expansion, then insert the trigger char
-      view.dispatch({
-        changes: [
-          { from: result.from, to: result.to, insert: expansion },
-          { from: result.from + expansion.length, insert: text },
-        ],
-      });
+      view.dispatch({ changes: change });
       return true;
     },
   );

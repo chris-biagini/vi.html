@@ -16,6 +16,7 @@ import { _getCommands } from '@replit/codemirror-vim';
 import {
   isKeyword,
   extractWord,
+  computeExpansion,
   getAbbreviations,
   registerAbbreviations,
 } from './abbreviations.js';
@@ -99,6 +100,83 @@ describe('extractWord', () => {
       from: 6,
       to: 9,
     });
+  });
+});
+
+// Helper: apply a change spec to a string to get the resulting document.
+// This simulates what CM6 dispatch does, so we can assert on final text.
+function applyChange(doc, change) {
+  return doc.slice(0, change.from) + change.insert + doc.slice(change.to);
+}
+
+describe('computeExpansion', () => {
+  // :help abbreviations — expansion happens when non-keyword char typed after abbrev
+
+  test('single-word expansion preserves trigger char', () => {
+    // :ab teh the — typing "teh " should produce "the "
+    var doc = 'teh';
+    var change = computeExpansion(doc, 3, ' ', { teh: 'the' });
+    expect(applyChange(doc, change)).toBe('the ');
+  });
+
+  test('multi-word expansion preserves trigger char', () => {
+    // :ab sig Best regards, — typing "sig " should produce "Best regards, "
+    var doc = 'sig';
+    var change = computeExpansion(doc, 3, ' ', { sig: 'Best regards,' });
+    expect(applyChange(doc, change)).toBe('Best regards, ');
+  });
+
+  test('expansion longer than abbreviation has correct offsets', () => {
+    // Regression: expansion longer than lhs must not produce out-of-bounds offsets
+    var doc = 'hello bg';
+    var change = computeExpansion(doc, 8, ' ', { bg: 'background' });
+    expect(change).toEqual({ from: 6, to: 8, insert: 'background ' });
+    expect(applyChange(doc, change)).toBe('hello background ');
+  });
+
+  test('expansion shorter than abbreviation works', () => {
+    var doc = 'hello thier';
+    var change = computeExpansion(doc, 11, ' ', { thier: 'her' });
+    expect(applyChange(doc, change)).toBe('hello her ');
+  });
+
+  test('trigger char is punctuation, not just space', () => {
+    var doc = 'teh';
+    var change = computeExpansion(doc, 3, '.', { teh: 'the' });
+    expect(applyChange(doc, change)).toBe('the.');
+  });
+
+  test('returns null for keyword trigger char', () => {
+    expect(computeExpansion('teh', 3, 'x', { teh: 'the' })).toBeNull();
+  });
+
+  test('returns null when no abbreviations defined', () => {
+    expect(computeExpansion('teh', 3, ' ', {})).toBeNull();
+  });
+
+  test('returns null when word does not match any abbreviation', () => {
+    expect(computeExpansion('foo', 3, ' ', { teh: 'the' })).toBeNull();
+  });
+
+  test('does not expand partial match inside longer word', () => {
+    // "ateh" is not "teh" — no expansion
+    expect(computeExpansion('ateh', 4, ' ', { teh: 'the' })).toBeNull();
+  });
+
+  test('expands after punctuation boundary', () => {
+    var doc = 'x.teh';
+    var change = computeExpansion(doc, 5, ' ', { teh: 'the' });
+    expect(applyChange(doc, change)).toBe('x.the ');
+  });
+
+  test('expands after newline', () => {
+    var doc = 'line1\nteh';
+    var change = computeExpansion(doc, 9, ' ', { teh: 'the' });
+    expect(applyChange(doc, change)).toBe('line1\nthe ');
+  });
+
+  test('multi-char trigger is rejected', () => {
+    expect(computeExpansion('teh', 3, '  ', { teh: 'the' })).toBeNull();
   });
 });
 
