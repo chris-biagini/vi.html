@@ -1,0 +1,16 @@
+{
+  "planPath": "docs/plans/2026-03-08-exrc-implementation.md",
+  "tasks": [
+    {"id": 3, "subject": "Task 1: Add exrc storage helpers to storage.js", "status": "pending"},
+    {"id": 4, "subject": "Task 2: Remove settings/persist persistence from storage.js", "status": "pending", "blockedBy": [3]},
+    {"id": 5, "subject": "Task 3: Remove persistence from abbreviations.js", "status": "pending"},
+    {"id": 6, "subject": "Task 4: Remove saveSettingsFn from options.js", "status": "pending"},
+    {"id": 7, "subject": "Task 5: Create exrc.js module", "status": "pending", "blockedBy": [3]},
+    {"id": 8, "subject": "Task 6: Wire :w/:wq/:q into exrc-aware routing", "status": "pending", "blockedBy": [7]},
+    {"id": 9, "subject": "Task 7: Wire everything into main.js", "status": "pending", "blockedBy": [7, 8]},
+    {"id": 10, "subject": "Task 8: Add status bar indicator for exrc editing", "status": "pending"},
+    {"id": 11, "subject": "Task 9: Update help page", "status": "pending"},
+    {"id": 12, "subject": "Task 10: Final verification", "status": "pending", "blockedBy": [9, 10, 11]}
+  ],
+  "lastUpdated": "2026-03-08T00:00:00Z"
+}
