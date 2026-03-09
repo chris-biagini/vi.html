@@ -1,0 +1,18 @@
+{
+  "planPath": "docs/plans/2026-03-08-help-page-rewrite.md",
+  "tasks": [
+    {"id": 1, "subject": "Task 1: Add tip/callout CSS styling to style.css", "status": "pending"},
+    {"id": 2, "subject": "Task 2: Write help page HTML — Header, Composability, Semantic Line Breaks", "status": "pending", "blockedBy": [1]},
+    {"id": 3, "subject": "Task 3: Write help page HTML — Getting Around", "status": "pending"},
+    {"id": 4, "subject": "Task 4: Write help page HTML — Entering Insert Mode", "status": "pending"},
+    {"id": 5, "subject": "Task 5: Write help page HTML — Changing and Deleting Text", "status": "pending"},
+    {"id": 6, "subject": "Task 6: Write help page HTML — Copying and Pasting", "status": "pending"},
+    {"id": 7, "subject": "Task 7: Write help page HTML — Text Objects", "status": "pending"},
+    {"id": 8, "subject": "Task 8: Write help page HTML — Working with Prose", "status": "pending"},
+    {"id": 9, "subject": "Task 9: Write help page HTML — Finding and Replacing", "status": "pending"},
+    {"id": 10, "subject": "Task 10: Write help page HTML — Dot Command, Undo/Redo, Counts, Marks, Visual Mode", "status": "pending"},
+    {"id": 11, "subject": "Task 11: Write help page HTML — vi.html Reference section", "status": "pending"},
+    {"id": 12, "subject": "Task 12: Build and verify", "status": "pending", "blockedBy": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
+  ],
+  "lastUpdated": "2026-03-08T00:00:00Z"
+}

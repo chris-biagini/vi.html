@@ -24,52 +24,121 @@
           <h1>vi.html</h1>
           <p class="subtitle">A markdown editor with vim keybindings</p>
 
-          <h2>Modes</h2>
+          <h2>Composability</h2>
           <p>
-            Vim has distinct modes for different tasks. The current mode is
-            shown in the status bar.
+            Vim commands are built from parts: an <b>operator</b> (what to do)
+            combined with a <b>motion</b> or <b>text object</b> (to what). Learn
+            the parts and you can construct hundreds of commands from a small
+            vocabulary.
           </p>
           <table>
             <thead>
               <tr>
-                <th>Mode</th>
-                <th>Enter with</th>
-                <th>Purpose</th>
+                <th>Operator</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><b>Normal</b></td>
-                <td><kbd>Esc</kbd></td>
-                <td>
-                  Navigate, delete, copy, paste, and issue commands. This is
-                  your home base.
-                </td>
+                <td><kbd>d</kbd></td>
+                <td>Delete (cut &mdash; goes to a register for pasting)</td>
               </tr>
               <tr>
-                <td><b>Insert</b></td>
-                <td>
-                  <kbd>i</kbd> <kbd>a</kbd> <kbd>o</kbd> <kbd>A</kbd>
-                  <kbd>O</kbd>
-                </td>
-                <td>Type text. Press <kbd>Esc</kbd> to return to Normal.</td>
+                <td><kbd>c</kbd></td>
+                <td>Change (delete, then enter Insert mode)</td>
               </tr>
               <tr>
-                <td><b>Visual</b></td>
-                <td><kbd>v</kbd> (char) &middot; <kbd>V</kbd> (line)</td>
-                <td>
-                  Select text, then act on it (delete, yank, reflow, etc.).
-                </td>
+                <td><kbd>y</kbd></td>
+                <td>Yank (copy)</td>
               </tr>
               <tr>
-                <td><b>Replace</b></td>
-                <td><kbd>R</kbd></td>
-                <td>Overwrite characters in place.</td>
+                <td><kbd>gq</kbd></td>
+                <td>Reflow / hard-wrap text</td>
+              </tr>
+              <tr>
+                <td><kbd>&gt;</kbd></td>
+                <td>Indent</td>
+              </tr>
+              <tr>
+                <td><kbd>&lt;</kbd></td>
+                <td>Dedent</td>
               </tr>
             </tbody>
           </table>
+          <table>
+            <thead>
+              <tr>
+                <th>Motion / Text Object</th>
+                <th>Target</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>w</kbd></td>
+                <td>From cursor to next word</td>
+              </tr>
+              <tr>
+                <td><kbd>iw</kbd> / <kbd>aw</kbd></td>
+                <td>Inner word / a word (includes trailing space)</td>
+              </tr>
+              <tr>
+                <td><kbd>is</kbd> / <kbd>as</kbd></td>
+                <td>Inner sentence / a sentence</td>
+              </tr>
+              <tr>
+                <td><kbd>ip</kbd> / <kbd>ap</kbd></td>
+                <td>Inner paragraph / a paragraph</td>
+              </tr>
+              <tr>
+                <td><kbd>i"</kbd> / <kbd>i(</kbd> / <kbd>i{</kbd></td>
+                <td>Inside quotes / parens / braces</td>
+              </tr>
+              <tr>
+                <td><kbd>$</kbd></td>
+                <td>To end of line</td>
+              </tr>
+              <tr>
+                <td><kbd>}</kbd></td>
+                <td>To next blank line</td>
+              </tr>
+              <tr>
+                <td><kbd>G</kbd></td>
+                <td>To end of file</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Any operator + any motion = a valid command.
+            <kbd>dap</kbd> deletes a paragraph. <kbd>ciw</kbd> changes a word.
+            <kbd>gqap</kbd> reflows a paragraph. <kbd>&gt;}</kbd> indents to the
+            next blank line. Every new motion you learn works with every
+            operator you already know.
+          </p>
 
-          <h2>Movement (Normal mode)</h2>
+          <h2>Semantic Line Breaks</h2>
+          <p>
+            <a href="https://sembr.org/" target="_blank"
+              >Semantic line breaks</a
+            >
+            mean putting one sentence per line in your source. The rendered
+            output joins them into paragraphs &mdash; the line breaks are for
+            the writer, not the reader.
+          </p>
+          <p>
+            Vim is a natural fit for this style. Its line-oriented commands
+            become sentence-oriented: <kbd>dd</kbd> deletes a sentence,
+            <kbd>yy</kbd> copies one, <kbd>p</kbd> moves one. <kbd>{</kbd> and
+            <kbd>}</kbd> jump between paragraphs since blank lines mark the
+            boundaries. And <kbd>gqap</kbd> reflows a paragraph while respecting
+            its structure.
+          </p>
+
+          <h2>Getting Around</h2>
+          <p>
+            These motions work in Normal mode. They also work after an operator
+            &mdash; <kbd>d}</kbd> deletes to the next blank line,
+            <kbd>c$</kbd> changes to end of line.
+          </p>
           <table>
             <thead>
               <tr>
@@ -88,7 +157,7 @@
               </tr>
               <tr>
                 <td><kbd>e</kbd></td>
-                <td>End of word</td>
+                <td>End of current word</td>
               </tr>
               <tr>
                 <td><kbd>0</kbd> / <kbd>$</kbd></td>
@@ -99,22 +168,28 @@
                 <td>First non-blank character</td>
               </tr>
               <tr>
-                <td><kbd>gg</kbd> / <kbd>G</kbd></td>
-                <td>Top / bottom of document</td>
+                <td><kbd>(</kbd> / <kbd>)</kbd></td>
+                <td>Previous / next sentence</td>
               </tr>
               <tr>
                 <td><kbd>{</kbd> / <kbd>}</kbd></td>
                 <td>Previous / next blank line (paragraph boundary)</td>
               </tr>
               <tr>
-                <td><kbd>%</kbd></td>
-                <td>Matching bracket</td>
+                <td><kbd>gg</kbd> / <kbd>G</kbd></td>
+                <td>Top / bottom of document</td>
+              </tr>
+              <tr>
+                <td><kbd>42G</kbd> or <code>:42</code></td>
+                <td>Jump to line 42</td>
+              </tr>
+              <tr>
+                <td><kbd>Ctrl-d</kbd> / <kbd>Ctrl-u</kbd></td>
+                <td>Scroll half-screen down / up</td>
               </tr>
               <tr>
                 <td><kbd>f</kbd><em>x</em> / <kbd>F</kbd><em>x</em></td>
-                <td>
-                  Jump to next / previous occurrence of character <em>x</em>
-                </td>
+                <td>Jump to next / previous <em>x</em> on this line</td>
               </tr>
               <tr>
                 <td><kbd>t</kbd><em>x</em> / <kbd>T</kbd><em>x</em></td>
@@ -124,10 +199,28 @@
                 <td><kbd>;</kbd> / <kbd>,</kbd></td>
                 <td>Repeat / reverse last f/F/t/T</td>
               </tr>
+              <tr>
+                <td><kbd>%</kbd></td>
+                <td>Matching bracket</td>
+              </tr>
+              <tr>
+                <td><kbd>*</kbd> / <kbd>#</kbd></td>
+                <td>Next / previous occurrence of word under cursor</td>
+              </tr>
             </tbody>
           </table>
+          <div class="tip">
+            Since markdown separates paragraphs with blank lines,
+            <kbd>{</kbd> and <kbd>}</kbd> are your fastest way to move between
+            sections &mdash; much quicker than repeated <kbd>j</kbd> and
+            <kbd>k</kbd>.
+          </div>
 
-          <h2>Editing (Normal mode)</h2>
+          <h2>Entering Insert Mode</h2>
+          <p>
+            Each of these drops you into Insert mode at a different position.
+            Press <kbd>Esc</kbd> to return to Normal.
+          </p>
           <table>
             <thead>
               <tr>
@@ -146,71 +239,147 @@
               </tr>
               <tr>
                 <td><kbd>o</kbd> / <kbd>O</kbd></td>
-                <td>Open line below / above</td>
+                <td>Open new line below / above</td>
               </tr>
               <tr>
-                <td><kbd>x</kbd></td>
-                <td>Delete character under cursor</td>
+                <td><kbd>R</kbd></td>
+                <td>Replace mode (overwrite characters in place)</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tip">
+            Keep your Insert mode sessions short and focused. Vim treats
+            everything between entering and leaving Insert mode as a single edit
+            &mdash; short sessions mean precise undo with <kbd>u</kbd> and
+            precise repeat with <kbd>.</kbd>
+          </div>
+
+          <h2>Changing and Deleting Text</h2>
+          <p>
+            The <kbd>c</kbd> (change) operator deletes text and drops you into
+            Insert mode. The <kbd>d</kbd> (delete) operator removes text and
+            stays in Normal. Both work with any motion or text object.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>ciw</kbd></td>
+                <td>
+                  Change inner word (whole word, regardless of cursor position)
+                </td>
+              </tr>
+              <tr>
+                <td><kbd>cw</kbd></td>
+                <td>Change from cursor to end of word</td>
+              </tr>
+              <tr>
+                <td><kbd>cc</kbd></td>
+                <td>Change entire line</td>
+              </tr>
+              <tr>
+                <td><kbd>C</kbd></td>
+                <td>Change from cursor to end of line</td>
+              </tr>
+              <tr>
+                <td><kbd>ci"</kbd></td>
+                <td>
+                  Change inside quotes (also <kbd>'</kbd> <kbd>`</kbd>
+                  <kbd>(</kbd> <kbd>[</kbd> <kbd>{</kbd>)
+                </td>
               </tr>
               <tr>
                 <td><kbd>dd</kbd></td>
                 <td>Delete entire line</td>
               </tr>
               <tr>
-                <td><kbd>d</kbd><em>motion</em></td>
-                <td>
-                  Delete over motion (e.g. <kbd>dw</kbd> = delete word,
-                  <kbd>d$</kbd> = delete to end of line)
-                </td>
+                <td><kbd>D</kbd></td>
+                <td>Delete from cursor to end of line</td>
               </tr>
               <tr>
-                <td><kbd>cc</kbd></td>
-                <td>Change entire line (delete + enter Insert)</td>
+                <td><kbd>diw</kbd></td>
+                <td>Delete inner word</td>
               </tr>
               <tr>
-                <td><kbd>c</kbd><em>motion</em></td>
-                <td>Change over motion (e.g. <kbd>cw</kbd> = change word)</td>
+                <td><kbd>dap</kbd></td>
+                <td>Delete a paragraph (including trailing blank line)</td>
               </tr>
+              <tr>
+                <td><kbd>di(</kbd></td>
+                <td>Delete inside parentheses</td>
+              </tr>
+              <tr>
+                <td><kbd>x</kbd></td>
+                <td>Delete character under cursor</td>
+              </tr>
+              <tr>
+                <td><kbd>~</kbd></td>
+                <td>Toggle case of character</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tip">
+            <b>Why <kbd>ciw</kbd> instead of <kbd>cw</kbd>?</b>
+            <kbd>cw</kbd> changes from the cursor to the end of the word.
+            <kbd>ciw</kbd> changes the entire word no matter where your cursor
+            is in it. The <kbd>i</kbd> means &ldquo;inner&rdquo; &mdash; the
+            text object without surrounding whitespace. There&rsquo;s also
+            <kbd>aw</kbd> (&ldquo;a word&rdquo;) which includes the trailing
+            space.
+          </div>
+          <div class="tip">
+            <b>Delete is really cut.</b> When you <kbd>dd</kbd> a line, it goes
+            to a register &mdash; <kbd>p</kbd> will paste it right back.
+            <kbd>ddp</kbd> swaps the current line with the one below.
+            <kbd>ddkP</kbd> moves a line up.
+          </div>
+
+          <h2>Copying and Pasting</h2>
+          <p>
+            Vim calls copying &ldquo;yanking.&rdquo; The <kbd>y</kbd> operator
+            works with any motion or text object, just like <kbd>d</kbd> and
+            <kbd>c</kbd>.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
               <tr>
                 <td><kbd>yy</kbd></td>
                 <td>Yank (copy) entire line</td>
               </tr>
               <tr>
                 <td><kbd>y</kbd><em>motion</em></td>
-                <td>Yank over motion</td>
+                <td>
+                  Yank over motion (e.g. <kbd>yap</kbd> = yank a paragraph)
+                </td>
               </tr>
               <tr>
-                <td><kbd>p</kbd> / <kbd>P</kbd></td>
-                <td>Paste after / before cursor</td>
+                <td><kbd>p</kbd></td>
+                <td>Paste after cursor (or below, for whole lines)</td>
               </tr>
               <tr>
-                <td><kbd>u</kbd></td>
-                <td>Undo</td>
-              </tr>
-              <tr>
-                <td><kbd>Ctrl-r</kbd></td>
-                <td>Redo</td>
-              </tr>
-              <tr>
-                <td><kbd>.</kbd></td>
-                <td>Repeat last edit</td>
-              </tr>
-              <tr>
-                <td><kbd>~</kbd></td>
-                <td>Toggle case of character</td>
-              </tr>
-              <tr>
-                <td><kbd>&gt;&gt;</kbd> / <kbd>&lt;&lt;</kbd></td>
-                <td>Indent / unindent line</td>
+                <td><kbd>P</kbd></td>
+                <td>Paste before cursor (or above)</td>
               </tr>
             </tbody>
           </table>
 
           <h2>Text Objects</h2>
           <p>
-            Use with operators like <kbd>d</kbd>, <kbd>c</kbd>, <kbd>y</kbd>,
-            <kbd>gq</kbd>. Prefix with <kbd>i</kbd> for &ldquo;inner&rdquo; or
-            <kbd>a</kbd> for &ldquo;around&rdquo;.
+            Text objects select structured chunks of text. Prefix with
+            <kbd>i</kbd> for &ldquo;inner&rdquo; (contents only) or
+            <kbd>a</kbd> for &ldquo;around&rdquo; (includes delimiters or
+            trailing whitespace). Use them with any operator.
           </p>
           <table>
             <thead>
@@ -253,8 +422,63 @@
               </tr>
             </tbody>
           </table>
+          <div class="tip">
+            With semantic line breaks, sentence text objects (<kbd>is</kbd>,
+            <kbd>as</kbd>) and line operations (<kbd>dd</kbd>, <kbd>yy</kbd>)
+            overlap &mdash; both target a single sentence. Use whichever feels
+            more natural.
+          </div>
 
-          <h2>Search</h2>
+          <h2>Working with Prose</h2>
+          <p>
+            The <kbd>gq</kbd> operator hard-wraps text to a specified width. Set
+            your preferred width with <code>:set tw=72</code>. If
+            <code>textwidth</code> is 0, <kbd>gq</kbd> wraps at 79 columns
+            (matching vim&rsquo;s default).
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>gqq</kbd></td>
+                <td>Reflow current line</td>
+              </tr>
+              <tr>
+                <td><kbd>gqap</kbd></td>
+                <td>Reflow current paragraph</td>
+              </tr>
+              <tr>
+                <td><kbd>gq}</kbd></td>
+                <td>Reflow from cursor to next blank line</td>
+              </tr>
+              <tr>
+                <td><kbd>gqj</kbd></td>
+                <td>Reflow current line and next</td>
+              </tr>
+              <tr>
+                <td>Visual + <kbd>gq</kbd></td>
+                <td>Reflow selected lines</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            With <code>textwidth</code> set, lines also wrap automatically as
+            you type in Insert mode. Lines are broken at word boundaries and
+            indentation is preserved.
+          </p>
+          <div class="tip">
+            <kbd>gqap</kbd> is the command you&rsquo;ll use most. Write freely,
+            then reflow the paragraph when you&rsquo;re done. It respects
+            blank-line paragraph boundaries &mdash; it won&rsquo;t merge
+            separate paragraphs.
+          </div>
+
+          <h2>Finding and Replacing</h2>
           <table>
             <thead>
               <tr>
@@ -279,14 +503,146 @@
                 <td><kbd>*</kbd> / <kbd>#</kbd></td>
                 <td>Search for word under cursor (forward / backward)</td>
               </tr>
+              <tr>
+                <td><code>:noh</code></td>
+                <td>Clear search highlighting</td>
+              </tr>
             </tbody>
           </table>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>:s/old/new/</code></td>
+                <td>Replace first match on current line</td>
+              </tr>
+              <tr>
+                <td><code>:s/old/new/g</code></td>
+                <td>Replace all on current line</td>
+              </tr>
+              <tr>
+                <td><code>:%s/old/new/g</code></td>
+                <td>Replace all in file</td>
+              </tr>
+              <tr>
+                <td><code>:%s/old/new/gc</code></td>
+                <td>Replace all in file, confirm each</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tip">
+            Search <kbd>/^#</kbd> then press <kbd>n</kbd> to jump between
+            markdown headings. Use <kbd>/^##</kbd> for subheadings only.
+          </div>
+
+          <h2>The Dot Command</h2>
+          <p>
+            The most powerful key in vim. <kbd>.</kbd> repeats your last change
+            &mdash; whatever you just did, do it again.
+          </p>
+          <p>
+            The dot command repeats the entire last edit, including what you
+            typed in Insert mode. So <kbd>ciw</kbd> + new text +
+            <kbd>Esc</kbd> is a complete repeatable unit.
+          </p>
+          <div class="tip">
+            <b>The <kbd>n</kbd>.<kbd>n</kbd>.<kbd>n</kbd>. pattern:</b>
+            Search with <kbd>/</kbd>, make a change (e.g. <kbd>ciw</kbd> + new
+            word + <kbd>Esc</kbd>), then <kbd>n</kbd> to jump to the next match
+            and <kbd>.</kbd> to repeat the change. Step through the whole file
+            with <kbd>n</kbd><kbd>.</kbd><kbd>n</kbd><kbd>.</kbd>
+          </div>
+
+          <h2>Undo and Redo</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>u</kbd></td>
+                <td>Undo</td>
+              </tr>
+              <tr>
+                <td><kbd>Ctrl-r</kbd></td>
+                <td>Redo</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tip">
+            Vim&rsquo;s undo is per-edit, and an &ldquo;edit&rdquo; is
+            everything between entering and leaving Insert mode. Keep your
+            Insert trips short and undo stays precise.
+          </div>
 
           <h2>Counts</h2>
           <p>
             Most commands accept a numeric prefix: <kbd>5j</kbd> moves down 5
             lines, <kbd>3dd</kbd> deletes 3 lines, <kbd>2dw</kbd> deletes 2
             words.
+          </p>
+
+          <h2>Marks</h2>
+          <p>Bookmarks within your document.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>m</kbd><em>a</em></td>
+                <td>Set mark <em>a</em> (any lowercase letter)</td>
+              </tr>
+              <tr>
+                <td><kbd>'</kbd><em>a</em></td>
+                <td>Jump to the line of mark <em>a</em></td>
+              </tr>
+              <tr>
+                <td><kbd>`</kbd><em>a</em></td>
+                <td>Jump to the exact position of mark <em>a</em></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tip">
+            Set a mark before jumping away: <kbd>ma</kbd>, do your work
+            elsewhere, then <kbd>'a</kbd> to come back.
+          </div>
+
+          <h2>Visual Mode</h2>
+          <p>Select text, then act on the selection.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>v</kbd></td>
+                <td>Character-wise visual mode</td>
+              </tr>
+              <tr>
+                <td><kbd>V</kbd></td>
+                <td>Line-wise visual mode</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Use any motion to extend the selection, then apply an operator:
+            <kbd>d</kbd> to delete, <kbd>c</kbd> to change, <kbd>y</kbd> to
+            yank, <kbd>gq</kbd> to reflow, <kbd>&gt;</kbd> to indent.
           </p>
 
           <hr />
@@ -340,14 +696,6 @@
               <tr>
                 <td><code>:settings</code></td>
                 <td>Show all current settings</td>
-              </tr>
-              <tr>
-                <td><code>:s/old/new/g</code></td>
-                <td>Substitute (supports regex)</td>
-              </tr>
-              <tr>
-                <td><code>:noh</code></td>
-                <td>Clear search highlighting</td>
               </tr>
               <tr>
                 <td><code>:exrc</code></td>
@@ -459,50 +807,6 @@
             </tbody>
           </table>
 
-          <h2>Text Reflow</h2>
-          <p>
-            Set <code>:set tw=72</code> (or your preferred width), then use
-            <kbd>gq</kbd> with a motion or text object to hard-wrap text. If
-            <code>textwidth</code> is 0, <kbd>gq</kbd> wraps at 79 columns
-            (matching vim).
-          </p>
-          <table>
-            <thead>
-              <tr>
-                <th>Key</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><kbd>gqq</kbd></td>
-                <td>Reflow current line</td>
-              </tr>
-              <tr>
-                <td><kbd>gqap</kbd></td>
-                <td>Reflow current paragraph</td>
-              </tr>
-              <tr>
-                <td><kbd>gq}</kbd></td>
-                <td>Reflow from cursor to next blank line</td>
-              </tr>
-              <tr>
-                <td><kbd>gqj</kbd></td>
-                <td>Reflow current line and next</td>
-              </tr>
-              <tr>
-                <td>Visual + <kbd>gq</kbd></td>
-                <td>Reflow selected lines</td>
-              </tr>
-            </tbody>
-          </table>
-          <p>
-            Lines are wrapped at word boundaries. Indentation is preserved. This
-            is useful for writing
-            <a href="https://sembr.org/" target="_blank">semantic line breaks</a
-            >.
-          </p>
-
           <h2>Abbreviations</h2>
           <p>
             Define short text expansions that trigger automatically in Insert
@@ -579,7 +883,7 @@
 " My vi.html config
 set ts=2
 set sw=2
-set noet
+set tw=72
 ab teh the
 ab dont don't
 persist</pre
