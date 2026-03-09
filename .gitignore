@@ -2,3 +2,4 @@ node_modules/
 dist/
 vi.html
 .playwright-mcp/
+*.png
