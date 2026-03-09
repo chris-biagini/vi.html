@@ -92,11 +92,75 @@ export function showTab(name, state, callbacks) {
     containers.preview.classList.add('visible');
   } else if (name === 'help') {
     containers.help.classList.add('visible');
+    initHelpTocTracking(containers.help);
   } else {
     containers.editor.classList.remove('hidden');
     callbacks.focusEditor();
   }
   tabs[name].classList.add('active');
+}
+
+// ── Help TOC scroll tracking ────────────────────────────
+var tocCleanup = null;
+
+function initHelpTocTracking(helpContainer) {
+  // Clean up previous listener
+  if (tocCleanup) tocCleanup();
+
+  var toc = document.getElementById('help-toc');
+  if (!toc) return;
+
+  var links = toc.querySelectorAll('a[href^="#"]');
+  var sections = [];
+  for (var i = 0; i < links.length; i++) {
+    var id = links[i].getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) sections.push({ link: links[i], el: el });
+  }
+
+  // Handle click — smooth scroll within the help container
+  function handleClick(e) {
+    var href = e.target.closest('a');
+    if (!href) return;
+    var id = href.getAttribute('href');
+    if (!id || id[0] !== '#') return;
+    e.preventDefault();
+    var target = document.getElementById(id.slice(1));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+  toc.addEventListener('click', handleClick);
+
+  function updateActive() {
+    var scrollTop = helpContainer.scrollTop;
+    var active = null;
+    for (var j = 0; j < sections.length; j++) {
+      if (sections[j].el.offsetTop - 80 <= scrollTop) {
+        active = sections[j];
+      }
+    }
+    for (var k = 0; k < sections.length; k++) {
+      sections[k].link.classList.toggle('active', sections[k] === active);
+    }
+    // Scroll the active TOC item into view within the TOC panel
+    if (active) {
+      var linkRect = active.link.getBoundingClientRect();
+      var tocRect = toc.getBoundingClientRect();
+      if (linkRect.top < tocRect.top || linkRect.bottom > tocRect.bottom) {
+        active.link.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }
+
+  helpContainer.addEventListener('scroll', updateActive);
+  updateActive();
+
+  tocCleanup = function () {
+    helpContainer.removeEventListener('scroll', updateActive);
+    toc.removeEventListener('click', handleClick);
+    tocCleanup = null;
+  };
 }
 
 // ── SmartyPants ─────────────────────────────────────────

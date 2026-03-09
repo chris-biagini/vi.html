@@ -24,11 +24,41 @@
         <div id="preview-content"></div>
       </div>
       <div id="help-container">
+        <nav id="help-toc">
+          <div id="help-toc-header">Contents</div>
+          <ul>
+            <li><a href="#s-composability">Composability</a></li>
+            <li><a href="#s-semantic-line-breaks">Semantic Line Breaks</a></li>
+            <li><a href="#s-getting-around">Getting Around</a></li>
+            <li><a href="#s-entering-insert-mode">Entering Insert Mode</a></li>
+            <li><a href="#s-changing-deleting">Changing &amp; Deleting</a></li>
+            <li><a href="#s-copying-pasting">Copying &amp; Pasting</a></li>
+            <li><a href="#s-text-objects">Text Objects</a></li>
+            <li><a href="#s-working-with-prose">Working with Prose</a></li>
+            <li><a href="#s-finding-replacing">Finding &amp; Replacing</a></li>
+            <li><a href="#s-dot-command">The Dot Command</a></li>
+            <li><a href="#s-undo-redo">Undo &amp; Redo</a></li>
+            <li><a href="#s-counts">Counts</a></li>
+            <li><a href="#s-marks">Marks</a></li>
+            <li><a href="#s-visual-mode">Visual Mode</a></li>
+            <li><a href="#s-commands">Commands</a></li>
+            <li><a href="#s-buffers">Buffers</a></li>
+            <li><a href="#s-options">Options</a></li>
+            <li><a href="#s-keyboard-shortcuts">Keyboard Shortcuts</a></li>
+            <li><a href="#s-abbreviations">Abbreviations</a></li>
+            <li><a href="#s-exrc">exrc</a></li>
+            <li><a href="#s-end-of-buffer">End-of-Buffer Lines</a></li>
+            <li><a href="#s-persistence">Persistence</a></li>
+            <li>
+              <a href="#s-preview-smartypants">Preview &amp; SmartyPants</a>
+            </li>
+          </ul>
+        </nav>
         <div id="help-content">
           <h1>vi.html</h1>
           <p class="subtitle">A markdown editor with vim keybindings</p>
 
-          <h2>Composability</h2>
+          <h2 id="s-composability">Composability</h2>
           <p>
             Vim commands are built from parts: an <b>operator</b> (what to do)
             combined with a <b>motion</b> or <b>text object</b> (to what). Learn
@@ -119,7 +149,7 @@
             operator you already know.
           </p>
 
-          <h2>Semantic Line Breaks</h2>
+          <h2 id="s-semantic-line-breaks">Semantic Line Breaks</h2>
           <p>
             <a href="https://sembr.org/" target="_blank"
               >Semantic line breaks</a
@@ -137,7 +167,7 @@
             its structure.
           </p>
 
-          <h2>Getting Around</h2>
+          <h2 id="s-getting-around">Getting Around</h2>
           <p>
             These motions work in Normal mode. They also work after an operator
             &mdash; <kbd>d}</kbd> deletes to the next blank line,
@@ -220,7 +250,7 @@
             <kbd>k</kbd>.
           </div>
 
-          <h2>Entering Insert Mode</h2>
+          <h2 id="s-entering-insert-mode">Entering Insert Mode</h2>
           <p>
             Each of these drops you into Insert mode at a different position.
             Press <kbd>Esc</kbd> to return to Normal.
@@ -258,7 +288,7 @@
             precise repeat with <kbd>.</kbd>
           </div>
 
-          <h2>Changing and Deleting Text</h2>
+          <h2 id="s-changing-deleting">Changing and Deleting Text</h2>
           <p>
             The <kbd>c</kbd> (change) operator deletes text and drops you into
             Insert mode. The <kbd>d</kbd> (delete) operator removes text and
@@ -343,7 +373,7 @@
             <kbd>ddkP</kbd> moves a line up.
           </div>
 
-          <h2>Copying and Pasting</h2>
+          <h2 id="s-copying-pasting">Copying and Pasting</h2>
           <p>
             Vim calls copying &ldquo;yanking.&rdquo; The <kbd>y</kbd> operator
             works with any motion or text object, just like <kbd>d</kbd> and
@@ -378,7 +408,7 @@
             </tbody>
           </table>
 
-          <h2>Text Objects</h2>
+          <h2 id="s-text-objects">Text Objects</h2>
           <p>
             Text objects select structured chunks of text. Prefix with
             <kbd>i</kbd> for &ldquo;inner&rdquo; (contents only) or
@@ -433,7 +463,7 @@
             more natural.
           </div>
 
-          <h2>Working with Prose</h2>
+          <h2 id="s-working-with-prose">Working with Prose</h2>
           <p>
             The <kbd>gq</kbd> operator hard-wraps text to a specified width. Set
             your preferred width with <code>:set tw=72</code>. If
@@ -482,7 +512,7 @@
             separate paragraphs.
           </div>
 
-          <h2>Finding and Replacing</h2>
+          <h2 id="s-finding-replacing">Finding and Replacing</h2>
           <table>
             <thead>
               <tr>
@@ -544,7 +574,7 @@
             markdown headings. Use <kbd>/^##</kbd> for subheadings only.
           </div>
 
-          <h2>The Dot Command</h2>
+          <h2 id="s-dot-command">The Dot Command</h2>
           <p>
             The most powerful key in vim. <kbd>.</kbd> repeats your last change
             &mdash; whatever you just did, do it again.
@@ -562,7 +592,7 @@
             with <kbd>n</kbd><kbd>.</kbd><kbd>n</kbd><kbd>.</kbd>
           </div>
 
-          <h2>Undo and Redo</h2>
+          <h2 id="s-undo-redo">Undo and Redo</h2>
           <table>
             <thead>
               <tr>
@@ -587,14 +617,14 @@
             Insert trips short and undo stays precise.
           </div>
 
-          <h2>Counts</h2>
+          <h2 id="s-counts">Counts</h2>
           <p>
             Most commands accept a numeric prefix: <kbd>5j</kbd> moves down 5
             lines, <kbd>3dd</kbd> deletes 3 lines, <kbd>2dw</kbd> deletes 2
             words.
           </p>
 
-          <h2>Marks</h2>
+          <h2 id="s-marks">Marks</h2>
           <p>Bookmarks within your document.</p>
           <table>
             <thead>
@@ -623,7 +653,7 @@
             elsewhere, then <kbd>'a</kbd> to come back.
           </div>
 
-          <h2>Visual Mode</h2>
+          <h2 id="s-visual-mode">Visual Mode</h2>
           <p>Select text, then act on the selection.</p>
           <table>
             <thead>
@@ -651,7 +681,7 @@
 
           <hr />
 
-          <h2>vi.html Commands</h2>
+          <h2 id="s-commands">vi.html Commands</h2>
           <p>Type <kbd>:</kbd> in Normal mode to enter the command line.</p>
           <table>
             <thead>
@@ -736,7 +766,7 @@
             </tbody>
           </table>
 
-          <h2>Buffers</h2>
+          <h2 id="s-buffers">Buffers</h2>
           <p>
             vi.html supports multiple named buffers &mdash; like files on disk,
             but stored in your browser. Each buffer has its own content and
@@ -796,7 +826,7 @@
             switching.
           </div>
 
-          <h2>vi.html Options</h2>
+          <h2 id="s-options">vi.html Options</h2>
           <p>
             Set with <code>:set <em>option</em></code
             >. Boolean options can be negated with
@@ -890,7 +920,7 @@
             built-in spellcheck rather than vim&rsquo;s spell engine.
           </div>
 
-          <h2>vi.html Keyboard Shortcuts</h2>
+          <h2 id="s-keyboard-shortcuts">vi.html Keyboard Shortcuts</h2>
           <table>
             <thead>
               <tr>
@@ -918,7 +948,7 @@
             </tbody>
           </table>
 
-          <h2>Abbreviations</h2>
+          <h2 id="s-abbreviations">Abbreviations</h2>
           <p>
             Define short text expansions that trigger automatically in Insert
             mode. When you type an abbreviation followed by a non-keyword
@@ -975,7 +1005,7 @@
             in the vim docs.
           </p>
 
-          <h2>exrc (Startup Commands)</h2>
+          <h2 id="s-exrc">exrc (Startup Commands)</h2>
           <p>
             vi.html supports an <code>exrc</code> &mdash; a list of Ex commands
             that run every time the editor loads. Use it to persist your
@@ -1011,7 +1041,7 @@ persist</pre
             in the vim docs.
           </p>
 
-          <h2>End-of-Buffer Lines</h2>
+          <h2 id="s-end-of-buffer">End-of-Buffer Lines</h2>
           <p>
             Lines below the end of the document are marked with
             <code style="color: #4e5a8a">~</code>, matching vim&rsquo;s
@@ -1019,7 +1049,7 @@ persist</pre
             they show where the file ends and empty screen space begins.
           </p>
 
-          <h2>Persistence</h2>
+          <h2 id="s-persistence">Persistence</h2>
           <ul>
             <li>
               <b>Buffers</b> are auto-saved as you type and persist until
@@ -1040,7 +1070,7 @@ persist</pre
             </li>
           </ul>
 
-          <h2>Preview &amp; SmartyPants</h2>
+          <h2 id="s-preview-smartypants">Preview &amp; SmartyPants</h2>
           <p>
             The Preview tab renders your markdown with full
             <a href="https://github.github.com/gfm/" target="_blank"
