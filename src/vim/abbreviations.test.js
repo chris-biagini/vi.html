@@ -1,5 +1,24 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { isKeyword, extractWord, getAbbreviations } from './abbreviations.js';
+vi.mock('@replit/codemirror-vim', () => {
+  const commands = {};
+  return {
+    Vim: {
+      defineEx: vi.fn((name, abbr, fn) => {
+        commands[name] = fn;
+      }),
+    },
+    getCM: vi.fn(),
+    _getCommands: () => commands,
+  };
+});
+
+import { _getCommands } from '@replit/codemirror-vim';
+import {
+  isKeyword,
+  extractWord,
+  getAbbreviations,
+  registerAbbreviations,
+} from './abbreviations.js';
 
 // Mock localStorage
 const store = {};
@@ -98,5 +117,105 @@ describe('extractWord', () => {
       from: 6,
       to: 9,
     });
+  });
+});
+
+describe('Ex commands', () => {
+  let commands;
+  let flashFn;
+
+  beforeEach(() => {
+    flashFn = vi.fn();
+    registerAbbreviations(flashFn);
+    commands = _getCommands();
+    // Start each test clean
+    commands.abclear(null, {});
+    flashFn.mockClear();
+  });
+
+  test(':ab with two args defines abbreviation', () => {
+    commands.abbreviate(null, { args: ['teh', 'the'] });
+    expect(getAbbreviations()['teh']).toBe('the');
+  });
+
+  test(':ab with multi-word rhs joins correctly', () => {
+    commands.abbreviate(null, { args: ['sig', 'Best', 'regards'] });
+    expect(getAbbreviations()['sig']).toBe('Best regards');
+  });
+
+  test(':ab with no args lists all abbreviations', () => {
+    commands.abbreviate(null, { args: ['teh', 'the'] });
+    commands.abbreviate(null, { args: ['sig', 'Best', 'regards'] });
+    flashFn.mockClear();
+    commands.abbreviate(null, { args: [] });
+    expect(flashFn).toHaveBeenCalledWith(
+      expect.stringContaining('teh'),
+      8000,
+    );
+  });
+
+  test(':ab with no args and no abbreviations shows message', () => {
+    commands.abbreviate(null, { args: [] });
+    expect(flashFn).toHaveBeenCalledWith('No abbreviations defined', 8000);
+  });
+
+  test(':ab with single arg shows that abbreviation', () => {
+    commands.abbreviate(null, { args: ['teh', 'the'] });
+    flashFn.mockClear();
+    commands.abbreviate(null, { args: ['teh'] });
+    expect(flashFn).toHaveBeenCalledWith('teh the', 8000);
+  });
+
+  test(':ab with single arg not found shows error', () => {
+    commands.abbreviate(null, { args: ['nope'] });
+    expect(flashFn).toHaveBeenCalledWith(
+      'No abbreviation found for nope',
+      8000,
+    );
+  });
+
+  test(':una removes abbreviation', () => {
+    commands.abbreviate(null, { args: ['teh', 'the'] });
+    commands.unabbreviate(null, { args: ['teh'] });
+    expect(getAbbreviations()['teh']).toBeUndefined();
+  });
+
+  test(':una with unknown lhs flashes error', () => {
+    commands.unabbreviate(null, { args: ['nope'] });
+    expect(flashFn).toHaveBeenCalledWith(
+      'E24: No such abbreviation: nope',
+      8000,
+    );
+  });
+
+  test(':una with no args flashes error', () => {
+    commands.unabbreviate(null, { args: [] });
+    expect(flashFn).toHaveBeenCalledWith('E474: No argument supplied', 8000);
+  });
+
+  test(':abc clears all abbreviations', () => {
+    commands.abbreviate(null, { args: ['teh', 'the'] });
+    commands.abbreviate(null, { args: ['sig', 'Best', 'regards'] });
+    commands.abclear(null, {});
+    expect(Object.keys(getAbbreviations()).length).toBe(0);
+  });
+
+  test(':abc flashes confirmation', () => {
+    flashFn.mockClear();
+    commands.abclear(null, {});
+    expect(flashFn).toHaveBeenCalledWith('All abbreviations cleared', 8000);
+  });
+
+  test('abbreviations persist to localStorage', () => {
+    commands.abbreviate(null, { args: ['teh', 'the'] });
+    expect(store['vihtml_abbreviations']).toBeDefined();
+    const parsed = JSON.parse(store['vihtml_abbreviations']);
+    expect(parsed['teh']).toBe('the');
+  });
+
+  test(':abc removes localStorage key', () => {
+    commands.abbreviate(null, { args: ['teh', 'the'] });
+    commands.abclear(null, {});
+    expect(store['vihtml_abbreviations']).toBeUndefined();
   });
 });
