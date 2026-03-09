@@ -18,6 +18,8 @@ export default [
         URLSearchParams: 'readonly',
         KeyboardEvent: 'readonly',
         navigator: 'readonly',
+        Blob: 'readonly',
+        ClipboardItem: 'readonly',
       },
     },
     rules: {

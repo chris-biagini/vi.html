@@ -90,6 +90,7 @@ export function showTab(name, state, callbacks) {
   if (name === 'preview') {
     renderPreview(callbacks.getText());
     containers.preview.classList.add('visible');
+    initPreviewCopy();
   } else if (name === 'help') {
     containers.help.classList.add('visible');
     initHelpTocTracking(containers.help);
@@ -208,11 +209,44 @@ export function educateText(t) {
 // Note: Uses innerHTML to render the user's own markdown content.
 // This is the same pattern as the original vi.html — the content
 // is user-authored markdown rendered locally, not untrusted input.
+var lastPreviewMarkdown = null;
+
 export function renderPreview(mdText) {
+  lastPreviewMarkdown = mdText;
   var html = marked.parse(mdText);
   html = smartyPants(html);
   var el = document.getElementById('preview-content');
   el.innerHTML = html;
+}
+
+var copyInitialized = false;
+
+function initPreviewCopy() {
+  if (copyInitialized) return;
+  copyInitialized = true;
+  var btn = document.getElementById('preview-copy');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    if (!lastPreviewMarkdown) return;
+    var html = renderClipboardHTML(lastPreviewMarkdown);
+    var htmlBlob = new Blob([html], { type: 'text/html' });
+    var textBlob = new Blob([lastPreviewMarkdown], { type: 'text/plain' });
+    navigator.clipboard
+      .write([
+        new ClipboardItem({
+          'text/html': htmlBlob,
+          'text/plain': textBlob,
+        }),
+      ])
+      .then(function () {
+        flash('Copied to clipboard');
+      })
+      .catch(function () {
+        navigator.clipboard.writeText(lastPreviewMarkdown).then(function () {
+          flash('Copied as plain text');
+        });
+      });
+  });
 }
 
 /**
