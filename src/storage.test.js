@@ -1,14 +1,14 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import {
-  saveContent,
-  loadContent,
-  clearContent,
-  refreshTTL,
-  saveExrc,
-  loadExrc,
   lsGet,
   lsSet,
   lsRemove,
+  loadBuffers,
+  saveBuffers,
+  loadSession,
+  saveSession,
+  saveExrc,
+  loadExrc,
 } from './storage.js';
 
 // Mock localStorage
@@ -46,38 +46,40 @@ describe('lsGet / lsSet / lsRemove', () => {
   });
 });
 
-describe('saveContent / loadContent', () => {
-  test('saves and loads content when persist is true', () => {
-    saveContent('hello world', true);
-    expect(loadContent()).toBe('hello world');
+describe('loadBuffers / saveBuffers', () => {
+  test('loadBuffers returns {} when nothing saved', () => {
+    expect(loadBuffers()).toEqual({});
   });
 
-  test('does not save when persist is false', () => {
-    saveContent('hello world', false);
-    expect(loadContent()).toBeNull();
+  test('loadBuffers returns {} on corrupt JSON', () => {
+    store['vi_buffers'] = '{not valid json!!!';
+    expect(loadBuffers()).toEqual({});
   });
 
-  test('returns null when TTL has expired', () => {
-    saveContent('hello', true);
-    store['vihtml_content_ttl'] = String(Date.now() - 1000);
-    expect(loadContent()).toBeNull();
-  });
-
-  test('clearContent removes content and TTL', () => {
-    saveContent('hello', true);
-    clearContent();
-    expect(loadContent()).toBeNull();
+  test('saveBuffers / loadBuffers round-trip', () => {
+    const buffers = {
+      'notes.md': { content: '# Notes\nHello', cursor: { line: 0, ch: 0 } },
+      'todo.md': { content: '- buy milk', cursor: { line: 0, ch: 2 } },
+    };
+    saveBuffers(buffers);
+    expect(loadBuffers()).toEqual(buffers);
   });
 });
 
-describe('refreshTTL', () => {
-  test('sets TTL to ~7 days in the future', () => {
-    const before = Date.now();
-    refreshTTL();
-    const ttl = parseInt(store['vihtml_content_ttl'], 10);
-    const sevenDays = 7 * 24 * 60 * 60 * 1000;
-    expect(ttl).toBeGreaterThanOrEqual(before + sevenDays - 100);
-    expect(ttl).toBeLessThanOrEqual(before + sevenDays + 100);
+describe('loadSession / saveSession', () => {
+  test('loadSession returns default when nothing saved', () => {
+    expect(loadSession()).toEqual({ current: '', alternate: null });
+  });
+
+  test('loadSession returns default on corrupt JSON', () => {
+    store['vi_session'] = 'nope{';
+    expect(loadSession()).toEqual({ current: '', alternate: null });
+  });
+
+  test('saveSession / loadSession round-trip', () => {
+    const session = { current: 'notes.md', alternate: 'todo.md' };
+    saveSession(session);
+    expect(loadSession()).toEqual(session);
   });
 });
 
@@ -88,6 +90,12 @@ describe('saveExrc / loadExrc', () => {
   });
 
   test('returns empty string when no exrc saved', () => {
+    expect(loadExrc()).toBe('');
+  });
+
+  test('removes exrc when given falsy value', () => {
+    saveExrc('set ts=2');
+    saveExrc('');
     expect(loadExrc()).toBe('');
   });
 });
