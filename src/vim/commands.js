@@ -9,7 +9,13 @@
  */
 import { Vim } from '@replit/codemirror-vim';
 
-export function registerExCommands(state, flashFn, showTabFn, editorAPI) {
+export function registerExCommands(
+  state,
+  flashFn,
+  showTabFn,
+  editorAPI,
+  exrcAPI,
+) {
   Vim.defineEx('preview', 'pre', function (_cm) {
     showTabFn('preview');
   });
@@ -27,8 +33,29 @@ export function registerExCommands(state, flashFn, showTabFn, editorAPI) {
   });
 
   Vim.defineEx('write', 'w', function (_cm) {
+    if (exrcAPI && exrcAPI.isEditing()) {
+      exrcAPI.write();
+      return;
+    }
     editorAPI.saveNow();
     flashFn('Saved');
+  });
+
+  Vim.defineEx('wq', 'wq', function (_cm) {
+    if (exrcAPI && exrcAPI.isEditing()) {
+      exrcAPI.writeQuit();
+      return;
+    }
+    editorAPI.saveNow();
+    flashFn('Saved');
+  });
+
+  Vim.defineEx('quit', 'q', function (_cm, params) {
+    if (exrcAPI && exrcAPI.isEditing()) {
+      var bang = params && params.argString && params.argString.includes('!');
+      exrcAPI.quit(bang);
+      return;
+    }
   });
 
   Vim.defineEx('clear', '', function (_cm) {

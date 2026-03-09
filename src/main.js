@@ -26,6 +26,7 @@ import {
   flash,
   updateMode,
   showTab,
+  setStatusIndicator,
 } from './ui.js';
 import {
   handleTextwidthWrap,
@@ -35,6 +36,12 @@ import {
   registerExCommands,
   registerMappings,
   registerAbbreviations,
+  executeExrc,
+  registerExrc,
+  isEditingExrc,
+  exrcWrite,
+  exrcQuit,
+  exrcWriteQuit,
 } from './vim/index.js';
 
 // ── Application state ───────────────────────────────────
@@ -187,6 +194,7 @@ var cm = getCM(view);
 // ── Debounced content save ──────────────────────────────
 var saveTimer = null;
 function scheduleContentSave() {
+  if (isEditingExrc()) return;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(function () {
     saveContent(view.state.doc.toString(), state.persist);
@@ -273,6 +281,20 @@ var editorAPI = {
   clearSaved: function () {
     clearContent();
   },
+  getDoc: function () {
+    return view.state.doc.toString();
+  },
+  setDoc: function (text) {
+    view.dispatch({
+      changes: { from: 0, to: view.state.doc.length, insert: text },
+    });
+  },
+  getCM: function () {
+    return cm;
+  },
+  setStatusIndicator: function (label) {
+    setStatusIndicator(label);
+  },
   getSettingsDisplay: function () {
     return [
       'number=' + currentLineNumbers,
@@ -289,7 +311,22 @@ var editorAPI = {
 
 // ── Register vim config ─────────────────────────────────
 registerVimOptions(state, flash, editorAPI);
-registerExCommands(state, flash, doShowTab, editorAPI);
+registerExrc(flash, editorAPI);
+
+var exrcAPI = {
+  isEditing: isEditingExrc,
+  write: function () {
+    exrcWrite(editorAPI, flash);
+  },
+  writeQuit: function () {
+    exrcWriteQuit(editorAPI, flash);
+  },
+  quit: function (bang) {
+    exrcQuit(editorAPI, flash, bang);
+  },
+};
+
+registerExCommands(state, flash, doShowTab, editorAPI, exrcAPI);
 registerGqOperator(state);
 registerArrowClamp();
 registerMappings();
@@ -325,6 +362,9 @@ document.addEventListener('keydown', function (e) {
     doShowTab('editor');
   }
 });
+
+// ── Execute exrc before loading content ──────────────────
+executeExrc(cm);
 
 // ── Load persisted state ────────────────────────────────
 var savedContent = loadContent();

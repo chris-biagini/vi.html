@@ -42,6 +42,40 @@ export function isEditingExrc() {
   return exrcState.active;
 }
 
+// ── Exrc action functions ────────────────────────────────
+// These are called by both the internal Vim.defineEx handlers
+// and the exrcAPI in main.js for :w/:wq/:q routing.
+
+export function exrcWrite(editorAPI, flashFn) {
+  if (!exrcState.active) return;
+  saveExrc(editorAPI.getDoc());
+  flashFn('exrc saved');
+}
+
+export function exrcQuit(editorAPI, _flashFn, bang) {
+  if (!exrcState.active) return;
+  if (!bang) {
+    saveExrc(editorAPI.getDoc());
+  }
+  editorAPI.setDoc(exrcState.savedDoc);
+  exrcState.active = false;
+  exrcState.savedDoc = null;
+  editorAPI.setStatusIndicator(null);
+  if (!bang) {
+    executeExrc(editorAPI.getCM());
+  }
+}
+
+export function exrcWriteQuit(editorAPI, _flashFn) {
+  if (!exrcState.active) return;
+  saveExrc(editorAPI.getDoc());
+  editorAPI.setDoc(exrcState.savedDoc);
+  exrcState.active = false;
+  exrcState.savedDoc = null;
+  editorAPI.setStatusIndicator(null);
+  executeExrc(editorAPI.getCM());
+}
+
 // ── Register :exrc command and exrc-mode :w/:wq/:q handlers ─
 export function registerExrc(flashFn, editorAPI) {
   Vim.defineEx('exrc', 'exrc', function () {
@@ -56,38 +90,17 @@ export function registerExrc(flashFn, editorAPI) {
     flashFn(':wq to save, :q! to discard');
   });
 
-  // Internal commands used by the exrc-aware routing in commands.js
+  // Internal commands for direct exrc-mode operations
   Vim.defineEx('exrcwrite', '', function () {
-    if (!exrcState.active) return;
-    saveExrc(editorAPI.getDoc());
-    flashFn('exrc saved');
+    exrcWrite(editorAPI, flashFn);
   });
 
   Vim.defineEx('exrcquit', '', function (_cm, params) {
-    if (!exrcState.active) return;
     var bang = params && params.argString && params.argString.includes('!');
-    if (!bang) {
-      // :q — save first
-      saveExrc(editorAPI.getDoc());
-    }
-    // Restore original document
-    editorAPI.setDoc(exrcState.savedDoc);
-    exrcState.active = false;
-    exrcState.savedDoc = null;
-    editorAPI.setStatusIndicator(null);
-    // Re-execute exrc to apply any changes
-    if (!bang) {
-      executeExrc(editorAPI.getCM());
-    }
+    exrcQuit(editorAPI, flashFn, bang);
   });
 
   Vim.defineEx('exrcwritequit', '', function () {
-    if (!exrcState.active) return;
-    saveExrc(editorAPI.getDoc());
-    editorAPI.setDoc(exrcState.savedDoc);
-    exrcState.active = false;
-    exrcState.savedDoc = null;
-    editorAPI.setStatusIndicator(null);
-    executeExrc(editorAPI.getCM());
+    exrcWriteQuit(editorAPI, flashFn);
   });
 }

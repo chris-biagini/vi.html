@@ -34,6 +34,19 @@ export function flash(msg, duration) {
 }
 flash._timer = null;
 
+export function setStatusIndicator(label) {
+  var el = document.getElementById('status-indicator');
+  if (!el) {
+    // Create indicator element next to mode element if it doesn't exist
+    el = document.createElement('span');
+    el.id = 'status-indicator';
+    el.style.cssText =
+      'color: var(--accent); margin-left: 8px; font-weight: bold;';
+    modeEl.parentNode.insertBefore(el, modeEl.nextSibling);
+  }
+  el.textContent = label ? '[' + label + ']' : '';
+}
+
 export function updateMode(modeObj) {
   if (!modeObj) return;
   var mode = modeObj.mode || 'normal';
