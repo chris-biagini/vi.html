@@ -25,3 +25,4 @@ export {
   foldGutterExtension,
   registerFoldCommands,
 } from './fold.js';
+export { registerClipboard } from './clipboard.js';

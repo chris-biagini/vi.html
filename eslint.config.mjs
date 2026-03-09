@@ -17,6 +17,7 @@ export default [
         window: 'readonly',
         URLSearchParams: 'readonly',
         KeyboardEvent: 'readonly',
+        navigator: 'readonly',
       },
     },
     rules: {

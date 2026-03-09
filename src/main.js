@@ -6,7 +6,7 @@ import {
 } from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
 import { markdown } from '@codemirror/lang-markdown';
-import { vim, getCM } from '@replit/codemirror-vim';
+import { vim, getCM, Vim } from '@replit/codemirror-vim';
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands';
 import {
   bracketMatching,
@@ -48,6 +48,7 @@ import {
   foldExtension,
   foldGutterExtension,
   registerFoldCommands,
+  registerClipboard,
 } from './vim/index.js';
 import { installTestHarness } from './test-harness.js';
 
@@ -434,6 +435,7 @@ registerGqOperator(state);
 registerArrowClamp();
 registerMappings();
 registerFoldCommands();
+registerClipboard(Vim);
 
 var abbrExtension = registerAbbreviations(flash);
 view.dispatch({
