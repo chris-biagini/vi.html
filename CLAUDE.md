@@ -32,6 +32,8 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 
 **CM6 vim API:** `@replit/codemirror-vim` provides backward-compatible API. Use `import { Vim } from '@replit/codemirror-vim'` and `getCM(view)` for CM5-style methods. Dynamic options use compartments (`new Compartment()`).
 
+**CM6 dispatch gotcha:** Never call `cm.replaceRange()` or `view.dispatch()` synchronously inside a CM5 `change` event handler — CM6 throws "Calls to EditorView.update are not allowed while an update is in progress." Defer with `setTimeout(..., 0)`.
+
 **editorAPI pattern:** Vim modules don't import CM6 directly. `main.js` defines an `editorAPI` object that wraps compartment reconfigurations (e.g., `setTabSize`, `getTabSize`). New vim features needing runtime editor state must add methods here.
 
 ## Development
@@ -48,6 +50,7 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 - `vi.html` is gitignored (build artifact). GitHub Actions runs lint + test + build on push to main, deploys to Pages.
 - Tests use Vitest. Test files are co-located with source (`*.test.js`).
 - Linting uses ESLint (flat config) + Prettier. Config in `eslint.config.mjs` and `.prettierrc`.
+- ESLint globals are declared manually (no `env: browser`). When using new browser APIs in `src/`, add them to `eslint.config.mjs` globals.
 
 ## Testing Conventions
 
