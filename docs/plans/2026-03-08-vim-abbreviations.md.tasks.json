@@ -1,0 +1,13 @@
+{
+  "planPath": "docs/plans/2026-03-08-vim-abbreviations.md",
+  "tasks": [
+    {"id": 1, "subject": "Task 1: Create abbreviation storage and pure helpers", "status": "pending"},
+    {"id": 2, "subject": "Task 2: Write tests for storage and extractWord", "status": "pending", "blockedBy": [1]},
+    {"id": 3, "subject": "Task 3: Add Ex commands (:ab, :una, :abc)", "status": "pending", "blockedBy": [1]},
+    {"id": 4, "subject": "Task 4: Write tests for Ex commands", "status": "pending", "blockedBy": [3]},
+    {"id": 5, "subject": "Task 5: Implement inputHandler expansion logic", "status": "pending", "blockedBy": [3]},
+    {"id": 6, "subject": "Task 6: Integrate into main.js and barrel export", "status": "pending", "blockedBy": [5]},
+    {"id": 7, "subject": "Task 7: Lint, test, build verification", "status": "pending", "blockedBy": [6]}
+  ],
+  "lastUpdated": "2026-03-08T00:00:00Z"
+}

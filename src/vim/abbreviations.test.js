@@ -148,10 +148,7 @@ describe('Ex commands', () => {
     commands.abbreviate(null, { args: ['sig', 'Best', 'regards'] });
     flashFn.mockClear();
     commands.abbreviate(null, { args: [] });
-    expect(flashFn).toHaveBeenCalledWith(
-      expect.stringContaining('teh'),
-      8000,
-    );
+    expect(flashFn).toHaveBeenCalledWith(expect.stringContaining('teh'), 8000);
   });
 
   test(':ab with no args and no abbreviations shows message', () => {

@@ -86,9 +86,9 @@ export function registerAbbreviations(flashFn) {
       }
       return;
     }
+    var lhs = args[0];
     if (args.length === 1) {
       // Show single abbreviation
-      var lhs = args[0];
       if (abbreviations[lhs]) {
         flashFn(lhs + ' ' + abbreviations[lhs], 8000);
       } else {
@@ -97,7 +97,6 @@ export function registerAbbreviations(flashFn) {
       return;
     }
     // Define abbreviation: first arg = lhs, rest = rhs
-    var lhs = args[0];
     var rhs = args.slice(1).join(' ');
     abbreviations[lhs] = rhs;
     saveAbbreviations();
@@ -124,37 +123,43 @@ export function registerAbbreviations(flashFn) {
     flashFn('All abbreviations cleared', 8000);
   });
 
-  var inputHandler = EditorView.inputHandler.of(function (view, from, to, text) {
-    // Only expand on single non-keyword character input
-    if (text.length !== 1 || isKeyword(text)) return false;
+  var inputHandler = EditorView.inputHandler.of(
+    function (view, from, to, text) {
+      // Only expand on single non-keyword character input
+      if (text.length !== 1 || isKeyword(text)) return false;
 
-    // Only expand in insert mode
-    var cmInstance = getCM(view);
-    if (!cmInstance || !cmInstance.state.vim || !cmInstance.state.vim.insertMode) {
-      return false;
-    }
+      // Only expand in insert mode
+      var cmInstance = getCM(view);
+      if (
+        !cmInstance ||
+        !cmInstance.state.vim ||
+        !cmInstance.state.vim.insertMode
+      ) {
+        return false;
+      }
 
-    // No abbreviations defined — fast path
-    if (Object.keys(abbreviations).length === 0) return false;
+      // No abbreviations defined — fast path
+      if (Object.keys(abbreviations).length === 0) return false;
 
-    // Extract the word just before the cursor
-    var docText = view.state.doc.toString();
-    var result = extractWord(docText, from);
-    if (!result) return false;
+      // Extract the word just before the cursor
+      var docText = view.state.doc.toString();
+      var result = extractWord(docText, from);
+      if (!result) return false;
 
-    // Check if it matches an abbreviation
-    var expansion = abbreviations[result.word];
-    if (!expansion) return false;
+      // Check if it matches an abbreviation
+      var expansion = abbreviations[result.word];
+      if (!expansion) return false;
 
-    // Replace the abbreviation with its expansion, then insert the trigger char
-    view.dispatch({
-      changes: [
-        { from: result.from, to: result.to, insert: expansion },
-        { from: result.from + expansion.length, insert: text },
-      ],
-    });
-    return true;
-  });
+      // Replace the abbreviation with its expansion, then insert the trigger char
+      view.dispatch({
+        changes: [
+          { from: result.from, to: result.to, insert: expansion },
+          { from: result.from + expansion.length, insert: text },
+        ],
+      });
+      return true;
+    },
+  );
 
   return inputHandler;
 }
