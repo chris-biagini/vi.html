@@ -491,6 +491,62 @@
             >.
           </p>
 
+          <h2>Abbreviations</h2>
+          <p>
+            Define short text expansions that trigger automatically in Insert
+            mode. When you type an abbreviation followed by a non-keyword
+            character (space, punctuation, Enter), it expands to the full text.
+            Abbreviations persist across sessions.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>:ab[breviate] {lhs} {rhs}</code></td>
+                <td>
+                  Define abbreviation: typing <em>lhs</em> expands to
+                  <em>rhs</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>:ab[breviate]</code></td>
+                <td>List all defined abbreviations</td>
+              </tr>
+              <tr>
+                <td><code>:ab[breviate] {lhs}</code></td>
+                <td>Show the abbreviation for <em>lhs</em></td>
+              </tr>
+              <tr>
+                <td><code>:una[bbreviate] {lhs}</code></td>
+                <td>Remove the abbreviation for <em>lhs</em></td>
+              </tr>
+              <tr>
+                <td><code>:abc[lear]</code></td>
+                <td>Remove all abbreviations</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            <b>Example:</b> <code>:ab teh the</code> &mdash; now typing
+            <code>teh </code> in Insert mode produces <code>the </code>.
+            Multi-word expansions work too:
+            <code>:ab sig Best regards, Alice</code>.
+          </p>
+          <p>
+            See
+            <a
+              href="https://vimhelp.org/map.txt.html#Abbreviations"
+              target="_blank"
+              >:help Abbreviations</a
+            >
+            in the vim docs.
+          </p>
+
           <h2>Persistence</h2>
           <ul>
             <li>
