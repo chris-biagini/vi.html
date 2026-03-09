@@ -11,6 +11,7 @@ export { registerExCommands } from './commands.js';
 export { registerMappings } from './mappings.js';
 export { registerAbbreviations } from './abbreviations.js';
 export { createBufferManager } from './buffers.js';
+export { tildeExtension } from './tilde.js';
 export {
   executeExrc,
   registerExrc,

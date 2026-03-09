@@ -44,6 +44,7 @@ import {
   exrcWrite,
   exrcQuit,
   exrcWriteQuit,
+  tildeExtension,
 } from './vim/index.js';
 import { installTestHarness } from './test-harness.js';
 
@@ -116,6 +117,7 @@ var view = new EditorView({
       keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
       abbreviationsCompartment.of([]),
       spellcheckCompartment.of([]),
+      tildeExtension(),
       EditorView.updateListener.of(function (update) {
         if (update.selectionSet) {
           var pos = update.state.selection.main.head;
@@ -188,6 +190,17 @@ var view = new EditorView({
         },
         '.cm-panels input:focus': {
           borderColor: 'var(--accent)',
+        },
+        '.cm-tilde-container': {
+          pointerEvents: 'none',
+          userSelect: 'none',
+        },
+        '.cm-tilde-line': {
+          color: '#4e5a8a',
+          fontFamily: 'inherit',
+          fontSize: 'inherit',
+          lineHeight: '1.55',
+          paddingLeft: '6px',
         },
       }),
     ],
