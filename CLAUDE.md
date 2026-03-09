@@ -62,3 +62,8 @@ This is a vim learning tool. Custom vim features (gq, textwidth wrap, Ex command
 **Intentional default divergences:** `tabstop=4` (vim: 8), `shiftwidth=4` (vim: 8), `expandtab=on` (vim: off), `number=on` (vim: off). These are UX choices for a markdown editor — do not "fix" them to match vim defaults.
 
 **Not implemented (by design):** `formatoptions` flags (n, 1, 2, w, a), `gw` operator. These are acceptable scope limits for a markdown editor.
+
+## Adding Custom Vim Features
+
+When implementing new custom vim features, follow the conventions above.
+Upon completion, add documention for the feature to the help page.  
