@@ -13,12 +13,10 @@ function clampedArrow(dir) {
   return function (cm) {
     var cur = cm.getCursor();
     if (dir === 'left') {
-      if (cur.ch > 0) cm.execCommand('goCharLeft');
+      if (cur.ch > 0) cm.setCursor(cur.line, cur.ch - 1);
     } else if (dir === 'right') {
       var lineLen = cm.getLine(cur.line).length;
-      if (cur.ch < lineLen) cm.execCommand('goCharRight');
-    } else {
-      cm.execCommand(dir === 'up' ? 'goLineUp' : 'goLineDown');
+      if (cur.ch < lineLen) cm.setCursor(cur.line, cur.ch + 1);
     }
   };
 }
