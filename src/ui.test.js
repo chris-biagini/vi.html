@@ -1,5 +1,5 @@
-import { describe, test, expect } from 'vitest';
-import { educateText, smartyPants } from './ui.js';
+import { describe, test, it, expect } from 'vitest';
+import { educateText, smartyPants, renderClipboardHTML } from './ui.js';
 
 describe('educateText', () => {
   test('converts straight double quotes to curly quotes', () => {
@@ -54,5 +54,42 @@ describe('smartyPants', () => {
     expect(result).toBe(
       '<p>\u201Csmart\u201D</p><code>"raw"</code><p>\u201Csmart\u201D</p>',
     );
+  });
+});
+
+describe('renderClipboardHTML', () => {
+  it('renders headings without attributes', () => {
+    var html = renderClipboardHTML('# Hello');
+    expect(html).toBe('<h1>Hello</h1>\n');
+  });
+
+  it('renders emphasis and strong', () => {
+    var html = renderClipboardHTML('*em* and **strong**');
+    expect(html).toContain('<em>em</em>');
+    expect(html).toContain('<strong>strong</strong>');
+  });
+
+  it('strips class attributes from code blocks', () => {
+    var html = renderClipboardHTML('```js\nvar x = 1;\n```');
+    expect(html).not.toContain('class=');
+    expect(html).toContain('<pre><code>');
+  });
+
+  it('preserves href on links', () => {
+    var html = renderClipboardHTML('[test](https://example.com)');
+    expect(html).toContain('href="https://example.com"');
+  });
+
+  it('strips non-semantic attributes', () => {
+    var html = renderClipboardHTML('- item');
+    expect(html).not.toContain('id=');
+    expect(html).not.toContain('data-');
+    expect(html).not.toContain('style=');
+  });
+
+  it('applies SmartyPants', () => {
+    var html = renderClipboardHTML('"hello"');
+    expect(html).toContain('\u201C');
+    expect(html).toContain('\u201D');
   });
 });

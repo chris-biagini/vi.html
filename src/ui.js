@@ -214,3 +214,34 @@ export function renderPreview(mdText) {
   var el = document.getElementById('preview-content');
   el.innerHTML = html;
 }
+
+/**
+ * Render markdown as minimal semantic HTML for clipboard.
+ * Strips all classes, ids, data-*, and style attributes.
+ * Preserves only href on <a> and src/alt on <img>.
+ */
+export function renderClipboardHTML(mdText) {
+  var html = marked.parse(mdText);
+  html = smartyPants(html);
+  html = html.replace(/<(\w+)(\s[^>]*)>/g, function (_match, tag, attrs) {
+    var keep = '';
+    if (tag === 'a') {
+      var href = attrs.match(/\shref="[^"]*"/);
+      if (href) keep = href[0];
+    } else if (tag === 'img') {
+      var src = attrs.match(/\ssrc="[^"]*"/);
+      var alt = attrs.match(/\salt="[^"]*"/);
+      if (src) keep += src[0];
+      if (alt) keep += alt[0];
+    } else if (tag === 'input') {
+      var type = attrs.match(/\stype="[^"]*"/);
+      var checked =
+        attrs.match(/\schecked="[^"]*"/) || attrs.match(/\schecked(?=[\s>])/);
+      if (type) keep += type[0];
+      if (checked) keep += ' checked';
+      keep += ' disabled';
+    }
+    return '<' + tag + keep + '>';
+  });
+  return html;
+}
