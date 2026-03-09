@@ -6,6 +6,8 @@
  * Reference: :help 'eob' (strchars.txt)
  */
 
+import { ViewPlugin } from '@codemirror/view';
+
 /**
  * Calculate how many tilde lines fit in the empty space below content.
  * @param {number} contentHeight - Height of the document content in px
@@ -18,4 +20,75 @@ export function computeTildeCount(contentHeight, viewportHeight, lineHeight) {
   var emptySpace = viewportHeight - contentHeight;
   if (emptySpace <= 0) return 0;
   return Math.floor(emptySpace / lineHeight);
+}
+
+/**
+ * Incrementally update tilde DOM children to match target count.
+ * @param {HTMLElement} container - The tilde container element
+ * @param {number} count - Target number of tilde lines
+ */
+export function updateTildeDOM(container, count) {
+  var existing = container.children.length;
+  if (existing < count) {
+    for (var i = existing; i < count; i++) {
+      var div = document.createElement('div');
+      div.className = 'cm-tilde-line';
+      div.textContent = '~';
+      container.appendChild(div);
+    }
+  } else if (existing > count) {
+    for (var j = existing - 1; j >= count; j--) {
+      container.removeChild(container.children[j]);
+    }
+  }
+}
+
+/**
+ * CM6 ViewPlugin that renders vim-style tilde lines below document content.
+ * @returns {ViewPlugin} The tilde line extension
+ */
+export function tildeExtension() {
+  return ViewPlugin.fromClass(
+    class {
+      constructor(view) {
+        this.lastCount = -1;
+        this.container = document.createElement('div');
+        this.container.className = 'cm-tilde-container';
+        this.container.setAttribute('aria-hidden', 'true');
+        view.scrollDOM.appendChild(this.container);
+        this.render(view);
+      }
+
+      update(update) {
+        if (
+          update.docChanged ||
+          update.viewportChanged ||
+          update.geometryChanged
+        ) {
+          this.render(update.view);
+        }
+      }
+
+      render(view) {
+        var contentHeight = view.contentDOM.offsetHeight;
+        var viewportHeight = view.scrollDOM.clientHeight;
+        var lineHeight = view.defaultLineHeight;
+        var count = computeTildeCount(contentHeight, viewportHeight, lineHeight);
+
+        if (count !== this.lastCount) {
+          updateTildeDOM(this.container, count);
+          this.lastCount = count;
+        }
+
+        var gutters = view.scrollDOM.querySelector('.cm-gutters');
+        this.container.style.marginLeft = gutters
+          ? gutters.offsetWidth + 'px'
+          : '';
+      }
+
+      destroy() {
+        this.container.remove();
+      }
+    }
+  );
 }
