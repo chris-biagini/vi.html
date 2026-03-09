@@ -8,6 +8,8 @@ import {
   savePersistFlag,
   clearContent,
   refreshTTL,
+  saveExrc,
+  loadExrc,
   lsGet,
   lsSet,
   lsRemove,
@@ -113,5 +115,16 @@ describe('savePersistFlag / loadPersistFlag', () => {
   test('returns true when flag is "1"', () => {
     savePersistFlag(true);
     expect(loadPersistFlag()).toBe(true);
+  });
+});
+
+describe('saveExrc / loadExrc', () => {
+  test('saves and loads exrc string', () => {
+    saveExrc('set ts=2\nset sw=2');
+    expect(loadExrc()).toBe('set ts=2\nset sw=2');
+  });
+
+  test('returns empty string when no exrc saved', () => {
+    expect(loadExrc()).toBe('');
   });
 });

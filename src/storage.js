@@ -3,6 +3,7 @@ var LS_CONTENT = 'vihtml_content';
 var LS_TTL = 'vihtml_content_ttl';
 var LS_SETTINGS = 'vihtml_settings';
 var LS_PERSIST = 'vihtml_persist';
+var LS_EXRC = 'vihtml_exrc';
 var TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 // ── localStorage helpers ────────────────────────────────
@@ -70,6 +71,18 @@ export function savePersistFlag(persist) {
 export function clearContent() {
   lsRemove(LS_CONTENT);
   lsRemove(LS_TTL);
+}
+
+export function saveExrc(text) {
+  if (!text) {
+    lsRemove(LS_EXRC);
+  } else {
+    lsSet(LS_EXRC, text);
+  }
+}
+
+export function loadExrc() {
+  return lsGet(LS_EXRC) || '';
 }
 
 export function refreshTTL() {
