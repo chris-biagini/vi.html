@@ -73,7 +73,11 @@ export function tildeExtension() {
         var contentHeight = view.contentDOM.offsetHeight;
         var viewportHeight = view.scrollDOM.clientHeight;
         var lineHeight = view.defaultLineHeight;
-        var count = computeTildeCount(contentHeight, viewportHeight, lineHeight);
+        var count = computeTildeCount(
+          contentHeight,
+          viewportHeight,
+          lineHeight,
+        );
 
         if (count !== this.lastCount) {
           updateTildeDOM(this.container, count);
@@ -89,6 +93,6 @@ export function tildeExtension() {
       destroy() {
         this.container.remove();
       }
-    }
+    },
   );
 }

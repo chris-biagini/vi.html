@@ -1,5 +1,6 @@
+// @vitest-environment jsdom
 import { describe, test, expect } from 'vitest';
-import { computeTildeCount } from './tilde.js';
+import { computeTildeCount, updateTildeDOM } from './tilde.js';
 
 describe('computeTildeCount', () => {
   // :help 'eob' (strchars.txt) — "~" displayed on lines after end of buffer
@@ -23,5 +24,47 @@ describe('computeTildeCount', () => {
 
   test('handles zero line height gracefully', () => {
     expect(computeTildeCount(100, 500, 0)).toBe(0);
+  });
+});
+
+describe('updateTildeDOM', () => {
+  function makeContainer() {
+    return document.createElement('div');
+  }
+
+  test('adds tilde lines to empty container', () => {
+    const el = makeContainer();
+    updateTildeDOM(el, 3);
+    expect(el.children.length).toBe(3);
+    expect(el.children[0].textContent).toBe('~');
+    expect(el.children[0].className).toBe('cm-tilde-line');
+  });
+
+  test('removes excess tilde lines', () => {
+    const el = makeContainer();
+    updateTildeDOM(el, 5);
+    updateTildeDOM(el, 2);
+    expect(el.children.length).toBe(2);
+  });
+
+  test('adds missing tilde lines', () => {
+    const el = makeContainer();
+    updateTildeDOM(el, 2);
+    updateTildeDOM(el, 4);
+    expect(el.children.length).toBe(4);
+  });
+
+  test('does nothing when count matches', () => {
+    const el = makeContainer();
+    updateTildeDOM(el, 3);
+    const firstChild = el.children[0];
+    updateTildeDOM(el, 3);
+    expect(el.children[0]).toBe(firstChild); // same DOM node
+  });
+
+  test('handles zero count', () => {
+    const el = makeContainer();
+    updateTildeDOM(el, 0);
+    expect(el.children.length).toBe(0);
   });
 });
