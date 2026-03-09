@@ -659,11 +659,11 @@
             <tbody>
               <tr>
                 <td><code>:w</code></td>
-                <td>Save to browser storage</td>
+                <td>Save current buffer to storage</td>
               </tr>
               <tr>
                 <td><code>:e</code></td>
-                <td>Reload content from last save</td>
+                <td>Reload current buffer (with name: open buffer)</td>
               </tr>
               <tr>
                 <td><code>:editor</code></td>
@@ -709,8 +709,88 @@
                 <td><code>:q!</code></td>
                 <td>Quit without saving (in exrc: discard changes)</td>
               </tr>
+              <tr>
+                <td><code>:ls</code></td>
+                <td>List all buffers</td>
+              </tr>
+              <tr>
+                <td><code>:b name</code></td>
+                <td>Switch to buffer</td>
+              </tr>
+              <tr>
+                <td><code>:bd</code></td>
+                <td>Delete buffer</td>
+              </tr>
+              <tr>
+                <td><code>:sav[eas] name</code></td>
+                <td>Save-as to new buffer</td>
+              </tr>
+              <tr>
+                <td><code>:f name</code></td>
+                <td>Show or rename current buffer</td>
+              </tr>
             </tbody>
           </table>
+
+          <h2>Buffers</h2>
+          <p>
+            vi.html supports multiple named buffers &mdash; like files on disk,
+            but stored in your browser. Each buffer has its own content and
+            cursor position. Buffers persist across sessions until you delete
+            them.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>:e name</code></td>
+                <td>Open or create a buffer (without name: reload current)</td>
+              </tr>
+              <tr>
+                <td><code>:b name</code></td>
+                <td>Switch to a buffer by name</td>
+              </tr>
+              <tr>
+                <td><code>:b#</code></td>
+                <td>Switch to the alternate (previous) buffer</td>
+              </tr>
+              <tr>
+                <td><kbd>Ctrl-^</kbd></td>
+                <td>Toggle alternate buffer (Normal mode)</td>
+              </tr>
+              <tr>
+                <td><code>:ls</code> / <code>:buffers</code></td>
+                <td>List all buffers</td>
+              </tr>
+              <tr>
+                <td><code>:w name</code></td>
+                <td>Name an unnamed buffer, or save-as to a new name</td>
+              </tr>
+              <tr>
+                <td><code>:sav[eas] name</code></td>
+                <td>Copy current buffer to a new name</td>
+              </tr>
+              <tr>
+                <td><code>:f name</code></td>
+                <td>Rename current buffer (without name: show current)</td>
+              </tr>
+              <tr>
+                <td><code>:bd [name]</code></td>
+                <td>Delete a buffer (default: current buffer)</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tip">
+            <b>No data loss on switch.</b> Unlike vim, switching buffers
+            automatically saves the current buffer first. You&rsquo;ll see a
+            confirmation flash &mdash; no need to <code>:w</code> before
+            switching.
+          </div>
 
           <h2>vi.html Options</h2>
           <p>
@@ -826,6 +906,11 @@
                 <td>Preview / Help</td>
                 <td>Return to Editor</td>
               </tr>
+              <tr>
+                <td><kbd>Ctrl-^</kbd></td>
+                <td>Normal mode</td>
+                <td>Toggle alternate buffer</td>
+              </tr>
             </tbody>
           </table>
 
@@ -925,9 +1010,9 @@ persist</pre
           <h2>Persistence</h2>
           <ul>
             <li>
-              <b>Content</b> is auto-saved as you type (1-second debounce).
-              Saved content expires after <b>7 days</b> of inactivity. Use
-              <code>:w</code> to save explicitly and refresh the timer.
+              <b>Buffers</b> are auto-saved as you type and persist until
+              explicitly deleted with <code>:bd</code>. Use <code>:ls</code> to
+              see all your buffers.
             </li>
             <li>
               <b>Settings</b> and <b>abbreviations</b> are ephemeral by default.
@@ -939,7 +1024,7 @@ persist</pre
               <code>nopersist</code> to your <code>:exrc</code>.
             </li>
             <li>
-              <b>Clear</b> saved content immediately with <code>:clear</code>.
+              <b>Clear</b> all buffers and reset with <code>:clear</code>.
             </li>
           </ul>
 
