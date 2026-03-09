@@ -20,7 +20,8 @@ export function findBreakPoint(lineText, textwidth) {
 export function handleTextwidthWrap(cm, changeObj, state) {
   if (state.textwidth <= 0) return;
   if (state.wrapping) return;
-  if (changeObj.origin !== '+input') return;
+  // In insert mode only — origin varies by CM version (+input, null, undefined)
+  if (!cm.state.vim || !cm.state.vim.insertMode) return;
 
   var inserted = changeObj.text.join('');
   if (!inserted) return;
@@ -34,16 +35,16 @@ export function handleTextwidthWrap(cm, changeObj, state) {
 
   var indent = lineText.match(/^(\s*)/)[1];
 
+  // Defer the wrap to avoid dispatching during a CM6 update cycle
   state.wrapping = true;
-  cm.operation(function () {
-    cm.replaceRange(
-      '\n' + indent,
-      { line: lineNo, ch: breakAt },
-      { line: lineNo, ch: breakAt + 1 },
-    );
-  });
-  // Delay reset so the batched change event from cm.operation sees the flag
   setTimeout(function () {
+    cm.operation(function () {
+      cm.replaceRange(
+        '\n' + indent,
+        { line: lineNo, ch: breakAt },
+        { line: lineNo, ch: breakAt + 1 },
+      );
+    });
     state.wrapping = false;
   }, 0);
 }

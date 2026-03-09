@@ -43,6 +43,7 @@ import {
   exrcQuit,
   exrcWriteQuit,
 } from './vim/index.js';
+import { installTestHarness } from './test-harness.js';
 
 // ── Application state ───────────────────────────────────
 var state = {
@@ -405,6 +406,9 @@ if (savedContent !== null) {
     changes: { from: 0, to: view.state.doc.length, insert: savedContent },
   });
 }
+
+// ── Test harness (vi.html?test) ──────────────────────────
+installTestHarness(view, cm, state, editorAPI);
 
 // Set initial cursor position display
 var initialPos = view.state.selection.main.head;

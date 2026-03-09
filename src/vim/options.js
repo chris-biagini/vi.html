@@ -33,13 +33,14 @@ export function registerVimOptions(state, flashFn, editorAPI) {
 
   Vim.defineOption('tabstop', 4, 'number', ['ts'], function (val, cm) {
     if (!cm) return;
-    editorAPI.setTabSize(val);
+    editorAPI.setTabSize(Number(val));
   });
 
   // :help 'shiftwidth' — "When zero, the 'tabstop' value will be used."
   Vim.defineOption('shiftwidth', 4, 'number', ['sw'], function (val, cm) {
     if (!cm) return;
-    editorAPI.setIndentUnit(val === 0 ? editorAPI.getTabSize() : val);
+    var n = Number(val);
+    editorAPI.setIndentUnit(n === 0 ? editorAPI.getTabSize() : n);
   });
 
   Vim.defineOption('expandtab', true, 'boolean', ['et'], function (val, cm) {
@@ -54,7 +55,7 @@ export function registerVimOptions(state, flashFn, editorAPI) {
 
   Vim.defineOption('textwidth', 0, 'number', ['tw'], function (val, cm) {
     if (!cm) return;
-    state.textwidth = val;
+    state.textwidth = Number(val);
     flashFn('textwidth=' + val);
   });
 

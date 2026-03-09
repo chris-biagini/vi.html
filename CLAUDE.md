@@ -17,6 +17,7 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
   - `vim/commands.js` — Ex commands (:write, :preview, :help, etc.) via `Vim.defineEx`
   - `vim/mappings.js` — custom key mappings (`\p` toggle)
   - `vim/index.js` — barrel re-exporting all modules
+- `test-harness.js` — exposes `window.__vi` for interactive Playwright testing (activated by `?test` URL param)
 - `main.js` — entry point: CM6 EditorView, compartments for dynamic options, event wiring, state loading
 
 **Dependencies (npm, bundled offline):** CodeMirror 6 (`codemirror`, `@codemirror/lang-markdown`, `@codemirror/view`, `@codemirror/state`), `@replit/codemirror-vim`, `marked`
@@ -63,7 +64,30 @@ This is a vim learning tool. Custom vim features (gq, textwidth wrap, Ex command
 
 **Not implemented (by design):** `formatoptions` flags (n, 1, 2, w, a), `gw` operator. These are acceptable scope limits for a markdown editor.
 
+## Browser Testing (Playwright)
+
+Unit tests can't catch bugs that only appear in the real browser (CM6 update cycle errors, CM5 compat layer quirks, event origin mismatches). After adding or modifying a custom vim feature, do an interactive browser test:
+
+1. `npm run build` then serve locally (`python3 -m http.server 9876`)
+2. Navigate Playwright to `http://localhost:9876/vi.html?test`
+3. The `?test` param activates the test harness on `window.__vi`
+
+**Test harness API** (`src/test-harness.js`):
+- `__vi.setDoc(text)` / `__vi.getDoc()` — set/get document content
+- `__vi.getCursor()` — returns `{ line, ch }` (0-indexed)
+- `__vi.exec(cmd)` — run an Ex command (`:set tw=72`, `:ab teh the`, etc.)
+- `__vi.pressKeys(str)` — dispatch normal-mode keys (e.g. `__vi.pressKeys('gqap')`)
+- `__vi.pressKey(key)` — single key dispatch (e.g. `__vi.pressKey('Escape')`)
+- `__vi.view` / `__vi.cm` / `__vi.Vim` / `__vi.state` / `__vi.editorAPI` — raw internals
+- `__vi.getFlash()` / `__vi.getMode()` — status bar state
+
+**Known quirks:**
+- Ex commands (`:set`, `:ab`, etc.) must use `__vi.exec()` — typing `:` via key events opens a CM6 panel that can't be driven by key dispatch to contentDOM.
+- Insert-mode typing (for textwidth/abbreviation tests) must use Playwright's `pressSequentially` on the textbox element — `__vi.pressKeys` only works for normal-mode commands.
+- `Vim.defineOption` passes string values to callbacks even for `'number'` type — all number option callbacks must coerce with `Number()`.
+- CM5 compat layer change events have `origin: undefined` (not `'+input'` or `null`) — don't rely on origin for filtering.
+
 ## Adding Custom Vim Features
 
 When implementing new custom vim features, follow the conventions above.
-Upon completion, add documention for the feature to the help page.  
+Upon completion, add documentation for the feature to the help page. After implementation, do an interactive browser test (see "Browser Testing" above) to verify the feature works end-to-end.

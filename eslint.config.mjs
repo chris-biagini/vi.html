@@ -14,6 +14,9 @@ export default [
         localStorage: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
+        window: 'readonly',
+        URLSearchParams: 'readonly',
+        KeyboardEvent: 'readonly',
       },
     },
     rules: {

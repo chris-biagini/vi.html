@@ -23,7 +23,7 @@ export function reflowRange(cm, fromLine, toLine, width) {
   for (var j = 0; j < lines.length; j++) {
     if (lines[j].trim() === '') {
       if (current.length > 0) paragraphs.push(current);
-      paragraphs.push(['']);
+      paragraphs.push([lines[j]]);
       current = [];
     } else {
       current.push(lines[j]);
@@ -35,7 +35,7 @@ export function reflowRange(cm, fromLine, toLine, width) {
   for (var p = 0; p < paragraphs.length; p++) {
     var para = paragraphs[p];
     if (para.length === 1 && para[0].trim() === '') {
-      result.push('');
+      result.push(para[0]);
       continue;
     }
     var paraIndent = para[0].match(/^(\s*)/)[1];
