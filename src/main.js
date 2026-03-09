@@ -192,13 +192,13 @@ var view = new EditorView({
           borderColor: 'var(--accent)',
         },
         '.cm-tilde-container': {
+          position: 'absolute',
           pointerEvents: 'none',
           userSelect: 'none',
         },
         '.cm-tilde-line': {
           color: '#4e5a8a',
-          fontFamily: 'inherit',
-          fontSize: 'inherit',
+          fontSize: '17px',
           lineHeight: '1.55',
           paddingLeft: '6px',
         },

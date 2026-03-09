@@ -87,10 +87,13 @@ export function tildeExtension() {
           this.lastCount = count;
         }
 
+        // Position below document content, aligned with text area.
+        // .cm-scroller is flex-direction:row, so we use absolute positioning
+        // to overlay the empty space below the document lines.
         var gutters = view.scrollDOM.querySelector('.cm-gutters');
-        this.container.style.marginLeft = gutters
-          ? gutters.offsetWidth + 'px'
-          : '';
+        var left = gutters ? gutters.offsetWidth : 0;
+        this.container.style.top = contentHeight + 'px';
+        this.container.style.left = left + 'px';
       }
 
       destroy() {
