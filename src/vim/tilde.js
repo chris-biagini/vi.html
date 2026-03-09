@@ -70,9 +70,12 @@ export function tildeExtension() {
       }
 
       render(view) {
-        var contentHeight = view.contentDOM.offsetHeight;
-        var viewportHeight = view.scrollDOM.clientHeight;
+        // Cannot use contentDOM.offsetHeight — CM6 sets min-height:100%
+        // and flex-grow:2, stretching it to fill the viewport. Instead,
+        // measure actual content via line count * lineHeight.
         var lineHeight = view.defaultLineHeight;
+        var contentHeight = view.state.doc.lines * lineHeight;
+        var viewportHeight = view.scrollDOM.clientHeight;
         var count = computeTildeCount(
           contentHeight,
           viewportHeight,
