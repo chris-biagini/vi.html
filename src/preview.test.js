@@ -12,7 +12,7 @@ describe('educateText', () => {
 
   test('handles single quotes nested inside double quotes', () => {
     // GitHub issue #9: "'like' this" should have correct curly quotes
-    expect(educateText("\"'like' this\"")).toBe(
+    expect(educateText('"\'like\' this"')).toBe(
       '\u201C\u2018like\u2019 this\u201D',
     );
   });
