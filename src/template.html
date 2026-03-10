@@ -95,6 +95,10 @@
                 <td>Reflow / hard-wrap text</td>
               </tr>
               <tr>
+                <td><kbd>gw</kbd></td>
+                <td>Reflow, keep cursor</td>
+              </tr>
+              <tr>
                 <td><kbd>&gt;</kbd></td>
                 <td>Indent</td>
               </tr>
@@ -387,8 +391,8 @@
           </div>
           <div class="tip">
             <b>Increment and decrement.</b> <kbd>Ctrl-a</kbd> and
-            <kbd>Ctrl-x</kbd> find the next number on the current line and
-            add or subtract 1. Use a count to change by more:
+            <kbd>Ctrl-x</kbd> find the next number on the current line and add
+            or subtract 1. Use a count to change by more:
             <kbd>5 Ctrl-a</kbd> adds 5. Works with decimal, hex
             (<kbd>0x1f</kbd>), octal (<kbd>07</kbd>), and binary
             (<kbd>0b101</kbd>) formats.
@@ -524,10 +528,12 @@
 
           <h2 id="s-working-with-prose">Working with Prose</h2>
           <p>
-            The <kbd>gq</kbd> operator hard-wraps text to a specified width. Set
-            your preferred width with <code>:set tw=72</code>. If
-            <code>textwidth</code> is 0, <kbd>gq</kbd> wraps at 79 columns
-            (matching vim&rsquo;s default).
+            The <kbd>gq</kbd> and <kbd>gw</kbd> operators hard-wrap text to a
+            specified width. Set your preferred width with
+            <code>:set tw=72</code>. If <code>textwidth</code> is 0, they wrap
+            at 79 columns (matching vim&rsquo;s default). <kbd>gq</kbd> moves
+            the cursor to the end of the formatted text; <kbd>gw</kbd> keeps the
+            cursor in place.
           </p>
           <table>
             <thead>
@@ -556,6 +562,10 @@
               <tr>
                 <td>Visual + <kbd>gq</kbd></td>
                 <td>Reflow selected lines</td>
+              </tr>
+              <tr>
+                <td><kbd>gwap</kbd></td>
+                <td>Reflow paragraph, keep cursor position</td>
               </tr>
             </tbody>
           </table>

@@ -12,7 +12,7 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 - `preview.js` — tab switching, SmartyPants, preview rendering, clipboard HTML (marked.js)
 - `vim/` — vim customizations, one file per feature:
   - `vim/textwidth.js` — auto-wrap lines at textwidth during insert mode
-  - `vim/gq.js` — gq reflow operator for reformatting paragraphs
+  - `vim/gq.js` — gq/gw reflow operators for reformatting paragraphs
   - `vim/arrow-clamp.js` — prevent arrow keys from wrapping across lines in insert mode
   - `vim/abbreviations.js` — insert-mode abbreviations (`:ab`, `:una`, `:abc`)
   - `vim/buffers.js` — multiple named buffers/documents in memory with persistence
@@ -72,7 +72,7 @@ This is a vim learning tool. Custom vim features (gq, textwidth wrap, Ex command
 
 **Intentional default divergences:** `tabstop=4` (vim: 8), `shiftwidth=4` (vim: 8), `expandtab=on` (vim: off), `number=on` (vim: off). These are UX choices for a markdown editor — do not "fix" them to match vim defaults.
 
-**Not implemented (by design):** `formatoptions` flags (n, 1, 2, w, a), `gw` operator. These are acceptable scope limits for a markdown editor.
+**Not implemented (by design):** `formatoptions` flags (n, 1, 2, w, a). These are acceptable scope limits for a markdown editor.
 
 ## Browser Testing (Playwright)
 

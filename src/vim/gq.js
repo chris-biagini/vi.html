@@ -1,11 +1,14 @@
 /**
- * gq reflow operator
+ * gq/gw reflow operators
  *
- * Implements the gq operator for reformatting/reflowing text to a given width.
- * Uses textwidth if set, otherwise defaults to 79 columns. Handles multiple
- * paragraphs separated by blank lines, preserves indentation.
+ * Implements the gq and gw operators for reformatting/reflowing text to a
+ * given width. Uses textwidth if set, otherwise defaults to 79 columns.
+ * Handles multiple paragraphs separated by blank lines, preserves indentation.
+ *
+ * gq moves cursor to end of formatted text; gw keeps cursor in place.
  *
  * See: https://vimhelp.org/change.txt.html#gq
+ * See: https://vimhelp.org/change.txt.html#gw
  * See: https://vimhelp.org/options.txt.html#%27textwidth%27
  * See: https://vimhelp.org/change.txt.html#fo-table
  */
@@ -107,4 +110,35 @@ export function registerGqOperator(state) {
   });
 
   Vim.mapCommand('gq', 'operator', 'hardWrap', {}, {});
+
+  // gw: same as gq but cursor stays at original position
+  // See: :help gw (change.txt)
+  Vim.defineOperator(
+    'hardWrapKeepCursor',
+    function (cm, operatorArgs, ranges, oldAnchor) {
+      var width = state.textwidth > 0 ? state.textwidth : 79;
+      cm.operation(function () {
+        for (var i = ranges.length - 1; i >= 0; i--) {
+          var range = ranges[i];
+          var fromPos =
+            range.anchor.line <= range.head.line ? range.anchor : range.head;
+          var toPos =
+            range.anchor.line <= range.head.line ? range.head : range.anchor;
+          var from = fromPos.line;
+          var to = toPos.line;
+          if (to > from && toPos.ch === 0) to--;
+          while (to > from && cm.getLine(to).trim() === '') to--;
+          reflowRange(cm, from, to, width);
+        }
+      });
+      // Restore cursor to pre-motion position, clamping to valid range
+      var lastLine = cm.lastLine();
+      var line = Math.min(oldAnchor.line, lastLine);
+      var lineLen = cm.getLine(line).length;
+      var ch = Math.min(oldAnchor.ch, lineLen);
+      cm.setCursor(line, ch);
+    },
+  );
+
+  Vim.mapCommand('gw', 'operator', 'hardWrapKeepCursor', {}, {});
 }
