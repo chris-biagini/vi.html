@@ -10,6 +10,13 @@ describe('educateText', () => {
     expect(educateText("'hello'")).toBe('\u2018hello\u2019');
   });
 
+  test('handles single quotes nested inside double quotes', () => {
+    // GitHub issue #9: "'like' this" should have correct curly quotes
+    expect(educateText("\"'like' this\"")).toBe(
+      '\u201C\u2018like\u2019 this\u201D',
+    );
+  });
+
   test('converts apostrophes in contractions', () => {
     expect(educateText("don't")).toBe('don\u2019t');
   });

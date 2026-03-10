@@ -147,12 +147,12 @@ export function educateText(t) {
   // Ellipsis
   t = t.replace(/\.\.\./g, '\u2026');
   // Double quotes
-  t = t.replace(/(^|[\s([{>\u2014\u2013])"(?=\S)/gm, '$1\u201C');
+  t = t.replace(/(^|[\s([{>\u2014\u2013\u2018\u2019])"(?=\S)/gm, '$1\u201C');
   t = t.replace(/"/g, '\u201D');
   // Apostrophes in contractions (before general single quotes)
   t = t.replace(/(\w)'(\w)/g, '$1\u2019$2');
   // Single quotes
-  t = t.replace(/(^|[\s([{>\u2014\u2013])'(?=\S)/gm, '$1\u2018');
+  t = t.replace(/(^|[\s([{>\u2014\u2013\u201C\u201D])'(?=\S)/gm, '$1\u2018');
   t = t.replace(/'/g, '\u2019');
   return t;
 }
