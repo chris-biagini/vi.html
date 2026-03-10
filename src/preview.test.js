@@ -1,5 +1,5 @@
 import { describe, test, it, expect } from 'vitest';
-import { educateText, smartyPants, renderClipboardHTML } from './ui.js';
+import { educateText, smartyPants, renderClipboardHTML } from './preview.js';
 
 describe('educateText', () => {
   test('converts straight double quotes to curly quotes', () => {

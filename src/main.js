@@ -26,9 +26,9 @@ import {
   updateBufferName,
   flash,
   updateMode,
-  showTab,
   setStatusIndicator,
-} from './ui.js';
+} from './status.js';
+import { showTab } from './preview.js';
 import {
   handleTextwidthWrap,
   registerGqOperator,

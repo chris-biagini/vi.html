@@ -8,7 +8,8 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 - `template.html` — HTML skeleton with `/* STYLE */` and `/* SCRIPT */` placeholders
 - `style.css` — all CSS (markdown tokens, preview/help pane styles)
 - `storage.js` — localStorage helpers (content with 7-day TTL, settings, persist flag)
-- `ui.js` — status bar, tab switching, SmartyPants, preview rendering (marked.js)
+- `status.js` — status bar (mode, position, flash messages, buffer name, indicators)
+- `preview.js` — tab switching, SmartyPants, preview rendering, clipboard HTML (marked.js)
 - `vim/` — vim customizations, one file per feature:
   - `vim/textwidth.js` — auto-wrap lines at textwidth during insert mode
   - `vim/gq.js` — gq reflow operator for reformatting paragraphs
