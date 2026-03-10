@@ -360,6 +360,14 @@
                 <td><kbd>~</kbd></td>
                 <td>Toggle case of character</td>
               </tr>
+              <tr>
+                <td><kbd>Ctrl-a</kbd></td>
+                <td>Increment number under cursor</td>
+              </tr>
+              <tr>
+                <td><kbd>Ctrl-x</kbd></td>
+                <td>Decrement number under cursor</td>
+              </tr>
             </tbody>
           </table>
           <div class="tip">
@@ -376,6 +384,14 @@
             to a register &mdash; <kbd>p</kbd> will paste it right back.
             <kbd>ddp</kbd> swaps the current line with the one below.
             <kbd>ddkP</kbd> moves a line up.
+          </div>
+          <div class="tip">
+            <b>Increment and decrement.</b> <kbd>Ctrl-a</kbd> and
+            <kbd>Ctrl-x</kbd> find the next number on the current line and
+            add or subtract 1. Use a count to change by more:
+            <kbd>5 Ctrl-a</kbd> adds 5. Works with decimal, hex
+            (<kbd>0x1f</kbd>), octal (<kbd>07</kbd>), and binary
+            (<kbd>0b101</kbd>) formats.
           </div>
 
           <h2 id="s-copying-pasting">Copying and Pasting</h2>
