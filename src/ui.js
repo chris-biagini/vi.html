@@ -109,6 +109,7 @@ function initHelpTocTracking(helpContainer) {
   if (tocCleanup) tocCleanup();
 
   var toc = document.getElementById('help-toc');
+  var toggle = document.getElementById('help-toc-toggle');
   if (!toc) return;
 
   var links = toc.querySelectorAll('a[href^="#"]');
@@ -118,6 +119,12 @@ function initHelpTocTracking(helpContainer) {
     var el = document.getElementById(id);
     if (el) sections.push({ link: links[i], el: el });
   }
+
+  // Toggle button for narrow screens
+  function handleToggle() {
+    toc.classList.toggle('open');
+  }
+  if (toggle) toggle.addEventListener('click', handleToggle);
 
   // Handle click — smooth scroll within the help container
   function handleClick(e) {
@@ -130,6 +137,8 @@ function initHelpTocTracking(helpContainer) {
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    // Close TOC overlay on narrow screens after clicking a link
+    toc.classList.remove('open');
   }
   toc.addEventListener('click', handleClick);
 
@@ -160,6 +169,8 @@ function initHelpTocTracking(helpContainer) {
   tocCleanup = function () {
     helpContainer.removeEventListener('scroll', updateActive);
     toc.removeEventListener('click', handleClick);
+    if (toggle) toggle.removeEventListener('click', handleToggle);
+    toc.classList.remove('open');
     tocCleanup = null;
   };
 }

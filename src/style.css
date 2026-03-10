@@ -401,10 +401,6 @@ body {
   border-right: 1px solid #d8d5ce;
 }
 
-#help-container.visible #help-toc {
-  display: block;
-}
-
 #help-toc-header {
   font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   font-size: 10px;
@@ -451,7 +447,30 @@ body {
   font-weight: 600;
 }
 
-/* Shift help content right when TOC is visible */
+/* TOC toggle button — only visible on narrow screens */
+#help-toc-toggle {
+  display: none;
+  position: fixed;
+  top: 42px;
+  left: 8px;
+  z-index: 7;
+  background: #e2dfd8;
+  border: 1px solid #d0cdc5;
+  border-radius: 3px;
+  padding: 3px 10px;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: #666;
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+#help-toc-toggle:hover {
+  color: #2a2a2a;
+  border-color: #b8b5ae;
+}
+
+/* Shift help content right when TOC is visible (wide screens) */
 @media (min-width: 1060px) {
   #help-container.visible #help-toc {
     display: block;
@@ -461,9 +480,17 @@ body {
   }
 }
 
+/* Narrow screens: hide TOC by default, show toggle button */
 @media (max-width: 1059px) {
+  #help-container.visible #help-toc-toggle {
+    display: block;
+  }
   #help-toc {
-    display: none !important;
+    display: none;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+  #help-toc.open {
+    display: block;
   }
 }
 
