@@ -13,6 +13,12 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
   - `vim/textwidth.js` — auto-wrap lines at textwidth during insert mode
   - `vim/gq.js` — gq reflow operator for reformatting paragraphs
   - `vim/arrow-clamp.js` — prevent arrow keys from wrapping across lines in insert mode
+  - `vim/abbreviations.js` — insert-mode abbreviations (`:ab`, `:una`, `:abc`)
+  - `vim/buffers.js` — multiple named buffers/documents in memory with persistence
+  - `vim/clipboard.js` — aliases `"*` register to system clipboard (`"+`)
+  - `vim/exrc.js` — persistent Ex command configuration via localStorage
+  - `vim/fold.js` — markdown heading folding with vim-style commands (zo, zc, za, zR, zM)
+  - `vim/tilde.js` — vim-style `~` tilde lines below end of buffer
   - `vim/options.js` — `:set` options (number, tabstop, textwidth, etc.) via `Vim.defineOption`
   - `vim/commands.js` — Ex commands (:write, :preview, :help, etc.) via `Vim.defineEx`
   - `vim/mappings.js` — custom key mappings (`\p` toggle)
