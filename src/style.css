@@ -32,6 +32,34 @@ html[data-theme='light'] {
   --active-line: rgba(61, 53, 48, 0.04);
 }
 
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #2a2320;
+  --bg-alt: #352b26;
+  --bg-tab: #352b26;
+  --fg: #e4d8c0;
+  --fg-dim: #a89680;
+  --fg-faint: #9f8c74;
+  --accent: #e08060;
+  --accent-soft: #d27458;
+  --accent-warm: #d4a35c;
+  --accent-vis: #8ca3b8;
+  --accent-rep: #c45a40;
+  --list-mark: #b89968;
+  --code: #9bb08a;
+  --tilde: #7a6347;
+  --rule: #4a3f37;
+  --cursor-bg: #e4d8c0;
+  --tab-active: #4a3c30;
+  --tab-border: #4a3f37;
+  --status-bg: #352b26;
+  --status-fg: #a89680;
+  --flash-fg: #b89968;
+  --sel-bg: #4a3c30;
+  --dialog-bg: #352b26;
+  --active-line: rgba(228, 216, 192, 0.04);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -150,6 +178,10 @@ body {
 
 .cm-searchMatch {
   background: #e8d396;
+}
+
+html[data-theme='dark'] .cm-searchMatch {
+  background: #5a4a28;
 }
 
 /* ── Fold placeholder ────────────────────────────────── */
