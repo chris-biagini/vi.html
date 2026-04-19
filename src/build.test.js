@@ -21,6 +21,6 @@ describe('build', () => {
     expect(html).toContain('EditorView');
 
     // Should contain bundled CSS (from style.css)
-    expect(html).toContain('.cm-header');
+    expect(html).toContain('.cm-searchMatch');
   });
 });

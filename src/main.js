@@ -49,8 +49,18 @@ import {
   foldGutterExtension,
   registerFoldCommands,
   registerClipboard,
+  getHighlight,
 } from './vim/index.js';
 import { installTestHarness } from './test-harness.js';
+
+// ── Theme: OS-follow via prefers-color-scheme ──────────
+var darkModeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+
+function applyTheme(isDark) {
+  document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+}
+
+applyTheme(darkModeMedia.matches);
 
 // ── Application state ───────────────────────────────────
 var state = {
@@ -70,6 +80,7 @@ var indentUnitCompartment = new Compartment();
 var abbreviationsCompartment = new Compartment();
 var spellcheckCompartment = new Compartment();
 var foldGutterCompartment = new Compartment();
+var themeCompartment = new Compartment();
 
 // Track current values for settings display (compartment.get() is unreliable)
 var currentLineNumbers = true;
@@ -117,6 +128,7 @@ var view = new EditorView({
       tabSizeCompartment.of(EditorState.tabSize.of(4)),
       indentUnitCompartment.of(indentUnitFacet.of('    ')),
       markdown(),
+      themeCompartment.of(getHighlight(darkModeMedia.matches)),
       history(),
       bracketMatching(),
       drawSelection(),
@@ -177,7 +189,7 @@ var view = new EditorView({
           backgroundColor: 'var(--sel-bg) !important',
         },
         '.cm-focused .cm-selectionBackground': {
-          backgroundColor: '#1e3a24 !important',
+          backgroundColor: 'var(--sel-bg) !important',
         },
         '.cm-panels': {
           backgroundColor: 'var(--dialog-bg)',
@@ -205,7 +217,7 @@ var view = new EditorView({
           userSelect: 'none',
         },
         '.cm-tilde-line': {
-          color: '#4e5a8a',
+          color: 'var(--tilde)',
           fontSize: '17px',
           lineHeight: '1.55',
           paddingLeft: '6px',
@@ -474,6 +486,14 @@ executeExrc(cm);
 
 // ── Test harness (vi.html?test) ──────────────────────────
 installTestHarness(view, cm, state, editorAPI);
+
+// ── Theme: react to OS color-scheme changes ─────────────
+darkModeMedia.addEventListener('change', function (e) {
+  applyTheme(e.matches);
+  view.dispatch({
+    effects: themeCompartment.reconfigure(getHighlight(e.matches)),
+  });
+});
 
 // Set initial cursor position display
 var initialPos = view.state.selection.main.head;

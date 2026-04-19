@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1016,6 +1016,11 @@
             for a markdown editor. <code>spell</code> uses the browser&rsquo;s
             built-in spellcheck rather than vim&rsquo;s spell engine.
           </div>
+          <div class="tip">
+            <b>Appearance:</b> vi.html follows your operating system&rsquo;s
+            light/dark mode preference automatically. Change your OS appearance
+            and the editor recolors immediately &mdash; no reload, no setting.
+          </div>
 
           <h2 id="s-keyboard-shortcuts">vi.html Keyboard Shortcuts</h2>
           <table>
@@ -1141,7 +1146,7 @@ persist</pre
           <h2 id="s-end-of-buffer">End-of-Buffer Lines</h2>
           <p>
             Lines below the end of the document are marked with
-            <code style="color: #4e5a8a">~</code>, matching vim&rsquo;s
+            <code style="color: var(--tilde)">~</code>, matching vim&rsquo;s
             end-of-buffer indicator. These are not part of the document &mdash;
             they show where the file ends and empty screen space begins.
           </p>
