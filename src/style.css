@@ -257,6 +257,10 @@ html[data-theme='dark'] .cm-searchMatch {
   color: var(--status-fg);
 }
 
+#status-words {
+  color: var(--status-fg);
+}
+
 #status-flash {
   color: var(--flash-fg);
   margin-left: auto;
