@@ -4,7 +4,7 @@
  */
 import { describe, test, expect } from 'vitest';
 import { tags as t } from '@lezer/highlight';
-import { lightHighlight } from './highlight.js';
+import { lightHighlight, darkHighlight } from './highlight.js';
 
 describe('lightHighlight (Paper & Clay)', () => {
   test('constructs without error', () => {
@@ -78,5 +78,72 @@ describe('lightHighlight (Paper & Clay)', () => {
 
   test('contentSeparator is rule', () => {
     expect(specFor(t.contentSeparator).color).toBe('#c9b898');
+  });
+});
+
+describe('darkHighlight (Espresso Mirror)', () => {
+  test('constructs without error', () => {
+    expect(darkHighlight).toBeTruthy();
+  });
+
+  const specs = darkHighlight.specs;
+  function specFor(tag) {
+    return specs.find((s) => {
+      const tags = Array.isArray(s.tag) ? s.tag : [s.tag];
+      return tags.includes(tag);
+    });
+  }
+
+  test('heading1 is dark accent, bold', () => {
+    const s = specFor(t.heading1);
+    expect(s.color).toBe('#e08060');
+    expect(s.fontWeight).toBe('bold');
+  });
+
+  test('heading2–heading6 are accent-soft, bold', () => {
+    for (const tag of [
+      t.heading2,
+      t.heading3,
+      t.heading4,
+      t.heading5,
+      t.heading6,
+    ]) {
+      expect(specFor(tag).color).toBe('#d27458');
+      expect(specFor(tag).fontWeight).toBe('bold');
+    }
+  });
+
+  test('emphasis is italic accent', () => {
+    const s = specFor(t.emphasis);
+    expect(s.color).toBe('#e08060');
+    expect(s.fontStyle).toBe('italic');
+  });
+
+  test('strong is bold accent', () => {
+    expect(specFor(t.strong).color).toBe('#e08060');
+    expect(specFor(t.strong).fontWeight).toBe('bold');
+  });
+
+  test('link and url are accent', () => {
+    expect(specFor(t.link).color).toBe('#e08060');
+    expect(specFor(t.url).color).toBe('#e08060');
+  });
+
+  test('monospace is dark sage', () => {
+    expect(specFor(t.monospace).color).toBe('#9bb08a');
+  });
+
+  test('quote is fg-faint, italic', () => {
+    const s = specFor(t.quote);
+    expect(s.color).toBe('#9f8c74');
+    expect(s.fontStyle).toBe('italic');
+  });
+
+  test('processingInstruction is list-mark', () => {
+    expect(specFor(t.processingInstruction).color).toBe('#b89968');
+  });
+
+  test('contentSeparator is rule', () => {
+    expect(specFor(t.contentSeparator).color).toBe('#4a3f37');
   });
 });

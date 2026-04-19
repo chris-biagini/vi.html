@@ -29,9 +29,24 @@ export const lightHighlight = HighlightStyle.define([
 ]);
 
 /**
- * Espresso Mirror (dark) highlight. Filled in Slice 4.
+ * Espresso Mirror (dark) highlight.
  */
-export const darkHighlight = null; // populated in Slice 4
+export const darkHighlight = HighlightStyle.define([
+  { tag: t.heading1, color: '#e08060', fontWeight: 'bold' },
+  { tag: t.heading2, color: '#d27458', fontWeight: 'bold' },
+  { tag: t.heading3, color: '#d27458', fontWeight: 'bold' },
+  { tag: t.heading4, color: '#d27458', fontWeight: 'bold' },
+  { tag: t.heading5, color: '#d27458', fontWeight: 'bold' },
+  { tag: t.heading6, color: '#d27458', fontWeight: 'bold' },
+  { tag: t.emphasis, color: '#e08060', fontStyle: 'italic' },
+  { tag: t.strong, color: '#e08060', fontWeight: 'bold' },
+  { tag: t.link, color: '#e08060' },
+  { tag: t.url, color: '#e08060' },
+  { tag: t.monospace, color: '#9bb08a' },
+  { tag: t.quote, color: '#9f8c74', fontStyle: 'italic' },
+  { tag: t.processingInstruction, color: '#b89968' },
+  { tag: t.contentSeparator, color: '#4a3f37' },
+]);
 
 /**
  * Returns a syntax-highlighting extension for the requested variant.
