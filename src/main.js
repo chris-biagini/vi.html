@@ -27,6 +27,7 @@ import {
   flash,
   updateMode,
   setStatusIndicator,
+  updateWordCount,
 } from './status.js';
 import { showTab } from './preview.js';
 import {
@@ -118,6 +119,22 @@ function makeIndentUnitString() {
 // ── Build editor ────────────────────────────────────────
 initStatusBar();
 
+// ── Word-count indicator wiring ─────────────────────────
+// Doc-change recounts are debounced; selection-only updates are immediate.
+var wordCountTimer = null;
+var WORD_COUNT_DEBOUNCE_MS = 150;
+
+function recomputeWordCount(state) {
+  var sel = state.selection.main;
+  if (sel.from !== sel.to) {
+    updateWordCount(state.doc.sliceString(sel.from, sel.to), {
+      isSelection: true,
+    });
+  } else {
+    updateWordCount(state.doc.toString(), { isSelection: false });
+  }
+}
+
 var view = new EditorView({
   state: EditorState.create({
     doc: '',
@@ -152,9 +169,22 @@ var view = new EditorView({
               ),
             });
           }
+          // Selection-only updates: refresh word count immediately (cheap;
+          // selection cache in updateWordCount short-circuits no-ops).
+          if (!update.docChanged) {
+            recomputeWordCount(update.state);
+          }
         }
         if (update.docChanged) {
           scheduleContentSave();
+          // Debounce doc-change recounts: avoid scanning a 30-page doc on every
+          // keystroke during a fast typing burst.
+          if (wordCountTimer !== null) clearTimeout(wordCountTimer);
+          var stateAtTimer = update.state;
+          wordCountTimer = setTimeout(function () {
+            wordCountTimer = null;
+            recomputeWordCount(stateAtTimer);
+          }, WORD_COUNT_DEBOUNCE_MS);
         }
       }),
       EditorView.theme({
@@ -499,3 +529,5 @@ darkModeMedia.addEventListener('change', function (e) {
 var initialPos = view.state.selection.main.head;
 var initialLine = view.state.doc.lineAt(initialPos);
 updateStatusPos(initialLine.number - 1, initialPos - initialLine.from);
+// Initial word-count paint, so the indicator is populated before the first edit.
+recomputeWordCount(view.state);
