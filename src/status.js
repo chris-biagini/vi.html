@@ -1,14 +1,22 @@
+import { countWords, formatIndicator } from './wordcount.js';
+
 // ── Status bar ──────────────────────────────────────────
 var modeEl = null,
   posEl = null,
   flashEl = null,
-  bufferEl = null;
+  bufferEl = null,
+  wordsEl = null;
+
+// Cached last-rendered tuple to avoid redundant DOM writes.
+var lastWordCountKey = null;
 
 export function initStatusBar() {
   modeEl = document.getElementById('status-mode');
   posEl = document.getElementById('status-pos');
   flashEl = document.getElementById('status-flash');
   bufferEl = document.getElementById('status-buffer');
+  wordsEl = document.getElementById('status-words');
+  lastWordCountKey = null;
 }
 
 export function updateStatusPos(line, ch) {
@@ -56,4 +64,16 @@ export function updateMode(modeObj) {
   if (sub) display += ' ' + sub.toUpperCase();
   modeEl.textContent = display;
   modeEl.className = mode;
+}
+
+export function updateWordCount(text, opts) {
+  var isSelection = !!(opts && opts.isSelection);
+  // Cache key keys off both content and selection mode; identical inputs
+  // (e.g., a selectionSet update where selection didn't actually move) skip
+  // the recount and DOM write.
+  var key = (isSelection ? '1\0' : '0\0') + text;
+  if (key === lastWordCountKey) return;
+  lastWordCountKey = key;
+  var words = countWords(text);
+  wordsEl.textContent = formatIndicator(words, { isSelection: isSelection });
 }
