@@ -28,6 +28,7 @@ These are decided. Don't re-litigate.
 - **Stays a single static HTML file.** No backend, no telemetry, no WebSockets, no phone-home behavior. GitHub Pages deployment.
 - **Stack stays put.** CodeMirror 6 + `@replit/codemirror-vim` + `marked` is the foundation. We are not switching engines or rebuilding vim from scratch.
 - **"Nearest native browser feature" pattern.** Before reimplementing a vim feature, ask whether a browser-native equivalent achieves the goal. Spellcheck (`:set spell` → contenteditable `spellcheck` attribute, see `src/main.js:333`, `src/vim/options.js:63`) is the model.
+- **Verify native CM6 behavior *before* planning.** Before writing a plan that adds Enter/Backspace/Tab/cursor/selection behavior, drive the existing editor through the target scenarios via the `?test` harness and record what already works. CM6 plus `@codemirror/lang-markdown` does more than expected &mdash; markdown list continuation (bullets, ordered-with-increment, task-lists-carry-forward, indent preservation) is fully native. Skipping this check once cost us an entire list-continuation feature branch (plan `2026-04-19-list-continuation.md`), which re-implemented already-working logic and introduced subtle bugs by layering on top of it. The lesson: the first task of any keymap-adjacent plan is a short empirical-survey task that documents current native behavior.
 - **Smaller sequenced PRs.** One feature per branch per PR. No grand bundles.
 - **Test discipline.** Pure functions are exported and unit-tested. Browser behavior is verified interactively via the `?test` harness.
 
@@ -56,7 +57,7 @@ Each feature below gets its own plan when it's time to build. Order is a recomme
 
 ### Sprint 1 — Quick wins, prove the rhythm
 
-1. **Auto-continue lists** — Enter on `- foo` produces `- ` on the next line; `1.` becomes `2.`; preserves indent; Enter on empty marker terminates the list. Plan: `2026-04-19-list-continuation.md`.
+1. ~~**Auto-continue lists**~~ — **Shipped (via CM6 native).** CM6 + `@codemirror/lang-markdown` already provides bullet, ordered-with-increment, task-list-unchecked-carry, and indent-preserving continuation. The only gap &mdash; empty-marker termination &mdash; proved not worth a custom override (see superseded plan `2026-04-19-list-continuation.md`). User-facing docs added in help page's "List Continuation" section.
 2. **Word count + reading time** — small status-bar indicator (one number, ~200 wpm reading-time estimate).
 
 ### Sprint 2 — Foundational

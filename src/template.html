@@ -39,6 +39,7 @@
             <li><a href="#s-copying-pasting">Copying &amp; Pasting</a></li>
             <li><a href="#s-text-objects">Text Objects</a></li>
             <li><a href="#s-working-with-prose">Working with Prose</a></li>
+            <li><a href="#s-list-continuation">List Continuation</a></li>
             <li><a href="#s-finding-replacing">Finding &amp; Replacing</a></li>
             <li><a href="#s-dot-command">The Dot Command</a></li>
             <li><a href="#s-undo-redo">Undo &amp; Redo</a></li>
@@ -580,6 +581,26 @@
             blank-line paragraph boundaries &mdash; it won&rsquo;t merge
             separate paragraphs.
           </div>
+
+          <h2 id="s-list-continuation">List Continuation</h2>
+          <p>
+            Pressing <kbd>Enter</kbd> in Insert mode on a markdown list item
+            starts the next line with the same marker and indent. Numbered lists
+            increment automatically (<code>1.</code> &rarr; <code>2.</code>),
+            and task-list checkboxes carry forward unchecked.
+          </p>
+          <p>
+            Supported markers: <code>-</code>, <code>*</code>, <code>+</code>,
+            <code>1.</code> / <code>1)</code>, and GFM task lists (<code
+              >- [ ]</code
+            >
+            / <code>- [x]</code>).
+          </p>
+          <p>
+            To exit a list, clear the empty marker with <kbd>Backspace</kbd>, or
+            press <kbd>Esc</kbd> to return to Normal mode and use
+            <kbd>dd</kbd> to remove the empty line.
+          </p>
 
           <h2 id="s-finding-replacing">Finding and Replacing</h2>
           <table>
