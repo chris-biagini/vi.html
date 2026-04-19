@@ -71,6 +71,7 @@ var indentUnitCompartment = new Compartment();
 var abbreviationsCompartment = new Compartment();
 var spellcheckCompartment = new Compartment();
 var foldGutterCompartment = new Compartment();
+var themeCompartment = new Compartment();
 
 // Track current values for settings display (compartment.get() is unreliable)
 var currentLineNumbers = true;
@@ -118,7 +119,7 @@ var view = new EditorView({
       tabSizeCompartment.of(EditorState.tabSize.of(4)),
       indentUnitCompartment.of(indentUnitFacet.of('    ')),
       markdown(),
-      getHighlight(false),
+      themeCompartment.of(getHighlight(false)),
       history(),
       bracketMatching(),
       drawSelection(),
