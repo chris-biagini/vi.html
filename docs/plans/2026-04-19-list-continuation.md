@@ -1,5 +1,11 @@
 # Auto-Continue Lists Implementation Plan
 
+> **⚠ SUPERSEDED 2026-04-19.** This plan was partially executed (Tasks 0, 1, 2 were implemented and reviewed) before browser verification (Task 4) revealed that CM6 + `@codemirror/lang-markdown` already handles list continuation natively &mdash; bullets, ordered-with-increment, task-lists-carry-forward, and indent preservation all work without any custom code. Our custom handler was redundant for every continuation case, and its termination branch *conflicted* with CM6's continuation (producing `- foo\n\n- ` instead of the intended `- foo\n\n`). All three implementation commits were reverted. The only remaining artifact is the refined "List Continuation" section in the help page (`src/template.html`), which documents the already-working native behavior.
+>
+> **Lesson captured** in the roadmap's architectural commitments: *Verify native CM6 behavior before planning.* Drive scenarios through the `?test` harness before writing a plan that touches Enter/Backspace/Tab/cursor/selection semantics. CM6 does more than expected.
+>
+> Kept on disk as a record of the pivot. Do not execute.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** When pressing Enter in insert mode on a markdown list item, automatically begin the next line with the same marker, indent, and (for ordered lists) incremented number. Pressing Enter on an empty list marker terminates the list and leaves a blank line.
