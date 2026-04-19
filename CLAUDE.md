@@ -101,3 +101,17 @@ Unit tests can't catch bugs that only appear in the real browser (CM6 update cyc
 
 When implementing new custom vim features, follow the conventions above.
 Upon completion, add documentation for the feature to the help page. After implementation, do an interactive browser test (see "Browser Testing" above) to verify the feature works end-to-end.
+
+## Git Workflow
+
+User-wide git workflow rules live in `~/CLAUDE.md`. Project-specific notes:
+
+- `main` deploys to GitHub Pages automatically via GitHub Actions on every push. Never push WIP to `main`; use a feature branch.
+- CI runs `lint + test + build` on every push. The full local equivalent is `npm run check` plus `npm run build`.
+- No long-lived feature branches in active use.
+
+## Roadmap & Reference Docs
+
+Active product direction lives in `docs/plans/2026-04-19-product-polish-roadmap.md` — design north star (Her + McFetridge), architectural commitments, scope (in and explicitly out), and the feature inventory that gets carved into per-feature plans.
+
+Vim scope is calibrated against the [Goerz vim quick reference card](https://michaelgoerz.net/refcards/vimqrc.pdf) ([source](https://github.com/goerz/Refcards/tree/master/vim)). It is the **negative scope doc**: anything on the card we explicitly aren't building (multi-windowing, tags, `:make`, shell, real filesystem, completion frameworks) is captured in the roadmap's "Out of Scope" section so we stop re-litigating those decisions.
