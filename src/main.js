@@ -49,6 +49,7 @@ import {
   foldGutterExtension,
   registerFoldCommands,
   registerClipboard,
+  getHighlight,
 } from './vim/index.js';
 import { installTestHarness } from './test-harness.js';
 
@@ -117,6 +118,7 @@ var view = new EditorView({
       tabSizeCompartment.of(EditorState.tabSize.of(4)),
       indentUnitCompartment.of(indentUnitFacet.of('    ')),
       markdown(),
+      getHighlight(false),
       history(),
       bracketMatching(),
       drawSelection(),

@@ -31,7 +31,13 @@ describe('lightHighlight (Paper & Clay)', () => {
   });
 
   test('heading2–heading6 are accent-soft, bold', () => {
-    for (const tag of [t.heading2, t.heading3, t.heading4, t.heading5, t.heading6]) {
+    for (const tag of [
+      t.heading2,
+      t.heading3,
+      t.heading4,
+      t.heading5,
+      t.heading6,
+    ]) {
       const s = specFor(tag);
       expect(s).toBeDefined();
       expect(s.color).toBe('#b05d2b');
