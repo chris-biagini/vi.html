@@ -124,14 +124,14 @@ initStatusBar();
 var wordCountTimer = null;
 var WORD_COUNT_DEBOUNCE_MS = 150;
 
-function recomputeWordCount(state) {
-  var sel = state.selection.main;
+function recomputeWordCount(editorState) {
+  var sel = editorState.selection.main;
   if (sel.from !== sel.to) {
-    updateWordCount(state.doc.sliceString(sel.from, sel.to), {
+    updateWordCount(editorState.doc.sliceString(sel.from, sel.to), {
       isSelection: true,
     });
   } else {
-    updateWordCount(state.doc.toString(), { isSelection: false });
+    updateWordCount(editorState.doc.toString(), { isSelection: false });
   }
 }
 
