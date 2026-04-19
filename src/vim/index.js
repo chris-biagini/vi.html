@@ -26,3 +26,4 @@ export {
   registerFoldCommands,
 } from './fold.js';
 export { registerClipboard } from './clipboard.js';
+export { lightHighlight, darkHighlight, getHighlight } from './highlight.js';
