@@ -2,14 +2,57 @@
 
 Single-file markdown editor with vim keybindings. Source is modular; `vi.html` is built from `src/`.
 
+## Vision
+
+vi.html is a single-file markdown editor for solo prose work — specifically the workflow of writing long documents (10–30 pages) in vim, then pasting clean HTML into Microsoft Word for final delivery. The target environment is a locked-down corporate machine where you can't install software but can open an HTML file in Edge.
+
+## Design North Star
+
+The aesthetic target is the world of *Her* (2013) crossed with Geoff McFetridge's design language — warm, calm, friendly, low-contrast but comfortable. A computer that's a friend, not a hacker tool. An oasis from corporate beige.
+
+Concretely:
+
+- Warm cream / parchment background; espresso text (not harsh black)
+- Terracotta or dusty-coral accents
+- Generous whitespace and line-height
+- Soft rounded forms; gentle easing on transitions
+- Rounded sans for chrome; an optional serif for the prose surface itself
+- Calm and deliberate, never aggressive
+
+## Architectural Commitments
+
+These are decided. Don't re-litigate.
+
+- **Stays a single static HTML file.** No backend, no telemetry, no WebSockets, no phone-home behavior. GitHub Pages deployment.
+- **Stack stays put.** CodeMirror 6 + `@replit/codemirror-vim` + `marked` is the foundation. We are not switching engines or rebuilding vim from scratch.
+- **"Nearest native browser feature" pattern.** Before reimplementing a vim feature, ask whether a browser-native equivalent achieves the goal. Spellcheck (`:set spell` → contenteditable `spellcheck` attribute, see `src/main.js` and `src/vim/options.js`) is the model.
+- **Verify native CM6 behavior *before* planning.** Before writing a plan that adds Enter/Backspace/Tab/cursor/selection behavior, drive the existing editor through the target scenarios via the `?test` harness and record what already works. CM6 plus `@codemirror/lang-markdown` does more than expected — markdown list continuation (bullets, ordered-with-increment, task-lists-carry-forward, indent preservation) is fully native. Skipping this check once cost an entire feature branch (`docs/plans/2026-04-19-list-continuation.md`), which re-implemented already-working logic and introduced subtle bugs by layering on top of it. Lesson: the first task of any keymap-adjacent plan is a short empirical-survey task that documents current native behavior.
+- **Smaller sequenced PRs.** One feature per branch per PR. No grand bundles.
+- **Test discipline.** Pure functions are exported and unit-tested. Browser behavior is verified interactively via the `?test` harness.
+
+## Out of Scope (Product-Level)
+
+Considered and explicitly excluded — don't re-litigate. (Vim-feature-specific scope limits live under "Vim Fidelity" below.)
+
+- **Multi-windowing / window splits** (`:split`, `Ctrl-W` family). CM6 is one view; massive scope for marginal value.
+- **Tags** (`Ctrl-]`, `:tags`, `gd`/`gD`, `:ts`/`:tj`). No tag files in a browser.
+- **Compiling** (`:make`, `:compiler`, quickfix). No build pipeline.
+- **Shell** (`:sh`, `:!cmd`), `K` / `keywordprg`, `:hardcopy`. No shell.
+- **Real filesystem** (`:e file`, `:r file`, `gf`). Browser sandbox; partial coverage via the existing buffers system is enough.
+- **Completion frameworks** (`Ctrl-X Ctrl-*` family). Needs dictionaries / tags / etc.
+- **Differential testing infrastructure** (headless nvim oracle). Useful in theory; not worth the budget for this product's goals.
+- **Backend / accounts / collaboration.** Rails/Hetzner/Kamal explored and dropped for vi.html proper.
+- **Sharing features** (URL-fragment encoding, share-by-link). Irrelevant for the solo-use case.
+
 ## Architecture
 
 **Source files in `src/`:**
 - `template.html` — HTML skeleton with `/* STYLE */` and `/* SCRIPT */` placeholders
 - `style.css` — all CSS (markdown tokens, preview/help pane styles)
 - `storage.js` — localStorage helpers (content with 7-day TTL, settings, persist flag)
-- `status.js` — status bar (mode, position, flash messages, buffer name, indicators)
+- `status.js` — status bar (mode, position, flash messages, buffer name, indicators, word count)
 - `preview.js` — tab switching, SmartyPants, preview rendering, clipboard HTML (marked.js)
+- `wordcount.js` — pure markdown-aware word counter + status-bar indicator formatter
 - `vim/` — vim customizations, one file per feature:
   - `vim/textwidth.js` — auto-wrap lines at textwidth during insert mode
   - `vim/gq.js` — gq/gw reflow operators for reformatting paragraphs
@@ -62,7 +105,7 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 ## Testing Conventions
 
 - Vim fidelity tests reference `:help` topics in comments for traceability.
-- Pure functions are exported for testability (`wordWrap`, `reflowRange` from gq.js; `findBreakPoint` from textwidth.js).
+- Pure functions are exported for testability (`wordWrap`, `reflowRange` from gq.js; `findBreakPoint` from textwidth.js; `countWords`, `formatIndicator` from wordcount.js).
 - `storage.test.js` mocks `localStorage` via `vi.stubGlobal`. CM5 API mocks only need `getLine()` and `replaceRange()`.
 - `npm run check` before pushing — matches what CI runs.
 
@@ -70,16 +113,18 @@ Single-file markdown editor with vim keybindings. Source is modular; `vi.html` i
 
 This is a vim learning tool. Custom vim features (gq, textwidth wrap, Ex commands) must match standard vim behavior. When modifying vim-related code, verify against vim docs (vimhelp.org) or vim source (https://github.com/vim/vim) — do not rely on assumptions. Key references: `:help gq` (change.txt), `:help textwidth` (options.txt), `:help formatoptions` (options.txt), `:help shiftwidth` (options.txt).
 
+Vim scope is calibrated against the [Goerz vim quick reference card](https://michaelgoerz.net/refcards/vimqrc.pdf) ([source](https://github.com/goerz/Refcards/tree/master/vim)) — used as the **negative scope doc**. Anything on the card we explicitly aren't building is captured under "Out of Scope" above. New "do we need feature X?" debates start with "is X on the refcard?" and "is it already classified?"
+
 **Intentional default divergences:** `tabstop=4` (vim: 8), `shiftwidth=4` (vim: 8), `expandtab=on` (vim: off), `number=on` (vim: off). These are UX choices for a markdown editor — do not "fix" them to match vim defaults.
 
-**Not implemented (by design):** `formatoptions` flags (n, 1, 2, w, a). These are acceptable scope limits for a markdown editor.
+**Not implemented (by design):** `formatoptions` flags (n, 1, 2, w, a). Acceptable scope limit for a markdown editor.
 
 ## Browser Testing (Playwright)
 
 Unit tests can't catch bugs that only appear in the real browser (CM6 update cycle errors, CM5 compat layer quirks, event origin mismatches). After adding or modifying a custom vim feature, do an interactive browser test:
 
-1. `npm run build` then serve locally (`python3 -m http.server 9876`)
-2. Navigate Playwright to `http://localhost:9876/vi.html?test`
+1. `npm run build` then serve locally (`python3 -m http.server 9876 --bind 0.0.0.0`)
+2. Navigate Playwright to `http://rika:9876/vi.html?test`
 3. The `?test` param activates the test harness on `window.__vi`
 
 **Test harness API** (`src/test-harness.js`):
@@ -99,8 +144,7 @@ Unit tests can't catch bugs that only appear in the real browser (CM6 update cyc
 
 ## Adding Custom Vim Features
 
-When implementing new custom vim features, follow the conventions above.
-Upon completion, add documentation for the feature to the help page. After implementation, do an interactive browser test (see "Browser Testing" above) to verify the feature works end-to-end.
+When implementing new custom vim features, follow the conventions above. Upon completion, add documentation for the feature to the help page. After implementation, do an interactive browser test (see "Browser Testing" above) to verify the feature works end-to-end.
 
 ## Git Workflow
 
@@ -110,8 +154,8 @@ User-wide git workflow rules live in `~/CLAUDE.md`. Project-specific notes:
 - CI runs `lint + test + build` on every push. The full local equivalent is `npm run check` plus `npm run build`.
 - No long-lived feature branches in active use.
 
-## Roadmap & Reference Docs
+## Project Tracking & Reference Docs
 
-Active product direction lives in `docs/plans/2026-04-19-product-polish-roadmap.md` — design north star (Her + McFetridge), architectural commitments, scope (in and explicitly out), and the feature inventory that gets carved into per-feature plans.
+GitHub Issues is the source of truth for product work — see user-wide `~/.interslice-common/project-tracking.md` for the convention. Use `gh issue list` to see the current idea pile; check `gh api repos/:owner/:repo/milestones --jq '.[] | select(.state=="open")'` for any active launch gate.
 
-Vim scope is calibrated against the [Goerz vim quick reference card](https://michaelgoerz.net/refcards/vimqrc.pdf) ([source](https://github.com/goerz/Refcards/tree/master/vim)). It is the **negative scope doc**: anything on the card we explicitly aren't building (multi-windowing, tags, `:make`, shell, real filesystem, completion frameworks) is captured in the roadmap's "Out of Scope" section so we stop re-litigating those decisions.
+Per-feature design specs and implementation plans live under `docs/plans/YYYY-MM-DD-<feature>.md`. The dated `docs/plans/2026-04-19-product-polish-roadmap.md` is preserved as a historical snapshot of the original sprint-style inventory; current product direction is captured by the Vision / Design / Architectural Commitments / Out of Scope sections in this file plus the live GH issue list.
