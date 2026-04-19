@@ -177,7 +177,7 @@ var view = new EditorView({
           backgroundColor: 'var(--sel-bg) !important',
         },
         '.cm-focused .cm-selectionBackground': {
-          backgroundColor: '#1e3a24 !important',
+          backgroundColor: 'var(--sel-bg) !important',
         },
         '.cm-panels': {
           backgroundColor: 'var(--dialog-bg)',
@@ -205,7 +205,7 @@ var view = new EditorView({
           userSelect: 'none',
         },
         '.cm-tilde-line': {
-          color: '#4e5a8a',
+          color: 'var(--tilde)',
           fontSize: '17px',
           lineHeight: '1.55',
           paddingLeft: '6px',
