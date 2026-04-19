@@ -30,6 +30,9 @@ html[data-theme='light'] {
   --sel-bg: #e5d8bc;
   --dialog-bg: #ebe2d2;
   --active-line: rgba(61, 53, 48, 0.04);
+  --chrome-hover: #ddd0b8;
+  --fold-bg: #e8dcc5;
+  --fold-border: var(--rule);
 }
 
 html[data-theme='dark'] {
@@ -58,6 +61,9 @@ html[data-theme='dark'] {
   --sel-bg: #4a3c30;
   --dialog-bg: #352b26;
   --active-line: rgba(228, 216, 192, 0.04);
+  --chrome-hover: #40332c;
+  --fold-bg: #3d322c;
+  --fold-border: var(--rule);
 }
 
 * {
@@ -113,7 +119,7 @@ body {
 
 .tab:hover:not(.active) {
   color: var(--fg);
-  background: #161616;
+  background: var(--chrome-hover);
 }
 .tab.active {
   color: var(--fg);
@@ -186,8 +192,8 @@ html[data-theme='dark'] .cm-searchMatch {
 
 /* ── Fold placeholder ────────────────────────────────── */
 .cm-foldPlaceholder {
-  background: #1a1e14;
-  border: 1px solid #2a3a2a;
+  background: var(--fold-bg);
+  border: 1px solid var(--fold-border);
   color: var(--fg-dim);
   padding: 0 6px;
   border-radius: 3px;
@@ -212,7 +218,7 @@ html[data-theme='dark'] .cm-searchMatch {
   height: 22px;
   flex-shrink: 0;
   background: var(--status-bg);
-  border-top: 1px solid #1a1a1a;
+  border-top: 1px solid var(--rule);
   display: flex;
   align-items: center;
   padding: 0 10px;
