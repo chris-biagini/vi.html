@@ -148,51 +148,8 @@ body {
 /* Core editor styles are in EditorView.theme() in main.js.
        These cover markdown tokens and search highlights. */
 
-/* Markdown syntax tokens */
-.cm-header {
-  color: #d4b86a;
-  font-weight: bold;
-}
-.cm-strong {
-  color: #d4b86a;
-  font-weight: bold;
-}
-.cm-em {
-  color: #8abf8a;
-  font-style: italic;
-}
-.cm-link {
-  color: var(--accent-vis);
-}
-.cm-url {
-  color: #4e7fa0;
-  text-decoration: underline;
-}
-.cm-quote {
-  color: #7a7a68;
-  font-style: italic;
-}
-.cm-comment {
-  color: var(--fg-dim);
-}
-.cm-keyword {
-  color: #c49ad4;
-}
-.cm-atom {
-  color: #d4866a;
-}
-.cm-string {
-  color: #8abf8a;
-}
-.cm-variable-2 {
-  color: var(--accent-vis);
-}
-.cm-tag {
-  color: #c46a6a;
-}
-
 .cm-searchMatch {
-  background: #3a3a1a;
+  background: #e8d396;
 }
 
 /* ── Fold placeholder ────────────────────────────────── */
