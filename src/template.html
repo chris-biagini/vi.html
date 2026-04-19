@@ -42,6 +42,7 @@
             <li><a href="#s-list-continuation">List Continuation</a></li>
             <li><a href="#s-finding-replacing">Finding &amp; Replacing</a></li>
             <li><a href="#s-dot-command">The Dot Command</a></li>
+            <li><a href="#s-macros">Macros</a></li>
             <li><a href="#s-undo-redo">Undo &amp; Redo</a></li>
             <li><a href="#s-counts">Counts</a></li>
             <li><a href="#s-marks">Marks</a></li>
@@ -658,11 +659,27 @@
                 <td><code>:%s/old/new/gc</code></td>
                 <td>Replace all in file, confirm each</td>
               </tr>
+              <tr>
+                <td><code>:g/pat/</code><em>cmd</em></td>
+                <td>Run <em>cmd</em> on every line matching <em>pat</em></td>
+              </tr>
+              <tr>
+                <td><code>:v/pat/</code><em>cmd</em></td>
+                <td>
+                  Run <em>cmd</em> on every line <b>not</b> matching
+                  <em>pat</em>
+                </td>
+              </tr>
             </tbody>
           </table>
           <div class="tip">
             Search <kbd>/^#</kbd> then press <kbd>n</kbd> to jump between
             markdown headings. Use <kbd>/^##</kbd> for subheadings only.
+          </div>
+          <div class="tip">
+            <b>Global edits:</b> <code>:g/TODO/d</code> deletes every TODO line.
+            <code>:v/^#/d</code> keeps only headings.
+            <code>:g/^$/d</code> strips blank lines.
           </div>
 
           <h2 id="s-dot-command">The Dot Command</h2>
@@ -681,6 +698,46 @@
             word + <kbd>Esc</kbd>), then <kbd>n</kbd> to jump to the next match
             and <kbd>.</kbd> to repeat the change. Step through the whole file
             with <kbd>n</kbd><kbd>.</kbd><kbd>n</kbd><kbd>.</kbd>
+          </div>
+
+          <h2 id="s-macros">Macros</h2>
+          <p>
+            Where <kbd>.</kbd> repeats your last change, a macro records an
+            arbitrary sequence of keys into a named register and replays it on
+            demand.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>q</kbd><em>a</em></td>
+                <td>
+                  Start recording into register <em>a</em> (any letter
+                  <kbd>a</kbd>&ndash;<kbd>z</kbd>)
+                </td>
+              </tr>
+              <tr>
+                <td><kbd>q</kbd></td>
+                <td>Stop recording (while recording)</td>
+              </tr>
+              <tr>
+                <td><kbd>@</kbd><em>a</em></td>
+                <td>Replay macro from register <em>a</em></td>
+              </tr>
+              <tr>
+                <td><kbd>@@</kbd></td>
+                <td>Replay the last macro you ran</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tip">
+            Counts work: <kbd>10@a</kbd> runs macro <kbd>a</kbd> ten times in a
+            row.
           </div>
 
           <h2 id="s-undo-redo">Undo and Redo</h2>
