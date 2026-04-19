@@ -53,6 +53,7 @@
             <li><a href="#s-abbreviations">Abbreviations</a></li>
             <li><a href="#s-exrc">exrc</a></li>
             <li><a href="#s-end-of-buffer">End-of-Buffer Lines</a></li>
+            <li><a href="#s-status-bar">Status Bar</a></li>
             <li><a href="#s-folding">Folding</a></li>
             <li><a href="#s-persistence">Persistence</a></li>
             <li>
@@ -1149,6 +1150,17 @@ persist</pre
             <code style="color: var(--tilde)">~</code>, matching vim&rsquo;s
             end-of-buffer indicator. These are not part of the document &mdash;
             they show where the file ends and empty screen space begins.
+          </p>
+
+          <h2 id="s-status-bar">Status Bar</h2>
+          <p>
+            The bar across the bottom of the editor shows the current vim mode,
+            the active buffer name, the cursor position (line:column), and a
+            word count with an estimated reading time at 200 words per minute
+            (e.g.&nbsp;<code>543w &middot; 3m</code>). For documents under 200
+            words the reading-time estimate is omitted. When you select text in
+            Visual mode, the indicator switches to count just the selection
+            (e.g.&nbsp;<code>47w sel</code>).
           </p>
 
           <h2 id="s-folding">Folding</h2>
