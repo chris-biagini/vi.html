@@ -53,6 +53,15 @@ import {
 } from './vim/index.js';
 import { installTestHarness } from './test-harness.js';
 
+// ── Theme: OS-follow via prefers-color-scheme ──────────
+var darkModeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+
+function applyTheme(isDark) {
+  document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+}
+
+applyTheme(darkModeMedia.matches);
+
 // ── Application state ───────────────────────────────────
 var state = {
   textwidth: 0,
@@ -119,7 +128,7 @@ var view = new EditorView({
       tabSizeCompartment.of(EditorState.tabSize.of(4)),
       indentUnitCompartment.of(indentUnitFacet.of('    ')),
       markdown(),
-      themeCompartment.of(getHighlight(false)),
+      themeCompartment.of(getHighlight(darkModeMedia.matches)),
       history(),
       bracketMatching(),
       drawSelection(),
@@ -477,6 +486,14 @@ executeExrc(cm);
 
 // ── Test harness (vi.html?test) ──────────────────────────
 installTestHarness(view, cm, state, editorAPI);
+
+// ── Theme: react to OS color-scheme changes ─────────────
+darkModeMedia.addEventListener('change', function (e) {
+  applyTheme(e.matches);
+  view.dispatch({
+    effects: themeCompartment.reconfigure(getHighlight(e.matches)),
+  });
+});
 
 // Set initial cursor position display
 var initialPos = view.state.selection.main.head;
