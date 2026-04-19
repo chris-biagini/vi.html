@@ -55,8 +55,11 @@ Identical variable names across themes; different hex values.
 | `--fg` | `#3d3530` | Primary text (espresso) |
 | `--fg-muted` | `#6b5d4f` | Status bar text, labels |
 | `--fg-faint` | `#987b5a` | Blockquote body, comments |
-| `--accent` | `#c4634d` | Clay-red — h1, links, emphasis, strong |
+| `--accent` | `#c4634d` | Clay-red — h1, links, emphasis, strong; status bar NORMAL mode |
 | `--accent-soft` | `#b05d2b` | h2–h6 |
+| `--accent-warm` | `#b88a3c` | Status bar INSERT mode (amber) |
+| `--accent-vis` | `#6b8094` | Status bar VISUAL mode (muted slate-blue) |
+| `--accent-rep` | `#9a3a2a` | Status bar REPLACE mode (deep crimson) |
 | `--list-mark` | `#9a7540` | List bullets, ordered-list numerals |
 | `--code` | `#7a8f6e` | Inline code & fenced-block text (muted sage) |
 | `--tilde` | `#b89968` | End-of-buffer `~` (honey gold) |
@@ -74,8 +77,11 @@ Identical variable names across themes; different hex values.
 | `--fg` | `#e4d8c0` | Primary text |
 | `--fg-muted` | `#a89680` | Status bar text |
 | `--fg-faint` | `#9f8c74` | Blockquotes, comments |
-| `--accent` | `#e08060` | h1, links, emphasis, strong |
+| `--accent` | `#e08060` | h1, links, emphasis, strong; status bar NORMAL mode |
 | `--accent-soft` | `#d27458` | h2–h6 |
+| `--accent-warm` | `#d4a35c` | Status bar INSERT mode (warm gold) |
+| `--accent-vis` | `#8ca3b8` | Status bar VISUAL mode (slate-blue) |
+| `--accent-rep` | `#c45a40` | Status bar REPLACE mode (saturated crimson) |
 | `--list-mark` | `#b89968` | Bullets, numerals |
 | `--code` | `#9bb08a` | Inline code & fenced blocks |
 | `--tilde` | `#7a6347` | End-of-buffer `~` |
