@@ -570,6 +570,21 @@ All scenarios use `textwidth=20` unless noted. Newlines in cells are rendered as
 
 ## Decision
 
-**Verdict: delete.**
+**Verdict: slim (corrected from initial subagent verdict of `delete`).**
 
-The parity table has **zero DIFFER rows** across all eleven measurements (rows 1–9 prose/markdown output, rows 10a/10b `gw` cursor preservation). Per the plan's mechanical rule — "Full parity (0 DIFFER rows) → delete" — our `src/vim/gq.js` is pure duplication of upstream `hardWrap` + the keymap shim at bundle:2859–2867. Row 2 proves prose reflow matches byte-for-byte, row 10a proves upstream's `gw` keepCursor plumbing works end-to-end under jsdom, and rows 6–8 show that our module's only perceptible "difference" from upstream is that neither handles markdown — which is a wash, not a win. The one intentional behavioral nuance our operator has (positioning the cursor at first-non-blank of the last formatted line for `gq`, vs. upstream's `new Pos(endRow, 0)` in the operator shim) was not tested in these scenarios and is a minor cosmetic divergence on cursor landing — acceptable loss against removing ~60 lines of duplicated code.
+The 11-row parity table shows 0 DIFFER rows on *document output*, which under the plan's mechanical rule would point at `delete`. But the table didn't measure `gq` cursor landing on an **indented** last line — a gap the subagent flagged in pushback. An out-of-band probe (`Vim.handleKey(cm, 'g','q','a','p')` on `"  indented text that should be wrapped properly"` at tw=20) confirmed:
+
+- **Upstream lands at `{line:2, ch:0}`** — column 0, before the indentation. Per `node_modules/@replit/codemirror-vim/dist/index.js:2866`: `return operatorArgs.keepCursor ? oldAnchor : new Pos(endRow, 0);`
+- **Our `gq.js:108–109` lands at `{line:2, ch:2}`** — first non-blank. `var firstNonBlank = cm.getLine(cursorLine).search(/\S/);` matches real-vim behavior.
+
+Authoritative reference: vim source `src/textformat.c:893–896` leaves cursor at first-non-blank via `beginline(BL_WHITE | BL_FIX)` after `op_format`. This is not a cosmetic detail — it's a documented vim-fidelity guarantee and the project's `CLAUDE.md` explicitly makes vim fidelity a non-goal-divergent requirement for custom operators.
+
+So: keep our operator wrapper for the cursor-landing fix, but drop everything that *is* duplication:
+
+- Remove `Vim.mapCommand('gq', ...)` (line 112) and `Vim.mapCommand('gw', ...)` (line 143) — upstream's `defaultKeymap` at bundle:189–190 already routes these to operator name `hardWrap`, which our `defineOperator('hardWrap', ...)` overrides by name.
+- Remove the `hardWrapKeepCursor` operator (lines 116–141) — upstream's keymap passes `operatorArgs: {keepCursor: true}` to `hardWrap`; our operator just needs to honor that arg.
+- Remove `reflowRange` and `wordWrap` (lines 17–82) — upstream's `cm.hardWrap({from, to})` produces byte-identical output (rows 2–9). Delete `gq.test.js` (tests removed functions).
+- Keep the operator shim in `gq.js` — ~20 lines: call `cm.hardWrap`, then set cursor to first-non-blank (or `oldAnchor` if `keepCursor`).
+- Keep `gq-parity.test.js` refactored to a minimal regression test: `gqap` on an indented paragraph lands cursor at first-non-blank (proves the shim earns its keep); and a smoke test that upstream's hardWrap still produces the expected output on a canonical paragraph (proves we're not silently affected by a library regression).
+
+Net: ~120 LoC removed from `gq.js`, `gq.test.js` deleted entirely, vim-fidelity preserved, no functional change for the user.
