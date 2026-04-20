@@ -536,3 +536,32 @@ Resolves #27
 - **Placeholder scan:** no "TBD" or "add appropriate". Every code step shows actual code or a precise inline description. ✓
 - **Type consistency:** `runUpstream`/`runOurs` return strings; `reflowRange` import path matches existing test file; `getCM`/`Vim`/`EditorView`/`EditorState` are all real exports. ✓
 - **Open risk:** Task 2 Step 3 (`gw` via `Vim.handleKey`) may not work under jsdom — documented fallbacks. If even the fallbacks are flaky, gw parity gets marked "not tested" in the report, and the decision rule still works because gw's keepCursor logic lives in upstream's operator shim (bundle:2866), not inside `hardWrap` proper, and that shim IS covered by our standing override in Task 5b.
+
+---
+
+## Parity Report
+
+Generated from `src/vim/gq-parity.test.js` on 2026-04-19 against `@replit/codemirror-vim@^6.3.0` (installed version per `package-lock.json`: **6.3.0**).
+
+All scenarios use `textwidth=20` unless noted. Newlines in cells are rendered as `<br>` so the multi-line structure is legible; the literal snapshots live in the test file.
+
+| # | Scenario | tw | Upstream output | Ours output | Verdict |
+|---|---|---:|---|---|---|
+| 1 | Smoke (short line) | 80 | `short line` | `short line` | EQUAL |
+| 2 | Multi-line paragraph joins and rewraps | 20 | `the quick brown fox`<br>`jumps over the lazy`<br>`dog` | `the quick brown fox`<br>`jumps over the lazy`<br>`dog` | EQUAL |
+| 3 | Paragraphs separated by blank line | 20 | `first paragraph text`<br>`here`<br>`(blank)`<br>`second paragraph`<br>`text here` | `first paragraph text`<br>`here`<br>`(blank)`<br>`second paragraph`<br>`text here` | EQUAL |
+| 4 | Leading indentation preserved | 20 | `  indented text that`<br>`  should be wrapped`<br>`  properly` | `  indented text that`<br>`  should be wrapped`<br>`  properly` | EQUAL |
+| 5 | Mixed-width prose (short then long) | 20 | `A short line. This`<br>`second line is`<br>`considerably longer`<br>`than textwidth.` | `A short line. This`<br>`second line is`<br>`considerably longer`<br>`than textwidth.` | EQUAL |
+| 6 | Bullet list (two short items) | 20 | `- first item -`<br>`second item` | `- first item -`<br>`second item` | EQUAL (both wrong — both merge items) |
+| 7 | Blockquote (two lines) | 20 | `> quoted line one`<br>`here > quoted line`<br>`two here` | `> quoted line one`<br>`here > quoted line`<br>`two here` | EQUAL (both wrong — both merge marks) |
+| 8 | Fenced code block (should not reflow) | 20 | ` ``` var `<br>`longVariableName =`<br>`computeValueOverTwentyChars();`<br>` ``` ` | ` ``` var `<br>`longVariableName =`<br>`computeValueOverTwentyChars();`<br>` ``` ` | EQUAL (both wrong — both reflow inside fence) |
+| 9 | Setext heading (underline must not merge) | 20 | `Heading Text`<br>`============`<br>`(blank)`<br>`Body text paragraph`<br>`here.` | `Heading Text`<br>`============`<br>`(blank)`<br>`Body text paragraph`<br>`here.` | EQUAL |
+| 10a | `gw` cursor preservation via `Vim.handleKey('gwap')` | 20 | Doc wraps; cursor stays at `{line:0, ch:5}` | N/A — keepCursor is a vim-shim concern, not a `reflowRange` concern | EQUAL (upstream `gw` works end-to-end under jsdom) |
+| 10b | `cm.hardWrap({from,to})` called directly — cursor check | 20 | Before `{0,5}` → after `{0,5}` (unchanged) | N/A | EQUAL (pure `hardWrap` never moves the cursor) |
+
+### Divergence summary
+
+- **EQUAL on:** every scenario (1, 2, 3, 4, 5, 6, 7, 8, 9, 10a, 10b).
+- **DIFFER on:** none.
+- **Diagnosis:** upstream `hardWrap` at `node_modules/@replit/codemirror-vim/dist/index.js:8096–8131` with the default `allowMerge=true` performs the same paragraph-join-then-rewrap behavior as our `reflowRange`: when the current line is under `max` and the next line is non-blank, it merges them with a single space and reconsiders from the same row — which is functionally the same algorithm as our "collect paragraph, join, wordwrap". The markdown-construct scenarios (rows 6–8) are all EQUAL because *neither implementation is markdown-aware*: both happily merge `- item` + `- item` into `- first item - second item`, both reflow inside fenced code blocks, both join `> ` prefixes as interior tokens. The setext heading scenario (row 9) is EQUAL because both implementations treat `============` as a short line that doesn't need wrapping and neither would merge it upward (the first line `Heading Text` is also under tw, and upstream's merge branch only fires when the current line length exceeds max or there is an opportunity to pull a short-plus-short pair up — in this case `Heading Text` + `============` merged would be 25 chars which is over tw=20, so the `mergedLine.length < max` check fails, and since the first line is already under `max` neither side merges). Row 10a confirms that upstream's operator shim (bundle:2859–2867) correctly plumbs `{keepCursor:true}` for `gw` end-to-end under jsdom.
+- **Note on "both wrong":** rows 6–8 are annotated EQUAL because upstream and ours produce identical output, but neither matches the ideal markdown behavior. This is a known limitation of both — neither implementation claims markdown awareness. Issue #27's scope is parity between the two, not adding markdown awareness.
