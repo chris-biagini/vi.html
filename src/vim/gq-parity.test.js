@@ -6,7 +6,7 @@
  * vim:src/textformat.c:893–896). Full parity analysis is in
  * docs/plans/2026-04-19-gq-upstream-parity.md.
  */
-import { describe, test, expect, beforeEach } from 'vitest';
+import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import { EditorView } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
 import { vim, getCM, Vim } from '@replit/codemirror-vim';
@@ -15,9 +15,14 @@ import { registerGqOperator } from './gq.js';
 // Shared state mirroring main.js — our operator reads state.textwidth
 // because options.js doesn't propagate textwidth to cm.getOption (#28).
 const state = { textwidth: 0 };
+const hosts = [];
 
 beforeEach(() => {
   state.textwidth = 0;
+});
+
+afterEach(() => {
+  while (hosts.length) hosts.pop().remove();
 });
 
 registerGqOperator(state);
@@ -25,6 +30,7 @@ registerGqOperator(state);
 function makeEditor(doc, tw) {
   const host = document.createElement('div');
   document.body.appendChild(host);
+  hosts.push(host);
   const view = new EditorView({
     state: EditorState.create({ doc, extensions: [vim()] }),
     parent: host,
